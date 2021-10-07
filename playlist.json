@@ -1100,7 +1100,6 @@
 			"starred": 2
 		}, {
 			"description": "Sync noise synth",
-			"author": "SArpnt",
 			"url": "https://www.reddit.com/r/bytebeat/comments/flmyyd/sync_noise_synth/",
 			"samplerate": "44100",
 			"code": [
@@ -1113,7 +1112,6 @@
 			]
 		}, {
 			"description": "pwm serpinski harmony",
-			"author": "SArpnt",
 			"url": "https://www.reddit.com/r/bytebeat/comments/g9106h/pwm_serpinski_harmony/",
 			"code": "t&(t>>7)-t&t>>8"
 		}, {
