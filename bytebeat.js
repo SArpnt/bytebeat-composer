@@ -113,7 +113,7 @@ BytebeatClass.prototype = {
 		let imageData = this.imageData.data;
 		let bufLen = buffer.length;
 		for (let i = 0; i < bufLen; i++) {
-			let pos = (width * Math.round(buffer[i]) + pageWidth * (pageIdx + i / bufLen)) << 2;
+			let pos = (width * (255 - buffer[i]) + pageWidth * (pageIdx + i / bufLen)) << 2;
 			imageData[pos++] = imageData[pos++] = imageData[pos++] = imageData[pos] = 255;
 		}
 		this.canvCtx.putImageData(this.imageData, 0, 0);
@@ -152,7 +152,7 @@ BytebeatClass.prototype = {
 				else if (lastTime !== flooredTime) {
 					if (this.mode == "floatbeat") {
 						lastValue = this.func(flooredTime * this.sampleRateDivisor);
-						lastByteValue = (lastValue + 1) * 127.5;
+						lastByteValue = Math.round((lastValue + 1) * 127.5);
 					} else {
 						lastByteValue = this.func(flooredTime * this.sampleRateDivisor) & 255;
 						lastValue = lastByteValue / 127.5 - 1;
