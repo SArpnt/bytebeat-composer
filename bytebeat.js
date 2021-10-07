@@ -299,28 +299,26 @@ BytebeatClass.prototype = {
 	refeshCalc: function () {
 		let oldF = this.func;
 		let codeText = this.inputEl.value;
-		if (
-			(function () { // function used for scoping var
-				// create shortened functions
-				let varCommand = `var `; // hoisting is neccecary (this is peak jank)
-				for (let k of Object.getOwnPropertyNames(Math))
-					if (k != "E")
-						varCommand += `${k} = Math.${k},`;
-				varCommand += `int = Math.floor;`;
-				eval(varCommand);
 
-				try {
-					eval(`bytebeat.func=t=>{return ${codeText}\n;}`);
-					bytebeat.func(0);
-				} catch (err) {
-					bytebeat.func = oldF;
-					bytebeat.errorEl.innerText = err.toString();
-					return 1;
-				}
-				return 0;
-			})()
-		)
+		// create shortened functions
+		let params = [];
+		let values = [];
+		for (let k of Object.getOwnPropertyNames(Math))
+			if (k != "E") {
+				params.push(k);
+				values.push(Math[k]);
+			}
+		params.push("int");
+		values.push(Math.floor);
+
+		try {
+			bytebeat.func = Function(...params, "t", `return ${codeText}\n;`).bind(window, ...values);
+			bytebeat.func(0);
+		} catch (err) {
+			bytebeat.func = oldF;
+			bytebeat.errorEl.innerText = err.toString();
 			return;
+		}
 		this.errorEl.innerText = '';
 		let pData = (this.sampleRate === 8000 ? codeText :
 			JSON.stringify({ sampleRate: this.sampleRate, formula: codeText }));
