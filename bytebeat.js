@@ -1,9 +1,11 @@
-function $q(path, root) {
-	return (root || document.body).querySelector(path);
+"use strict";
+
+function $q(path, root = document.body) {
+	return root.querySelector(path);
 }
 
-function $Q(path, root) {
-	return (root || document.body).querySelectorAll(path);
+function $Q(path, root = document.body) {
+	return root.querySelectorAll(path);
 }
 
 function $id(id) {
@@ -11,161 +13,155 @@ function $id(id) {
 }
 
 function $toggle(el) {
-	var isHidden = el.style.display;
-	if(isHidden) {
+	if (el.style.display)
 		el.style.removeProperty('display');
-	} else {
+	else
 		el.style.display = 'none';
-	}
 }
 
-function ByteBeatClass() {
-	this.audioCtx = null;
-	this.audioGain = null;
-	this.audioRecorder = null;
-	this.bufferSize = 2048;
-	this.canvCtx = null;
-	this.canvEl = null;
-	this.canvHeight = 0;
-	this.canvWidth = 0;
-	this.contFixedEl = null;
-	this.contScrollEl = null;
-	this.errorEl = null;
-	this.imageData = null;
-	this.isPlaying = false;
-	this.isRecording = false;
-	this.mode = 1;
-	this.pageIdx = 0;
-	this.recChunks = [];
-	this.sampleRate = 8000;
-	this.sampleRatio = 1;
-	this.scaleMax = 10;
-	this.scale = 6;
-	this.time = 0;
-	document.addEventListener('DOMContentLoaded', function() {
-		this.contScrollEl = $q('.container-scroll');
-		this.contFixedEl = $q('.container-fixed');
-		this.setScrollHeight();
-		document.defaultView.addEventListener('resize', this.setScrollHeight);
-		this.initLibrary();
-		this.initCodeInput();
-		this.initControls();
-		this.initCanvas();
-		this.refeshCalc();
-		this.initAudioContext();
-	}.bind(this));
-}
-ByteBeatClass.prototype = {
+class BytebeatClass {
+	constructor() {
+		this.audioCtx = null;
+		this.audioGain = null;
+		this.audioRecorder = null;
+		this.bufferSize = 2048;
+		this.canvCtx = null;
+		this.canvEl = null;
+		this.canvHeight = 0;
+		this.canvWidth = 0;
+		this.contFixedEl = null;
+		this.contScrollEl = null;
+		this.errorEl = null;
+		this.imageData = null;
+		this.isPlaying = false;
+		this.isRecording = false;
+		this.mode = 1;
+		this.pageIdx = 0;
+		this.recChunks = [];
+		this.sampleRate = 8000;
+		this.sampleRatio = 1;
+		this.scaleMax = 10;
+		this.scale = 6;
+		this.time = 0;
+		document.addEventListener('DOMContentLoaded', function () {
+			this.contScrollEl = $q('.container-scroll');
+			this.contFixedEl = $q('.container-fixed');
+			this.setScrollHeight();
+			document.defaultView.addEventListener('resize', this.setScrollHeight);
+			this.initLibrary();
+			this.initCodeInput();
+			this.initControls();
+			this.initCanvas();
+			this.refeshCalc();
+			this.initAudioContext();
+		}.bind(this));
+	}
+
 	get saveData() {
-		var a = document.createElement('a');
+		let a = document.createElement('a');
 		document.body.appendChild(a);
 		a.style.display = 'none';
-		var fn = function(blob, fileName) {
+		let fn = function fn(blob, fileName) {
 			url = URL.createObjectURL(blob);
 			a.href = url;
 			a.download = fileName;
 			a.click();
-			setTimeout(function() {
+			setTimeout(function revokeSaveDataUrl() {
 				window.URL.revokeObjectURL(url);
 			});
 		};
 		Object.defineProperty(this, 'saveData', { value: fn });
 		return fn;
-	},
-	applySampleRate: function(rate) {
+	}
+	applySampleRate(rate) {
 		this.setSampleRate(rate);
-		var selectBox = $id('samplerate-change');
-		selectBox.childNodes.forEach(function(el, index) {
-			if(+el.value === rate) {
+		let selectBox = $id('samplerate-change');
+		selectBox.childNodes.forEach(function (el, index) {
+			if (+el.value === rate) {
 				selectBox.selectedIndex = index;
 			}
 		}.bind(this));
-	},
-	changeMode: function() {
+	}
+	changeMode() {
 		this.mode = +!this.mode;
-	},
-	changeScale: function(isIncrement) {
-		if(!isIncrement && this.scale > 0 || isIncrement && this.scale < this.scaleMax) {
+	}
+	changeScale(isIncrement) {
+		if (!isIncrement && this.scale > 0 || isIncrement && this.scale < this.scaleMax) {
 			this.scale += isIncrement ? 1 : -1;
 			this.pageIdx = 0;
 			this.clearCanvas();
-			if(this.scale === 0) {
+			if (this.scale === 0)
 				this.controlScaleDown.setAttribute('disabled', true);
-			} else if(this.scale === this.scaleMax) {
+			else if (this.scale === this.scaleMax)
 				this.controlScaleUp.setAttribute('disabled', true);
-			} else {
+			else {
 				this.controlScaleDown.removeAttribute('disabled');
 				this.controlScaleUp.removeAttribute('disabled');
 			}
 			this.toggleCursor();
 		}
-	},
-	changeVolume: function(el) {
-		var fraction = parseInt(el.value) / parseInt(el.max);
-		// Let's use an x * x curve (x-squared) instead of simple linear (x)
+	}
+	changeVolume(el) {
+		let fraction = parseInt(el.value) / parseInt(el.max);
+		// Let's use an x * x (x-squared) instead of simple linear (x)
 		this.audioGain.gain.value = fraction * fraction;
-	},
-	clearCanvas: function() {
+	}
+	clearCanvas() {
 		this.canvCtx.clearRect(0, 0, this.canvWidth, this.canvHeight);
 		this.imageData = this.canvCtx.getImageData(0, 0, this.canvWidth, this.canvHeight);
-	},
+	}
 	// "| 0" is Math.floor but faster, ">> 2" is "/ 4", "<< 2" is "* 4"
-	drawGraphics: function(buffer) {
-		var width = this.canvWidth;
-		var height = this.canvHeight;
-		var scale = this.scale;
-		var pageWidth = width >> scale;
-		// var pageWidth = width * this.sampleRatio / (2 ** scale);
-		var pageIdx = this.pageIdx;
+	drawGraphics(buffer) {
+		let width = this.canvWidth;
+		let height = this.canvHeight;
+		let scale = this.scale;
+		let pageWidth = width >> scale;
+		// let pageWidth = width * this.sampleRatio / (2 ** scale);
+		let pageIdx = this.pageIdx;
 		this.canvCtx.clearRect(pageWidth * pageIdx, 0, pageWidth, height);
 		this.imageData = this.canvCtx.getImageData(0, 0, width, height);
-		var imageData = this.imageData.data;
-		var bufLen = buffer.length;
-		for(var i = 0; i < bufLen; i++) {
-			var pos = (width * buffer[i] + pageWidth * (pageIdx + i / bufLen)) << 2;
+		let imageData = this.imageData.data;
+		let bufLen = buffer.length;
+		for (let i = 0; i < bufLen; i++) {
+			let pos = (width * buffer[i] + pageWidth * (pageIdx + i / bufLen)) << 2;
 			imageData[pos++] = imageData[pos++] = imageData[pos++] = imageData[pos] = 255;
 		}
 		this.canvCtx.putImageData(this.imageData, 0, 0);
 		this.pageIdx = pageIdx === (1 << scale) - 1 ? 0 : pageIdx + 1;
 		// this.pageIdx = pageIdx === (((2 ** scale) / this.sampleRatio) | 0) - 1 ? 0 : pageIdx + 1;
-		if(this.scale > 3) {
+		if (this.scale > 3)
 			this.timeCursor.style.left = pageWidth * this.pageIdx + 'px';
-		}
-	},
-	func: function() {
+	}
+	func() {
 		return 0;
-	},
-	initAudioContext: function() {
-		var audioCtx = this.audioCtx = new (window.AudioContext || window.webkitAudioContext ||
+	}
+	initAudioContext() {
+		let audioCtx = this.audioCtx = new (window.AudioContext || window.webkitAudioContext ||
 			window.mozAudioContext || window.oAudioContext || window.msAudioContext)();
-		if(!audioCtx.createGain) {
+		if (!audioCtx.createGain)
 			audioCtx.createGain = audioCtx.createGainNode;
-		}
-		if(!audioCtx.createDelay) {
+		if (!audioCtx.createDelay)
 			audioCtx.createDelay = audioCtx.createDelayNode;
-		}
-		if(!audioCtx.createScriptProcessor) {
+		if (!audioCtx.createScriptProcessor)
 			audioCtx.createScriptProcessor = audioCtx.createJavaScriptNode;
-		}
 		this.sampleRatio = this.sampleRate / audioCtx.sampleRate;
-		var processor = audioCtx.createScriptProcessor(this.bufferSize, 1, 1);
-		processor.onaudioprocess = function(e) {
-			var chData = e.outputBuffer.getChannelData(0);
-			var dataLen = chData.length;
-			if(!dataLen) {
+		let processor = audioCtx.createScriptProcessor(this.bufferSize, 1, 1);
+		processor.onaudioprocess = function (e) {
+			let chData = e.outputBuffer.getChannelData(0);
+			let dataLen = chData.length;
+			if (!dataLen)
 				return;
-			}
-			var lastValue = 0;
-			var lastByteValue = 0;
-			var sampleRatio = this.sampleRatio;
-			var time = sampleRatio * this.time;
-			var lastTime = -1;
-			var buffer = [];
-			for(var i = 0; i < dataLen; ++i) {
-				var flooredTime = time | 0;
-				if(!this.isPlaying) {
+			let lastValue = 0;
+			let lastByteValue = 0;
+			let sampleRatio = this.sampleRatio;
+			let time = sampleRatio * this.time;
+			let lastTime = -1;
+			let buffer = [];
+			for (let i = 0; i < dataLen; ++i) {
+				let flooredTime = time | 0;
+				if (!this.isPlaying)
 					lastValue = 0;
-				} else if(lastTime !== flooredTime) {
+				else if (lastTime !== flooredTime) {
 					lastByteValue = this.func(flooredTime) & 255;
 					lastValue = lastByteValue / 127 - 1;
 					lastTime = flooredTime;
@@ -175,30 +171,30 @@ ByteBeatClass.prototype = {
 				buffer[i] = lastByteValue;
 				time += sampleRatio;
 			}
-			if(this.isPlaying) {
+			if (this.isPlaying) {
 				this.setTime(this.time + dataLen);
 				this.drawGraphics(buffer);
 			}
 		}.bind(this);
-		var audioGain = this.audioGain = audioCtx.createGain();
+		let audioGain = this.audioGain = audioCtx.createGain();
 		this.changeVolume(this.controlVolume);
 		processor.connect(audioGain);
 		audioGain.connect(audioCtx.destination);
 
-		var mediaDest = audioCtx.createMediaStreamDestination();
-		var audioRecorder = this.audioRecorder = new MediaRecorder(mediaDest.stream);
-		audioRecorder.ondataavailable = function(e) {
+		let mediaDest = audioCtx.createMediaStreamDestination();
+		let audioRecorder = this.audioRecorder = new MediaRecorder(mediaDest.stream);
+		audioRecorder.ondataavailable = function (e) {
 			this.recChunks.push(e.data);
 		}.bind(this);
-		audioRecorder.onstop = function(e) {
-			var file, type;
-			var types = ['audio/webm', 'audio/ogg'];
-			var files = ['track.webm', 'track.ogg'];
-			var check = (MediaRecorder.isTypeSupported || function(type) {
+		audioRecorder.onstop = function (e) {
+			let file, type;
+			let types = ['audio/webm', 'audio/ogg'];
+			let files = ['track.webm', 'track.ogg'];
+			let check = (MediaRecorder.isTypeSupported || function (type) {
 				return MediaRecorder.canRecordMimeType && MediaRecordercanRecordMimeType(type) === 'probably';
 			});
-			while((file = files.pop()) && !check(type = types.pop())) {
-				if(types.length === 0) {
+			while ((file = files.pop()) && !check(type = types.pop())) {
+				if (types.length === 0) {
 					console.error('Saving not supported in this browser!');
 					break;
 				}
@@ -206,15 +202,15 @@ ByteBeatClass.prototype = {
 			this.saveData(new Blob(this.recChunks, { type: type }), file);
 		}.bind(this);
 		audioGain.connect(mediaDest);
-	},
-	initCodeInput: function() {
+	}
+	initCodeInput() {
 		this.errorEl = $id('error');
 		this.inputEl = $id('input-code');
 		this.inputEl.addEventListener('onchange', this.refeshCalc.bind(this));
 		this.inputEl.addEventListener('onkeyup', this.refeshCalc.bind(this));
 		this.inputEl.addEventListener('input', this.refeshCalc.bind(this));
-		this.inputEl.addEventListener('keydown', function(e) {
-			if(e.keyCode === 9 /* TAB */ && !e.shiftKey) {
+		this.inputEl.addEventListener('keydown', function (e) {
+			if (e.keyCode === 9 /* TAB */ && !e.shiftKey) {
 				e.preventDefault();
 				var el = e.target;
 				var value = el.value;
@@ -223,56 +219,58 @@ ByteBeatClass.prototype = {
 				el.setSelectionRange(selStart + 1, selStart + 1);
 			}
 		});
-		if(window.location.hash.indexOf('#b64') === 0) {
+		if (window.location.hash.indexOf('#b64') === 0) {
 			this.inputEl.value = pako.inflateRaw(
-				atob(decodeURIComponent(window.location.hash.substr(4))),
-				{ to: 'string' }) + ';';
-		} else if(window.location.hash.indexOf('#v3b64') === 0) {
+				atob(decodeURIComponent(
+					window.location.hash.substr(4))),
+				{ to: 'string' }
+			) + ';';
+		} else if (window.location.hash.indexOf('#v3b64') === 0) {
 			var pData = pako.inflateRaw(
 				atob(decodeURIComponent(window.location.hash.substr(6))),
 				{ to: 'string' });
 			codeText = pData;
-			if(pData.startsWith('{')) {
+			if (pData.startsWith('{')) {
 				try {
 					pData = JSON.parse(pData);
 					codeText = pData.formula;
 					this.applySampleRate(+pData.sampleRate);
-				} catch(err) {}
+				} catch (err) { }
 			}
 			this.inputEl.value = codeText;
 		}
-	},
-	initCanvas: function() {
+	}
+	initCanvas() {
 		this.timeCursor = $id('canvas-timecursor');
 		this.canvEl = $id('canvas-main');
 		this.canvCtx = this.canvEl.getContext('2d');
 		this.canvWidth = this.canvEl.width;
 		this.canvHeight = this.canvEl.height;
 		this.imageData = this.canvCtx.createImageData(this.canvWidth, this.canvHeight);
-	},
-	initControls: function() {
+	}
+	initControls() {
 		this.canvasTogglePlay = $id('canvas-toggleplay');
 		this.controlTogglePlay = $id('control-toggleplay');
 		this.controlScaleUp = $id('control-scaleup');
 		this.controlScaleDown = $id('control-scaledown');
 		this.controlCounter = $id('control-counter-value');
 		this.controlVolume = $id('control-volume');
-	},
-	initLibrary: function() {
-		Array.prototype.forEach.call($Q('.button-toggle'), function(el) {
-			el.onclick = function() {
+	}
+	initLibrary() {
+		Array.prototype.forEach.call($Q('.button-toggle'), function (el) {
+			el.onclick = function () {
 				$toggle(el.nextElementSibling);
 			};
 		});
 		var libraryEl = $q('.container-scroll');
-		libraryEl.onclick = function(e) {
+		libraryEl.onclick = function (e) {
 			var el = e.target;
-			if(el.tagName === 'CODE') {
+			if (el.tagName === 'CODE') {
 				this.insertAndRunCode(el, el.textContent);
-			} else if(el.classList.contains('code-load')) {
+			} else if (el.classList.contains('code-load')) {
 				var xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = function() {
-					if(xhr.readyState === 4 && xhr.status === 200) {
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4 && xhr.status === 200) {
 						this.insertAndRunCode(el, xhr.responseText);
 					}
 				}.bind(this);
@@ -281,31 +279,30 @@ ByteBeatClass.prototype = {
 				xhr.send(null);
 			}
 		}.bind(this);
-		libraryEl.onmouseover = function(e) {
+		libraryEl.onmouseover = function (e) {
 			var el = e.target;
-			if(el.tagName === 'CODE') {
+			if (el.tagName === 'CODE') {
 				el.title = 'Click to play this code';
 			}
 		};
-	},
-	insertAndRunCode: function(codeEl, codeText) {
+	}
+	insertAndRunCode(codeEl, codeText) {
 		this.inputEl.value = codeText;
 		this.applySampleRate(+codeEl.getAttribute('samplerate') || 8000);
 		this.refeshCalc();
 		this.resetTime();
 		this.togglePlay(true);
-	},
-	rec: function() {
-		if(this.audioCtx && !this.isRecording) {
+	}
+	rec() {
+		if (this.audioCtx && !this.isRecording) {
 			this.audioRecorder.start();
 			this.isRecording = true;
 			this.recChunks = [];
-			if(!this.isPlaying) {
+			if (!this.isPlaying)
 				this.togglePlay(true);
-			}
 		}
-	},
-	refeshCalc: function() {
+	}
+	refeshCalc() {
 		var oldF = this.func;
 		var codeText = this.inputEl.value;
 		var outputCode = codeText
@@ -313,16 +310,19 @@ ByteBeatClass.prototype = {
 			.replace(/\n/g, ' ') // Remove line breaks
 			.replace(/\/\*.*?\*\//g, ' ') // Remove /* */ comments
 			.replace(/\bint\b/g, 'floor') // Replace int to floor
-			.replace(/(?:Math\.)?(\w+)/g, function(str, method) { // Replace sin to Math.sin, etc.
+			.replace(/(?:Math\.)?(\w+)/g, function (str, method) { // Replace sin to Math.sin, etc.
 				return Math.hasOwnProperty(method) && method !== 'E' ? 'Math.' + method : str;
 			});
-		try {
-			eval('byteBeat.func = function(t) { return ' + outputCode + '; }');
-			this.func(0);
-		} catch(err) {
-			this.func = oldF;
-			this.errorEl.innerText = err.toString();
-			return;
+		{
+			
+			try {
+				eval(`bytebeat.func=t=>(${outputCode})`);
+				this.func(0);
+			} catch (err) {
+				this.func = oldF;
+				this.errorEl.innerText = err.toString();
+				return;
+			}
 		}
 		this.errorEl.innerText = '';
 		var pData = (this.sampleRate === 8000 ? codeText :
@@ -331,51 +331,48 @@ ByteBeatClass.prototype = {
 		this.setScrollHeight();
 		this.pageIdx = 0;
 		this.clearCanvas();
-	},
-	resetTime: function() {
+	}
+	resetTime() {
 		this.controlCounter.textContent = this.time = 0;
 		this.pageIdx = 0;
 		this.clearCanvas();
 		this.timeCursor.style.cssText = 'display: none; left: 0px;';
-		if(!this.isPlaying) {
+		if (!this.isPlaying)
 			this.canvasTogglePlay.classList.add('canvas-toggleplay-show');
-		}
-	},
-	setTime: function(value) {
+	}
+	setTime(value) {
 		this.controlCounter.textContent = this.time = value;
-	},
-	setSampleRate: function(rate) {
+	}
+	setSampleRate(rate) {
 		this.sampleRate = rate;
-		if(this.audioCtx) {
+		if (this.audioCtx) {
 			this.sampleRatio = this.sampleRate / this.audioCtx.sampleRate;
 		}
-	},
-	setScrollHeight: function() {
-		if(this.contScrollEl) {
+	}
+	setScrollHeight() {
+		if (this.contScrollEl) {
 			this.contScrollEl.style.maxHeight =
 				(document.documentElement.clientHeight - this.contFixedEl.offsetHeight - 4) + 'px';
 		}
-	},
-	toggleCursor: function() {
+	}
+	toggleCursor() {
 		this.timeCursor.style.display = this.scale <= 3 ? 'none' : 'block';
-	},
-	togglePlay: function(isPlay) {
+	}
+	togglePlay(isPlay) {
 		this.controlTogglePlay.textContent = isPlay ? 'Stop' : 'Play';
 		this.canvasTogglePlay.classList.toggle('canvas-toggleplay-stop', isPlay);
-		if(isPlay) {
+		if (isPlay) {
 			// Play
 			this.canvasTogglePlay.classList.remove('canvas-toggleplay-show');
 			this.toggleCursor();
-			if(this.audioCtx.resume) {
+			if (this.audioCtx.resume)
 				this.audioCtx.resume();
-			}
-			if(!this.isPlaying) {
+			if (!this.isPlaying)
 				this.isPlaying = true;
-			}
 			return;
 		}
 		// Stop
-		if(this.isRecording) {
+		if (this.isRecording) {
 			this.audioRecorder.stop();
 			this.isRecording = false;
 		}
@@ -383,4 +380,4 @@ ByteBeatClass.prototype = {
 	}
 };
 
-var byteBeat = new ByteBeatClass();
+let bytebeat = new BytebeatClass();
