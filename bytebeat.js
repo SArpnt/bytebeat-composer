@@ -217,21 +217,22 @@ BytebeatClass.prototype = {
 		});
 		if (window.location.hash.indexOf('#b64') === 0) {
 			this.inputEl.value = pako.inflateRaw(
-				atob(decodeURIComponent(window.location.hash.substr(4))),
-				{ to: 'string' }) + ';';
+				atob(decodeURIComponent(window.location.hash.substr(4))), { to: 'string' }
+			) + ';';
 		} else if (window.location.hash.indexOf('#v3b64') === 0) {
 			let pData = pako.inflateRaw(
-				atob(decodeURIComponent(window.location.hash.substr(6))),
-				{ to: 'string' });
-			codeText = pData;
+				atob(decodeURIComponent(window.location.hash.substr(6))), { to: 'string' }
+			);
 			if (pData.startsWith('{')) {
 				try {
 					pData = JSON.parse(pData);
-					codeText = pData.formula;
 					this.applySampleRate(+pData.sampleRate);
-				} catch (err) { }
-			}
-			this.inputEl.value = codeText;
+					this.inputEl.value = pData.formula;
+				} catch (err) {
+					console.error("Couldn't load data from url:", err);
+				}
+			} else
+				this.inputEl.value = pData;
 		}
 	},
 	initCanvas: function () {
