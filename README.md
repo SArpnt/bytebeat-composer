@@ -2,7 +2,7 @@
 Bytebeat player with playlist that contains many interesting formulas from the Internet.
 
 Forked from StephanShi to fix some bugs and soon add new features
-afaik this is the only bytebeat program that doesn't have any bugs (the two common ones are being unable to access functions like escape or editing strings like "sin")
+afaik this is the only bytebeat program that doesn't have any bugs (the two common ones are being unable to access functions like `escape` or editing strings like `"sin"`)
 this program also works well with storing persistent ariables, in this example `b` is used to store persistent variables
 ```js
 typeof b=='object'||(b={l:0,m:0}),
