@@ -14,7 +14,7 @@
 </head>
 <body>
 	<div class="middle container-fixed">
-		<textarea id="input-code" spellcheck="false">2*(-t%128|t%130)</textarea>
+		<textarea id="input-code" spellcheck="false">(t*(1+(5&t>>10))*(3+(t>>17&1?(2^2&t>>14)/3:3&(t>>13)+1))>>(3&t>>9))&(t&4096?(t*(t^t%9)|t>>3)>>1:255)</textarea>
 		<div class="buttons-control">
 			<button id="control-toggleplay" onclick="bytebeat.togglePlay(!bytebeat.isPlaying)">Play</button><!--
 			--><button id="control-scaledown" onclick="bytebeat.changeScale(false);">+</button><!--
@@ -94,8 +94,13 @@
 			</div>
 			<div id="library-bigcode" class="paragraph" style="display: none;"></div>
 			<div id="button-library-sthephanshi" class="button-toggle toggle">
-				[SthephanShi] - code SthephanShi discovered</div>
+				[SthephanShi] - code SthephanShi discovered
+			</div>
 			<div id="library-sthephanshi" class="paragraph" style="display: none;"></div>
+			<div id="button-library-sarpnt" class="button-toggle toggle">
+				[SArpnt] - code SArpnt created
+			</div>
+			<div id="library-sarpnt" class="paragraph" style="display: none;"></div>
 		</div>
 		<a class="link-home" href="/" title="Home">&lt;--</a>
 	</div>

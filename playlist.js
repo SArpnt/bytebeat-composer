@@ -78,11 +78,8 @@
 		xhr.onreadystatechange = function () {
 			if (xhr.readyState === 4 && xhr.status === 200) {
 				let obj = JSON.parse(xhr.responseText);
-				addPlaylist(obj, 'classic8khz');
-				addPlaylist(obj, 'js8khz');
-				addPlaylist(obj, 'highrate1k');
-				addPlaylist(obj, 'bigcode');
-				addPlaylist(obj, 'sthephanshi');
+				for (let p in obj.playlist)
+					addPlaylist(obj, p);
 			}
 		};
 		xhr.open('GET', 'playlist.json', true);
