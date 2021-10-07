@@ -299,15 +299,10 @@ BytebeatClass.prototype = {
 	refeshCalc: function () {
 		let oldF = this.func;
 		let codeText = this.inputEl.value;
-		let outputCode = codeText
-			//.replace(/\bint\b/g, 'floor') // Replace int to floor
-			//.replace(/(?:Math\.)?(\w+)/g, function (str, method) { // Replace sin to Math.sin, etc.
-			//	return Math.hasOwnProperty(method) && method !== 'E' ? 'Math.' + method : str;
-			//});
 		if (
-			(function () {
+			(function () { // function used for scoping var
 				// create shortened functions
-				let varCommand = `var `;
+				let varCommand = `var `; // hoisting is neccecary (this is peak jank)
 				for (let k of Object.getOwnPropertyNames(Math))
 					if (k != "E")
 						varCommand += `${k} = Math.${k},`;
@@ -315,7 +310,7 @@ BytebeatClass.prototype = {
 				eval(varCommand);
 
 				try {
-					eval(`bytebeat.func=t=>{return ${outputCode}\n;}`);
+					eval(`bytebeat.func=t=>{return ${codeText}\n;}`);
 					bytebeat.func(0);
 				} catch (err) {
 					bytebeat.func = oldF;
