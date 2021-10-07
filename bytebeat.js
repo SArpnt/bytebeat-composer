@@ -32,7 +32,7 @@ function BytebeatClass() {
 	this.imageData = null;
 	this.isPlaying = false;
 	this.isRecording = false;
-	this.mode = 1;
+	this.mode = "bytebeat";
 	this.pageIdx = 0;
 	this.recChunks = [];
 	this.sampleRate = 8000;
@@ -72,14 +72,7 @@ BytebeatClass.prototype = {
 	},
 	applySampleRate: function (rate) {
 		this.setSampleRate(rate);
-		let selectBox = $id('samplerate-change');
-		selectBox.childNodes.forEach(function (el, index) {
-			if (+el.value === rate)
-				selectBox.selectedIndex = index;
-		}.bind(this));
-	},
-	changeMode: function () {
-		this.mode = +!this.mode;
+		$id('samplerate-change').value = rate;
 	},
 	changeScale: function (isIncrement) {
 		if (!isIncrement && this.scale > 0 || isIncrement && this.scale < this.scaleMax) {
@@ -119,7 +112,7 @@ BytebeatClass.prototype = {
 		let imageData = this.imageData.data;
 		let bufLen = buffer.length;
 		for (let i = 0; i < bufLen; i++) {
-			let pos = (width * buffer[i] + pageWidth * (pageIdx + i / bufLen)) << 2;
+			let pos = (width * Math.round(buffer[i]) + pageWidth * (pageIdx + i / bufLen)) << 2;
 			imageData[pos++] = imageData[pos++] = imageData[pos++] = imageData[pos] = 255;
 		}
 		this.canvCtx.putImageData(this.imageData, 0, 0);
@@ -147,29 +140,31 @@ BytebeatClass.prototype = {
 			let dataLen = chData.length;
 			if (!dataLen)
 				return;
-			let lastValue = 0;
-			let lastByteValue = 0;
-			let sampleRatio = this.sampleRatio;
-			let time = sampleRatio * this.time;
+			let lastValue, lastByteValue;
+			let time = this.sampleRatio * this.time;
 			let lastTime = -1;
-			let buffer = [];
+			let drawBuffer = [];
 			for (let i = 0; i < dataLen; ++i) {
 				let flooredTime = time | 0;
 				if (!this.isPlaying)
 					lastValue = 0;
 				else if (lastTime !== flooredTime) {
-					lastByteValue = this.func(flooredTime) & 255;
-					lastValue = lastByteValue / 127 - 1;
+					if (this.mode == "floatbeat") {
+						lastValue = this.func(flooredTime);
+						lastByteValue = (lastValue + 1) * 127.5;
+					} else {
+						lastByteValue = this.func(flooredTime) & 255;
+						lastValue = lastByteValue / 127.5 - 1;
+					}
 					lastTime = flooredTime;
-					//buffer.push(lastByteValue);
 				}
 				chData[i] = lastValue;
-				buffer[i] = lastByteValue;
-				time += sampleRatio;
+				drawBuffer[i] = lastByteValue;
+				time += this.sampleRatio;
 			}
 			if (this.isPlaying) {
 				this.setTime(this.time + dataLen);
-				this.drawGraphics(buffer);
+				this.drawGraphics(drawBuffer);
 			}
 		}.bind(this);
 		let audioGain = this.audioGain = audioCtx.createGain();
@@ -226,7 +221,8 @@ BytebeatClass.prototype = {
 			if (pData.startsWith('{')) {
 				try {
 					pData = JSON.parse(pData);
-					this.applySampleRate(+pData.sampleRate);
+					this.mode = pData.mode || "bytebeat";
+					this.applySampleRate(+pData.sampleRate || 8000);
 					this.inputEl.value = pData.formula;
 				} catch (err) {
 					console.error("Couldn't load data from url:", err);
@@ -301,8 +297,8 @@ BytebeatClass.prototype = {
 		let codeText = this.inputEl.value;
 
 		// create shortened functions
-		let params = Object.getOwnPropertyNames(Math).filter(k=>k!="E");
-		let values = params.map(k=>Math[k]);
+		let params = Object.getOwnPropertyNames(Math);
+		let values = params.map(k => Math[k]);
 		params.push("int");
 		values.push(Math.floor);
 
@@ -314,9 +310,23 @@ BytebeatClass.prototype = {
 			bytebeat.errorEl.innerText = err.toString();
 			return;
 		}
+		// delete single letter variables to prevent persistent variable errors (covers a good enough range)
+		for (i = 0; i < 26; i++)
+			delete window[String.fromCharCode(65 + i)], window[String.fromCharCode(97 + i)]
+
 		this.errorEl.innerText = '';
-		let pData = (this.sampleRate === 8000 ? codeText :
-			JSON.stringify({ sampleRate: this.sampleRate, formula: codeText }));
+
+		let pData = { formula: codeText };
+		if (this.sampleRate != 8000)
+			pData.sampleRate = this.sampleRate;
+		if (this.mode != "bytebeat")
+			pData.mode = this.mode;
+
+		if (Object.getOwnPropertyNames(pData).length == 1)
+			pData = codeText;
+		else
+			pData = JSON.stringify(pData);
+
 		window.location.hash = '#v3b64' + btoa(pako.deflateRaw(pData, { to: 'string' }));
 		this.setScrollHeight();
 		this.pageIdx = 0;
