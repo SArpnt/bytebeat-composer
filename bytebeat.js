@@ -301,13 +301,8 @@ BytebeatClass.prototype = {
 		let codeText = this.inputEl.value;
 
 		// create shortened functions
-		let params = [];
-		let values = [];
-		for (let k of Object.getOwnPropertyNames(Math))
-			if (k != "E") {
-				params.push(k);
-				values.push(Math[k]);
-			}
+		let params = Object.getOwnPropertyNames(Math).filter(k=>k!="E");
+		let values = params.map(k=>Math[k]);
 		params.push("int");
 		values.push(Math.floor);
 
