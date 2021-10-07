@@ -10,4 +10,4 @@ t=(((t/4e2)%1>.5)+1.5)*64-b.l,b.l+=(b.m+=t*(sin(t/6e3)+1)/200)+t*.03
 ```
 all single letter variables are deleted when the bytebeat is input, so variables between bytebeats don't conflict
 
-i plan on adding an improved scope, floatbeat interpolation modes, downsampling, time skipping, and many other quality of life features
+i plan on adding an improved scope, time skipping, and many other quality of life features

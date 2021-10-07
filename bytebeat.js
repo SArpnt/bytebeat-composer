@@ -36,6 +36,7 @@ function BytebeatClass() {
 	this.pageIdx = 0;
 	this.recChunks = [];
 	this.sampleRate = 8000;
+	this.sampleRateDivisor = 1;
 	this.sampleRatio = 1;
 	this.scaleMax = 10;
 	this.scale = 6;
@@ -133,7 +134,7 @@ BytebeatClass.prototype = {
 			audioCtx.createDelay = audioCtx.createDelayNode;
 		if (!audioCtx.createScriptProcessor)
 			audioCtx.createScriptProcessor = audioCtx.createJavaScriptNode;
-		this.sampleRatio = this.sampleRate / audioCtx.sampleRate;
+		this.sampleRatio = this.sampleRate / this.sampleRateDivisor / audioCtx.sampleRate;
 		let processor = audioCtx.createScriptProcessor(this.bufferSize, 1, 1);
 		processor.onaudioprocess = function (e) {
 			let chData = e.outputBuffer.getChannelData(0);
@@ -150,10 +151,10 @@ BytebeatClass.prototype = {
 					lastValue = 0;
 				else if (lastTime !== flooredTime) {
 					if (this.mode == "floatbeat") {
-						lastValue = this.func(flooredTime);
+						lastValue = this.func(flooredTime * this.sampleRateDivisor);
 						lastByteValue = (lastValue + 1) * 127.5;
 					} else {
-						lastByteValue = this.func(flooredTime) & 255;
+						lastByteValue = this.func(flooredTime * this.sampleRateDivisor) & 255;
 						lastValue = lastByteValue / 127.5 - 1;
 					}
 					lastTime = flooredTime;
@@ -346,7 +347,12 @@ BytebeatClass.prototype = {
 	setSampleRate: function (rate) {
 		this.sampleRate = rate;
 		if (this.audioCtx)
-			this.sampleRatio = this.sampleRate / this.audioCtx.sampleRate;
+			this.sampleRatio = this.sampleRate / this.sampleRateDivisor / this.audioCtx.sampleRate;
+	},
+	setSampleRateDivisor: function (div) {
+		this.sampleRateDivisor = div;
+		if (this.audioCtx)
+			this.sampleRatio = this.sampleRate / this.sampleRateDivisor / this.audioCtx.sampleRate;
 	},
 	setScrollHeight: function () {
 		if (this.contScrollEl)
