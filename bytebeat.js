@@ -105,13 +105,12 @@ BytebeatClass.prototype = {
 		this.canvasCtx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 		this.imageData = this.canvasCtx.getImageData(0, 0, this.canvasWidth, this.canvasHeight);
 	},
-	// "| 0" is Math.floor but faster, ">> 2" is "/ 4", "<< 2" is "* 4"
+	// "| 0" is Math.floor but fastee
 	drawGraphics: function (buffer) {
 		let width = this.canvasWidth;
 		let height = this.canvasHeight;
 		let scale = this.scale;
 		let pageWidth = width >> scale;
-		// let pageWidth = width * this.sampleRatio / (2 ** scale);
 		let pageIdx = this.pageIdx;
 		this.canvasCtx.clearRect(pageWidth * pageIdx, 0, pageWidth, height);
 		this.imageData = this.canvasCtx.getImageData(0, 0, width, height);
@@ -123,9 +122,8 @@ BytebeatClass.prototype = {
 		}
 		this.canvasCtx.putImageData(this.imageData, 0, 0);
 		this.pageIdx = pageIdx === (1 << scale) - 1 ? 0 : pageIdx + 1;
-		// this.pageIdx = pageIdx === (((2 ** scale) / this.sampleRatio) | 0) - 1 ? 0 : pageIdx + 1;
 		if (this.scale > 3)
-			this.timeCursor.style.left = this.pageIdx * 100 / 64 + "%";
+			this.timeCursor.style.left = this.pageIdx / (1 << bytebeat.scale) * 100 + "%";
 	},
 	func: function () {
 		return 0;
