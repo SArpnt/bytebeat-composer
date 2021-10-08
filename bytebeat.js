@@ -268,7 +268,7 @@ BytebeatClass.prototype = {
 					if (xhr.readyState === 4 && xhr.status === 200)
 						this.loadCode(Object.assign(JSON.parse(el.dataset.songdata), { code: xhr.responseText }));
 				}.bind(this);
-				xhr.open('GET', 'library/' + el.getAttribute('codeFile'), true);
+				xhr.open('GET', 'library/' + el.dataset.codeFile, true);
 				xhr.setRequestHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 				xhr.send(null);
 			}

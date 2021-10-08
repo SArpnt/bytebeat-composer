@@ -11,8 +11,11 @@
 		return entry;
 	}
 
-	function stripEntryToSong({ code, sampleRate, mode }) {
-		return { code, sampleRate, mode };
+	function stripEntryToSong({ code, sampleRate, mode }, includeCode = true) {
+		if (includeCode)
+			return { code, sampleRate, mode };
+		else
+			return { sampleRate, mode }
 	}
 
 	function createEntryElem(entry) {
@@ -63,6 +66,12 @@
 				"star-yellow"
 			][entry.starred];
 			entryElem.append(" ", starElem);
+		}
+
+		entryElem.innerHTML += "<br>\n"
+
+		if (entry.codeFile) {
+			entryElem.innerHTML += `<a class="code-load" data-code-file="${entry.codeFile}" data-songdata=${JSON.stringify(stripEntryToSong(entry))}>► Click to load pretty code</a>`
 		}
 
 		if (entry.code) {
