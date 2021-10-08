@@ -125,7 +125,7 @@ BytebeatClass.prototype = {
 		this.pageIdx = pageIdx === (1 << scale) - 1 ? 0 : pageIdx + 1;
 		// this.pageIdx = pageIdx === (((2 ** scale) / this.sampleRatio) | 0) - 1 ? 0 : pageIdx + 1;
 		if (this.scale > 3)
-			this.timeCursor.style.left = pageWidth * this.pageIdx + "px";
+			this.timeCursor.style.left = this.pageIdx * 100 / 64 + "%";
 	},
 	func: function () {
 		return 0;
