@@ -71,6 +71,7 @@
 			codeElem.dataset.songdata = JSON.stringify(stripEntryToSong(entry));
 			let pre = document.createElement("pre");
 			pre.style.margin = "0";
+			pre.style.whiteSpace = "pre-wrap";
 			pre.append(codeElem);
 			entryElem.append(pre);
 		}
