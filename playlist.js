@@ -1,76 +1,100 @@
 (function () {
-	'use strict';
+	"use strict";
 	function $id(id) {
 		return document.getElementById(id);
 	};
 
-	function processCodeHTML(code, sRate) {
-		if (typeof code !== 'string')
-			code = code.join('@!@LINE_BREAK@!@');
-		return `<code${sRate ? ` samplerate="${sRate}"` : ``}>${
-			code.replace(/&/g, '&amp;')
-				.replace(/>/g, '&gt;')
-				.replace(/</g, '&lt;')
-				.replace(/ /g, '&#xA0;')
-				.replace(/@!@LINE_BREAK@!@/g, '<br>\r\n')
-			}</code>`;
+	function parseEntry(entry) {
+		if (Array.isArray(entry.code))
+			entry.code = entry.code.join('\n');
+
+		return entry;
 	}
 
-	function getEntryHTML(entry, isChildren) {
-		let descr = entry.description;
-		let author = entry.author;
-		let url = entry.url;
-		let authorHTML = '';
-		if (author) {
-			if (typeof author === 'string')
-				authorHTML = !url ? author : `<a href="${url}" target="_blank">${author}</a>`;
-			else {
-				let authorsArr = [];
-				for (let j = 0, aLen = author.length; j < aLen; ++j)
-					authorsArr.push(`<a href="${author[j][1]}" target="_blank">${author[j][0]}</a>`);
-				authorHTML = authorsArr.join(', ');
+	function stripEntryToSong({ code, sampleRate, mode }) {
+		return { code, sampleRate, mode };
+	}
+
+	function createEntryElem(entry) {
+		let entryElem = document.createElement("li");
+
+		if (entry.description) {
+			let descriptionElem;
+			if (entry.url)
+				descriptionElem = `<a href="${entry.url}" target="_blank">${entry.description}</a>`
+			else
+				descriptionElem = entry.description;
+			entryElem.innerHTML += descriptionElem;
+		}
+		if (entry.author) {
+			let authorListElem = document.createElement("span");
+			authorListElem.innerHTML += entry.description ? " (by " : "by ";
+			if (!Array.isArray(entry.author))
+				entry.author = [entry.author];
+
+			for (let i in entry.author) {
+				let author = entry.author[i];
+
+				let authorElem;
+				if (typeof author == "string")
+					authorElem = author;
+				else {
+					authorElem = document.createElement("a");
+					authorElem.innerHTML = author[0];
+					authorElem.href = author[1];
+					authorElem.target = "_blank";
+					authorElem = authorElem.outerHTML;
+				}
+				authorListElem.innerHTML += authorElem;
+				if (i < entry.author.length - 1)
+					authorListElem.innerHTML += ", ";
 			}
-			authorHTML = descr ? ` (by ${authorHTML})` : `by ${authorHTML}`;
+			if (entry.description)
+				authorListElem.innerHTML += ")";
+
+			authorListElem = authorListElem.outerHTML;
+
+			entryElem.innerHTML += authorListElem;
 		}
-		let descrHTML = ``;
-		if (descr)
-			descrHTML = author || !url ? descr : `<a href="${url}" target="_blank">${descr}</a>`;
-		descrHTML += authorHTML;
-		let code = entry.code;
-		let lCode = entry.loadcode;
-		let sRate = entry.samplerate;
-		let starHTML = sRate ? ` <span class="samplerate">${sRate.substr(0, 2)}kHz</span>` : ``;
-		switch (entry.starred) {
-			case 1: starHTML += ` <span class="star-white"></span>`; break;
-			case 2: starHTML += ` <span class="star-yellow"></span>`;
+		if (entry.starred) {
+			let starElem = document.createElement("span");
+			starElem.className = [
+				"star-white",
+				"star-yellow"
+			][entry.starred];
+			entryElem.append(" ", starElem);
 		}
-		let descr2HTML = entry.description2 ? ` - ${entry.description2}` : ``;
-		let codeLen = !code ? 0 : `<span class="codelength">${code instanceof Array ? code.join('').length : code.length}B</span>`;
-		let codeHTML = !code && !lCode ? `` :
-			(
-				lCode ? `<a class="code-load" loadcode="${lCode}"${
-					(sRate ? ` samplerate="${sRate}"` : ``)
-				}>&#9658; Click to load pretty code</a>` + (code ? `</br>` : ``) : ``
-			) +
-			(code ? processCodeHTML(code, sRate) + ' ' + codeLen : ``);
-		return isChildren ?
-			`${codeHTML}${descrHTML ? `${starHTML} ${descrHTML}` : starHTML}${descr2HTML}` :
-			`${descrHTML}${code || lCode ? `${starHTML}<br>\r\n${codeHTML}${descr2HTML}` : ``}`;
+
+		if (entry.code) {
+			let codeElem = document.createElement("code");
+			codeElem.innerText = entry.code;
+			codeElem.dataset.songdata = JSON.stringify(stripEntryToSong(entry));
+			let pre = document.createElement("pre");
+			pre.style.margin = "0";
+			pre.append(codeElem);
+			entryElem.append(pre);
+		}
+
+		if (entry.children) {
+			let childrenElem = document.createElement("ul");
+			for (let i = 0, len = entry.children.length; i < len; ++i) {
+				let childEntry = parseEntry(entry.children[i]);
+				childrenElem.append(createEntryElem(childEntry));
+			}
+			entryElem.append(childrenElem);
+		}
+
+		return entryElem;
 	}
 
 	function addPlaylist(obj, id) {
-		let html = [];
-		let arr = obj.playlist[id];
-		for (let i = 0, len = arr.length; i < len; ++i) {
-			let entry = arr[i];
-			let entryHTML = [getEntryHTML(entry, false)];
-			let children = entry.children;
-			if (children)
-				for (let j = 0, cLen = children.length; j < cLen; ++j)
-					entryHTML.push(getEntryHTML(children[j], true));
-			html.push(entryHTML.join('<br>\r\n'));
+		let playlist = obj.playlists[id];
+		let playlistElem = document.createElement("ul");
+		for (let i = 0, len = playlist.length; i < len; ++i) {
+			let entry = parseEntry(playlist[i]);
+			playlistElem.append(createEntryElem(entry));
 		}
-		$id(`library-${id}`).innerHTML = `<ul><li>${html.join('</li>\r\n<li>')}</li></ul>`;
+		$id(`library-${id}`).append(playlistElem);
 	}
 
 	document.addEventListener('DOMContentLoaded', function () {
@@ -78,11 +102,11 @@
 		xhr.onreadystatechange = function () {
 			if (xhr.readyState === 4 && xhr.status === 200) {
 				let obj = JSON.parse(xhr.responseText);
-				for (let p in obj.playlist)
+				for (let p in obj.playlists)
 					addPlaylist(obj, p);
 			}
 		};
-		xhr.open('GET', 'playlist.json', true);
+		xhr.open('GET', 'playlists.json', true);
 		xhr.send(null);
 	});
 }());

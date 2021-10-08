@@ -113,6 +113,9 @@ code {
 	word-wrap: break-word;
 	cursor: pointer;
 }
+code:not([data-songdata]) {
+	color: #ff4444;
+}
 
 .codelength {
 	color: grey;

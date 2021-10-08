@@ -22,6 +22,7 @@
 			--><button onclick="bytebeat.rec()">Rec</button><!--
 			--><select id="mode-change" onchange="bytebeat.mode = this.value;">
 					<option value="bytebeat" selected>Bytebeat</option>
+					<option value="signed bytebeat">Signed Bytebeat</option>
 					<option value="floatbeat">Floatbeat</option>
 				</select><!--
 			--><input id="samplerate-change" type="number" min="0" step="any" list="samplerates" value="8000" style="width: 8em;" onchange="bytebeat.setSampleRate(+this.value); bytebeat.refeshCalc();">Hz

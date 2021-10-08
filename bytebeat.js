@@ -22,13 +22,13 @@ function BytebeatClass() {
 	this.audioGain = null;
 	this.audioRecorder = null;
 	this.bufferSize = 2048;
-	this.canvCtx = null;
-	this.canvEl = null;
-	this.canvHeight = 0;
-	this.canvWidth = 0;
-	this.contFixedEl = null;
-	this.contScrollEl = null;
-	this.errorEl = null;
+	this.canvasCtx = null;
+	this.canvasEleme = null;
+	this.canvasWidth = 0;
+	this.canvasHeight = 0;
+	this.contFixedEleme = null;
+	this.contScrollElem = null;
+	this.errorElem = null;
 	this.imageData = null;
 	this.isPlaying = false;
 	this.isRecording = false;
@@ -50,7 +50,7 @@ function BytebeatClass() {
 		this.initCodeInput();
 		this.initControls();
 		this.initCanvas();
-		this.refeshCalc();
+		this.refreshCalc();
 		this.initAudioContext();
 	}.bind(this));
 }
@@ -75,6 +75,10 @@ BytebeatClass.prototype = {
 		this.setSampleRate(rate);
 		$id('samplerate-change').value = rate;
 	},
+	applyMode: function (mode) {
+		this.mode = mode;
+		$id('mode-change').value = mode;
+	},
 	changeScale: function (isIncrement) {
 		if (!isIncrement && this.scale > 0 || isIncrement && this.scale < this.scaleMax) {
 			this.scale += isIncrement ? 1 : -1;
@@ -97,26 +101,26 @@ BytebeatClass.prototype = {
 		this.audioGain.gain.value = fraction * fraction;
 	},
 	clearCanvas: function () {
-		this.canvCtx.clearRect(0, 0, this.canvWidth, this.canvHeight);
-		this.imageData = this.canvCtx.getImageData(0, 0, this.canvWidth, this.canvHeight);
+		this.canvasCtx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+		this.imageData = this.canvasCtx.getImageData(0, 0, this.canvasWidth, this.canvasHeight);
 	},
 	// "| 0" is Math.floor but faster, ">> 2" is "/ 4", "<< 2" is "* 4"
 	drawGraphics: function (buffer) {
-		let width = this.canvWidth;
-		let height = this.canvHeight;
+		let width = this.canvasWidth;
+		let height = this.canvasHeight;
 		let scale = this.scale;
 		let pageWidth = width >> scale;
 		// let pageWidth = width * this.sampleRatio / (2 ** scale);
 		let pageIdx = this.pageIdx;
-		this.canvCtx.clearRect(pageWidth * pageIdx, 0, pageWidth, height);
-		this.imageData = this.canvCtx.getImageData(0, 0, width, height);
+		this.canvasCtx.clearRect(pageWidth * pageIdx, 0, pageWidth, height);
+		this.imageData = this.canvasCtx.getImageData(0, 0, width, height);
 		let imageData = this.imageData.data;
 		let bufLen = buffer.length;
 		for (let i = 0; i < bufLen; i++) {
 			let pos = (width * (255 - buffer[i]) + pageWidth * (pageIdx + i / bufLen)) << 2;
 			imageData[pos++] = imageData[pos++] = imageData[pos++] = imageData[pos] = 255;
 		}
-		this.canvCtx.putImageData(this.imageData, 0, 0);
+		this.canvasCtx.putImageData(this.imageData, 0, 0);
 		this.pageIdx = pageIdx === (1 << scale) - 1 ? 0 : pageIdx + 1;
 		// this.pageIdx = pageIdx === (((2 ** scale) / this.sampleRatio) | 0) - 1 ? 0 : pageIdx + 1;
 		if (this.scale > 3)
@@ -150,12 +154,15 @@ BytebeatClass.prototype = {
 				if (!this.isPlaying)
 					lastValue = 0;
 				else if (lastTime !== flooredTime) {
-					if (this.mode == "floatbeat") {
-						lastValue = this.func(flooredTime * this.sampleRateDivisor);
-						lastByteValue = Math.round((lastValue + 1) * 127.5);
-					} else {
+					if (this.mode == "bytebeat") {
 						lastByteValue = this.func(flooredTime * this.sampleRateDivisor) & 255;
 						lastValue = lastByteValue / 127.5 - 1;
+					} else if (this.mode == "signed bytebeat") {
+						lastByteValue = (this.func(flooredTime * this.sampleRateDivisor) + 128) & 255;
+						lastValue = lastByteValue / 127.5 - 1;
+					} else {
+						lastValue = this.func(flooredTime * this.sampleRateDivisor);
+						lastByteValue = Math.round((lastValue + 1) * 127.5);
 					}
 					lastTime = flooredTime;
 				}
@@ -198,9 +205,9 @@ BytebeatClass.prototype = {
 	initCodeInput: function () {
 		this.errorEl = $id('error');
 		this.inputEl = $id('input-code');
-		this.inputEl.addEventListener('onchange', this.refeshCalc.bind(this));
-		this.inputEl.addEventListener('onkeyup', this.refeshCalc.bind(this));
-		this.inputEl.addEventListener('input', this.refeshCalc.bind(this));
+		this.inputEl.addEventListener('onchange', this.refreshCalc.bind(this));
+		this.inputEl.addEventListener('onkeyup', this.refreshCalc.bind(this));
+		this.inputEl.addEventListener('input', this.refreshCalc.bind(this));
 		this.inputEl.addEventListener('keydown', function (e) {
 			if (e.keyCode === 9 /* TAB */ && !e.shiftKey) {
 				e.preventDefault();
@@ -219,26 +226,21 @@ BytebeatClass.prototype = {
 			let pData = pako.inflateRaw(
 				atob(decodeURIComponent(window.location.hash.substr(6))), { to: 'string' }
 			);
-			if (pData.startsWith('{')) {
-				try {
-					pData = JSON.parse(pData);
-					this.mode = pData.mode || "bytebeat";
-					this.applySampleRate(+pData.sampleRate || 8000);
-					this.inputEl.value = pData.formula;
-				} catch (err) {
-					console.error("Couldn't load data from url:", err);
-				}
-			} else
-				this.inputEl.value = pData;
+			try {
+				pData = JSON.parse(pData);
+			} catch (err) {
+				console.error("Couldn't load data from url:", err);
+			}
+			this.loadCode(pData);
 		}
 	},
 	initCanvas: function () {
 		this.timeCursor = $id('canvas-timecursor');
 		this.canvEl = $id('canvas-main');
-		this.canvCtx = this.canvEl.getContext('2d');
-		this.canvWidth = this.canvEl.width;
-		this.canvHeight = this.canvEl.height;
-		this.imageData = this.canvCtx.createImageData(this.canvWidth, this.canvHeight);
+		this.canvasCtx = this.canvasEleme.getContext('2d');
+		this.canvWidth = this.canvasEleme.width;
+		this.canvHeight = this.canvasEleme.height;
+		this.imageData = this.canvasCtx.createImageData(this.canvasWidth, this.canvasHeight);
 	},
 	initControls: function () {
 		this.canvasTogglePlay = $id('canvas-toggleplay');
@@ -258,15 +260,14 @@ BytebeatClass.prototype = {
 		libraryEl.onclick = function (e) {
 			let el = e.target;
 			if (el.tagName === 'CODE')
-				this.insertAndRunCode(el, el.textContent);
+				this.loadCode(JSON.parse(el.dataset.songdata));
 			else if (el.classList.contains('code-load')) {
 				let xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = function () {
-					if (xhr.readyState === 4 && xhr.status === 200) {
-						this.insertAndRunCode(el, xhr.responseText);
-					}
+					if (xhr.readyState === 4 && xhr.status === 200)
+						this.loadCode(Object.assign(JSON.parse(el.dataset.songdata), { code: xhr.responseText }));
 				}.bind(this);
-				xhr.open('GET', 'library/' + el.getAttribute('loadcode'), true);
+				xhr.open('GET', 'library/' + el.getAttribute('codeFile'), true);
 				xhr.setRequestHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 				xhr.send(null);
 			}
@@ -277,10 +278,11 @@ BytebeatClass.prototype = {
 				el.title = 'Click to play this code';
 		};
 	},
-	insertAndRunCode: function (codeEl, codeText) {
-		this.inputEl.value = codeText;
-		this.applySampleRate(+codeEl.getAttribute('samplerate') || 8000);
-		this.refeshCalc();
+	loadCode: function ({ code, sampleRate, mode }) {
+		this.inputEl.value = code;
+		this.applySampleRate(+sampleRate || 8000);
+		this.applyMode(mode || "bytebeat");
+		this.refreshCalc();
 		this.resetTime();
 		this.togglePlay(true);
 	},
@@ -293,7 +295,7 @@ BytebeatClass.prototype = {
 				this.togglePlay(true);
 		}
 	},
-	refeshCalc: function () {
+	refreshCalc: function () {
 		let oldF = this.func;
 		let codeText = this.inputEl.value;
 
@@ -308,25 +310,22 @@ BytebeatClass.prototype = {
 			bytebeat.func(0);
 		} catch (err) {
 			bytebeat.func = oldF;
-			bytebeat.errorEl.innerText = err.toString();
+			bytebeat.errorElem.innerText = err.toString();
 			return;
 		}
 		// delete single letter variables to prevent persistent variable errors (covers a good enough range)
 		for (i = 0; i < 26; i++)
-			delete window[String.fromCharCode(65 + i)], window[String.fromCharCode(97 + i)]
+			delete window[String.fromCharCode(65 + i)], window[String.fromCharCode(97 + i)];
 
-		this.errorEl.innerText = '';
+		this.errorElem.innerText = '';
 
-		let pData = { formula: codeText };
+		let pData = { code: codeText };
 		if (this.sampleRate != 8000)
 			pData.sampleRate = this.sampleRate;
 		if (this.mode != "bytebeat")
 			pData.mode = this.mode;
 
-		if (Object.getOwnPropertyNames(pData).length == 1)
-			pData = codeText;
-		else
-			pData = JSON.stringify(pData);
+		pData = JSON.stringify(pData);
 
 		window.location.hash = '#v3b64' + btoa(pako.deflateRaw(pData, { to: 'string' }));
 		this.setScrollHeight();
@@ -355,8 +354,8 @@ BytebeatClass.prototype = {
 			this.sampleRatio = this.sampleRate / this.sampleRateDivisor / this.audioCtx.sampleRate;
 	},
 	setScrollHeight: function () {
-		if (this.contScrollEl)
-			this.contScrollEl.style.maxHeight = (document.documentElement.clientHeight - this.contFixedEl.offsetHeight - 4) + 'px';
+		if (this.contScrollElem)
+			this.contScrollElem.style.maxHeight = (document.documentElement.clientHeight - this.contFixedEleme.offsetHeight - 4) + 'px';
 	},
 	toggleCursor: function () {
 		this.timeCursor.style.display = this.scale <= 3 ? 'none' : 'block';
