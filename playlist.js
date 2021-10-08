@@ -6,7 +6,7 @@
 
 	function parseEntry(entry) {
 		if (Array.isArray(entry.code))
-			entry.code = entry.code.join('\n');
+			entry.code = entry.code.join("\n");
 
 		return entry;
 	}
@@ -66,7 +66,6 @@
 			entryElem.innerHTML += ` <span class="samplerate">${entry.mode}</span>`;
 
 		if (entry.starred) {
-			console.info(entry);
 			let starElem = document.createElement("span");
 			starElem.className = [
 				"star-white",
@@ -85,6 +84,8 @@
 			codeFileElem.dataset.songdata = JSON.stringify(stripEntryToSong(entry));
 			codeFileElem.innerText = "► Click to load pretty code";
 			entryElem.append(codeFileElem);
+			if (entry.code)
+				entryElem.append(" ");
 		}
 		if (entry.code) {
 			let codeElem = document.createElement("code");
@@ -122,7 +123,7 @@
 		$id(`library-${id}`).append(playlistElem);
 	}
 
-	document.addEventListener('DOMContentLoaded', function () {
+	document.addEventListener("DOMContentLoaded", function () {
 		let xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function () {
 			if (xhr.readyState === 4 && xhr.status === 200) {
@@ -131,7 +132,7 @@
 					addPlaylist(obj, p);
 			}
 		};
-		xhr.open('GET', 'playlists.json', true);
+		xhr.open("GET", "playlists.json", true);
 		xhr.send(null);
 	});
 }());

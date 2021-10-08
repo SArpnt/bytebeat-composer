@@ -12,9 +12,9 @@ function $id(id) {
 
 function $toggle(el) {
 	if (el.style.display)
-		el.style.removeProperty('display');
+		el.style.removeProperty("display");
 	else
-		el.style.display = 'none';
+		el.style.display = "none";
 }
 
 function BytebeatClass() {
@@ -42,11 +42,11 @@ function BytebeatClass() {
 	this.scaleMax = 10;
 	this.scale = 6;
 	this.time = 0;
-	document.addEventListener('DOMContentLoaded', function () {
-		this.contFixedElem = $q('.container-fixed');
-		this.contScrollElem = $q('.container-scroll');
+	document.addEventListener("DOMContentLoaded", function () {
+		this.contFixedElem = $q(".container-fixed");
+		this.contScrollElem = $q(".container-scroll");
 		this.setScrollHeight();
-		document.defaultView.addEventListener('resize', this.setScrollHeight);
+		document.defaultView.addEventListener("resize", this.setScrollHeight);
 		this.initLibrary();
 		this.initCodeInput();
 		this.initControls();
@@ -57,9 +57,9 @@ function BytebeatClass() {
 }
 BytebeatClass.prototype = {
 	get saveData() {
-		let a = document.createElement('a');
+		let a = document.createElement("a");
 		document.body.appendChild(a);
-		a.style.display = 'none';
+		a.style.display = "none";
 		let fn = function fn(blob, fileName) {
 			url = URL.createObjectURL(blob);
 			a.href = url;
@@ -69,16 +69,16 @@ BytebeatClass.prototype = {
 				window.URL.revokeObjectURL(url);
 			});
 		};
-		Object.defineProperty(this, 'saveData', { value: fn });
+		Object.defineProperty(this, "saveData", { value: fn });
 		return fn;
 	},
 	applySampleRate: function (rate) {
 		this.setSampleRate(rate);
-		$id('samplerate-change').value = rate;
+		$id("samplerate-change").value = rate;
 	},
 	applyMode: function (mode) {
 		this.mode = mode;
-		$id('mode-change').value = mode;
+		$id("mode-change").value = mode;
 	},
 	changeScale: function (isIncrement) {
 		if (!isIncrement && this.scale > 0 || isIncrement && this.scale < this.scaleMax) {
@@ -86,12 +86,12 @@ BytebeatClass.prototype = {
 			this.pageIdx = 0;
 			this.clearCanvas();
 			if (this.scale === 0)
-				this.controlScaleDown.setAttribute('disabled', true);
+				this.controlScaleDown.setAttribute("disabled", true);
 			else if (this.scale === this.scaleMax)
-				this.controlScaleUp.setAttribute('disabled', true);
+				this.controlScaleUp.setAttribute("disabled", true);
 			else {
-				this.controlScaleDown.removeAttribute('disabled');
-				this.controlScaleUp.removeAttribute('disabled');
+				this.controlScaleDown.removeAttribute("disabled");
+				this.controlScaleUp.removeAttribute("disabled");
 			}
 			this.toggleCursor();
 		}
@@ -125,7 +125,7 @@ BytebeatClass.prototype = {
 		this.pageIdx = pageIdx === (1 << scale) - 1 ? 0 : pageIdx + 1;
 		// this.pageIdx = pageIdx === (((2 ** scale) / this.sampleRatio) | 0) - 1 ? 0 : pageIdx + 1;
 		if (this.scale > 3)
-			this.timeCursor.style.left = pageWidth * this.pageIdx + 'px';
+			this.timeCursor.style.left = pageWidth * this.pageIdx + "px";
 	},
 	func: function () {
 		return 0;
@@ -188,14 +188,14 @@ BytebeatClass.prototype = {
 		}.bind(this);
 		audioRecorder.onstop = function (e) {
 			let file, type;
-			let types = ['audio/webm', 'audio/ogg'];
-			let files = ['track.webm', 'track.ogg'];
+			let types = ["audio/webm", "audio/ogg"];
+			let files = ["track.webm", "track.ogg"];
 			let check = (MediaRecorder.isTypeSupported || function (type) {
-				return MediaRecorder.canRecordMimeType && MediaRecordercanRecordMimeType(type) === 'probably';
+				return MediaRecorder.canRecordMimeType && MediaRecordercanRecordMimeType(type) === "probably";
 			});
 			while ((file = files.pop()) && !check(type = types.pop())) {
 				if (types.length === 0) {
-					console.error('Saving not supported in this browser!');
+					console.error("Saving not supported in this browser!");
 					break;
 				}
 			}
@@ -204,28 +204,28 @@ BytebeatClass.prototype = {
 		audioGain.connect(mediaDest);
 	},
 	initCodeInput: function () {
-		this.errorElem = $id('error');
-		this.inputElem = $id('input-code');
-		this.inputElem.addEventListener('onchange', this.refreshCalc.bind(this));
-		this.inputElem.addEventListener('onkeyup', this.refreshCalc.bind(this));
-		this.inputElem.addEventListener('input', this.refreshCalc.bind(this));
-		this.inputElem.addEventListener('keydown', function (e) {
+		this.errorElem = $id("error");
+		this.inputElem = $id("input-code");
+		this.inputElem.addEventListener("onchange", this.refreshCalc.bind(this));
+		this.inputElem.addEventListener("onkeyup", this.refreshCalc.bind(this));
+		this.inputElem.addEventListener("input", this.refreshCalc.bind(this));
+		this.inputElem.addEventListener("keydown", function (e) {
 			if (e.keyCode === 9 /* TAB */ && !e.shiftKey) {
 				e.preventDefault();
 				let el = e.target;
 				let value = el.value;
 				let selStart = el.selectionStart;
-				el.value = value.slice(0, selStart) + '\t' + value.slice(el.selectionEnd);
+				el.value = `${value.slice(0, selStart)}\t${value.slice(el.selectionEnd)}`;
 				el.setSelectionRange(selStart + 1, selStart + 1);
 			}
 		});
-		if (window.location.hash.indexOf('#b64') === 0) {
+		if (window.location.hash.indexOf("#b64") === 0) {
 			this.inputElem.value = pako.inflateRaw(
-				atob(decodeURIComponent(window.location.hash.substr(4))), { to: 'string' }
-			) + ';';
-		} else if (window.location.hash.indexOf('#v3b64') === 0) {
+				atob(decodeURIComponent(window.location.hash.substr(4))), { to: "string" }
+			) + ";";
+		} else if (window.location.hash.indexOf("#v3b64") === 0) {
 			let pData = pako.inflateRaw(
-				atob(decodeURIComponent(window.location.hash.substr(6))), { to: 'string' }
+				atob(decodeURIComponent(window.location.hash.substr(6))), { to: "string" }
 			);
 			try {
 				pData = JSON.parse(pData);
@@ -236,47 +236,47 @@ BytebeatClass.prototype = {
 		}
 	},
 	initCanvas: function () {
-		this.timeCursor = $id('canvas-timecursor');
-		this.canvasElem = $id('canvas-main');
-		this.canvasCtx = this.canvasElem.getContext('2d');
+		this.timeCursor = $id("canvas-timecursor");
+		this.canvasElem = $id("canvas-main");
+		this.canvasCtx = this.canvasElem.getContext("2d");
 		this.canvasWidth = this.canvasElem.width;
 		this.canvasHeight = this.canvasElem.height;
 		this.imageData = this.canvasCtx.createImageData(this.canvasWidth, this.canvasHeight);
 	},
 	initControls: function () {
-		this.canvasTogglePlay = $id('canvas-toggleplay');
-		this.controlTogglePlay = $id('control-toggleplay');
-		this.controlScaleUp = $id('control-scaleup');
-		this.controlScaleDown = $id('control-scaledown');
-		this.controlCounter = $id('control-counter-value');
-		this.controlVolume = $id('control-volume');
+		this.canvasTogglePlay = $id("canvas-toggleplay");
+		this.controlTogglePlay = $id("control-toggleplay");
+		this.controlScaleUp = $id("control-scaleup");
+		this.controlScaleDown = $id("control-scaledown");
+		this.controlCounter = $id("control-counter-value");
+		this.controlVolume = $id("control-volume");
 	},
 	initLibrary: function () {
-		Array.prototype.forEach.call($Q('.button-toggle'), function (el) {
+		Array.prototype.forEach.call($Q(".button-toggle"), function (el) {
 			el.onclick = function () {
 				$toggle(el.nextElementSibling);
 			};
 		});
-		let libraryEl = $q('.container-scroll');
+		let libraryEl = $q(".container-scroll");
 		libraryEl.onclick = function (e) {
 			let el = e.target;
-			if (el.tagName === 'CODE')
+			if (el.tagName === "CODE")
 				this.loadCode(Object.assign({ code: el.innerText }, JSON.parse(el.dataset.songdata)));
-			else if (el.classList.contains('code-load')) {
+			else if (el.classList.contains("code-load")) {
 				let xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = function () {
 					if (xhr.readyState === 4 && xhr.status === 200)
 						this.loadCode(Object.assign(JSON.parse(el.dataset.songdata), { code: xhr.responseText }));
 				}.bind(this);
-				xhr.open('GET', 'library/' + el.dataset.codeFile, true);
+				xhr.open("GET", "library/" + el.dataset.codeFile, true);
 				xhr.setRequestHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 				xhr.send(null);
 			}
 		}.bind(this);
 		libraryEl.onmouseover = function (e) {
 			let el = e.target;
-			if (el.tagName === 'CODE')
-				el.title = 'Click to play this code';
+			if (el.tagName === "CODE")
+				el.title = "Click to play this code";
 		};
 	},
 	loadCode: function ({ code, sampleRate, mode }, start = true) {
@@ -320,7 +320,7 @@ BytebeatClass.prototype = {
 		for (i = 0; i < 26; i++)
 			delete window[String.fromCharCode(65 + i)], window[String.fromCharCode(97 + i)];
 
-		this.errorElem.innerText = '';
+		this.errorElem.innerText = "";
 
 		let pData = { code: codeText };
 		if (this.sampleRate != 8000)
@@ -330,7 +330,7 @@ BytebeatClass.prototype = {
 
 		pData = JSON.stringify(pData);
 
-		window.location.hash = '#v3b64' + btoa(pako.deflateRaw(pData, { to: 'string' }));
+		window.location.hash = "#v3b64" + btoa(pako.deflateRaw(pData, { to: "string" }));
 		this.setScrollHeight();
 		this.pageIdx = 0;
 		this.clearCanvas();
@@ -339,9 +339,9 @@ BytebeatClass.prototype = {
 		this.controlCounter.textContent = this.time = 0;
 		this.pageIdx = 0;
 		this.clearCanvas();
-		this.timeCursor.style.cssText = 'display: none; left: 0px;';
+		this.timeCursor.style.cssText = "display: none; left: 0px;";
 		if (!this.isPlaying)
-			this.canvasTogglePlay.classList.add('canvas-toggleplay-show');
+			this.canvasTogglePlay.classList.add("canvas-toggleplay-show");
 	},
 	setTime: function (value) {
 		this.controlCounter.textContent = this.time = value;
@@ -358,17 +358,17 @@ BytebeatClass.prototype = {
 	},
 	setScrollHeight: function () {
 		if (this.contScrollElem)
-			this.contScrollElem.style.maxHeight = (document.documentElement.clientHeight - this.contFixedElem.offsetHeight - 4) + 'px';
+			this.contScrollElem.style.maxHeight = (document.documentElement.clientHeight - this.contFixedElem.offsetHeight - 4) + "px";
 	},
 	toggleCursor: function () {
-		this.timeCursor.style.display = this.scale <= 3 ? 'none' : 'block';
+		this.timeCursor.style.display = this.scale <= 3 ? "none" : "block";
 	},
 	togglePlay: function (isPlay) {
-		this.controlTogglePlay.textContent = isPlay ? 'Stop' : 'Play';
-		this.canvasTogglePlay.classList.toggle('canvas-toggleplay-stop', isPlay);
+		this.controlTogglePlay.textContent = isPlay ? "Stop" : "Play";
+		this.canvasTogglePlay.classList.toggle("canvas-toggleplay-stop", isPlay);
 		if (isPlay) {
 			// Play
-			this.canvasTogglePlay.classList.remove('canvas-toggleplay-show');
+			this.canvasTogglePlay.classList.remove("canvas-toggleplay-show");
 			this.toggleCursor();
 			if (this.audioCtx.resume)
 				this.audioCtx.resume();
