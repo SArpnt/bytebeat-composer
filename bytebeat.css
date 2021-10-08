@@ -6,8 +6,22 @@ html {
 }
 
 body {
-	margin: 0 auto;
-	width: 1028px;
+	text-align: center;
+	margin: 0;
+	height: 100vh;
+}
+
+.content {
+	position: relative;
+	height: 100%;
+
+	text-align: left;
+	display: inline-block;
+}
+.container-fixed {
+	position: relative;
+	height: auto;
+	overflow: hidden;
 }
 
 a, a:visited {
@@ -27,6 +41,7 @@ a.link-home:not(:hover) {
 }
 
 .buttons-control {
+	display: inline-block;
 	margin: 3px 0;
 }
 
@@ -57,9 +72,8 @@ a.link-home:not(:hover) {
 }
 
 #canvas-container {
+	display: inline-block;
 	position: relative;
-	width: 1028px;
-	height: 258px;
 	cursor: pointer;
 }
 
@@ -72,8 +86,9 @@ a.link-home:not(:hover) {
 }
 
 #canvas-main {
-	width: 1024px;
-	height: 256px;
+	max-width: 1024px;
+	width: 100%;
+	height: auto;
 	border: 2px solid #fcc33d;
 }
 
@@ -124,7 +139,10 @@ code {
 }
 
 .container-scroll {
+	box-sizing: border-box;
+	position: absolute;
 	overflow-y: auto;
+	width: 100%;
 }
 
 #control-counter {
@@ -153,7 +171,8 @@ code {
 	border: 2px solid white;
 	height: 196px;
 	padding: 0 5px;
-	width: 1014px;
+	box-sizing: border-box;
+	width: 100%;
 	overflow-y: auto;
 	word-wrap: break-word;
 	outline: none;
@@ -164,12 +183,11 @@ li {
 }
 
 .middle {
-	margin-top: 2px;
+	padding-top: 2px;
 }
 
 .paragraph {
 	margin: 0 0 8px 8px;
-	max-height: 999999px;
 	font-size: 12px;
 }
 
@@ -196,37 +214,4 @@ select {
 ul {
 	padding: 0 0 0 12px;
 	margin: 0;
-}
-
-/* ==[ Mobile devices ]==================================================================================== */
-
-@media (max-width: 1080px) {
-	body {
-		font-size: 1.7rem;
-	}
-
-	.buttons-control > button {
-		width: 96px;
-	}
-	
-	.buttons-control > button, #samplerate-change {
-		font-size: 2.2rem;
-	}
-	
-	#control-counter {
-		font-size: 1.7rem;
-	}
-
-	#input-code {
-		font-size: 0.7rem;
-		height: 370px;
-	}
-
-	.paragraph {
-		font-size: 1.6rem;
-	}
-
-	.samplerate {
-		font-size: 18px;
-	}
 }

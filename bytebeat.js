@@ -46,7 +46,7 @@ function BytebeatClass() {
 		this.contFixedElem = $q(".container-fixed");
 		this.contScrollElem = $q(".container-scroll");
 		this.setScrollHeight();
-		document.defaultView.addEventListener("resize", this.setScrollHeight);
+		document.defaultView.addEventListener("resize", this.setScrollHeight.bind(this));
 		this.initLibrary();
 		this.initCodeInput();
 		this.initControls();
@@ -358,7 +358,7 @@ BytebeatClass.prototype = {
 	},
 	setScrollHeight: function () {
 		if (this.contScrollElem)
-			this.contScrollElem.style.maxHeight = (document.documentElement.clientHeight - this.contFixedElem.offsetHeight - 4) + "px";
+			this.contScrollElem.style.height = (document.documentElement.clientHeight - this.contFixedElem.offsetHeight) + "px";
 	},
 	toggleCursor: function () {
 		this.timeCursor.style.display = this.scale <= 3 ? "none" : "block";
