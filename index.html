@@ -21,9 +21,9 @@
 			--><button id="control-scaleup" onclick="bytebeat.changeScale(true);">-</button><!--
 			--><button onclick="bytebeat.rec()">Rec</button><!--
 			--><select id="mode-change" onchange="bytebeat.mode = this.value;">
-					<option value="bytebeat" selected>Bytebeat</option>
-					<option value="signed bytebeat">Signed Bytebeat</option>
-					<option value="floatbeat">Floatbeat</option>
+					<option value="Bytebeat" selected>Bytebeat</option>
+					<option value="Signed Bytebeat">Signed Bytebeat</option>
+					<option value="Floatbeat">Floatbeat</option>
 				</select><!--
 			--><input id="samplerate-change" type="number" min="0" step="any" list="samplerates" value="8000" style="width: 8em;" onchange="bytebeat.setSampleRate(+this.value); bytebeat.refeshCalc();">Hz
 			/ <input id="samplerate-divisor" type="number" min="1" step="1" value="1" style="width: 3em;" onchange="bytebeat.setSampleRateDivisor(+this.value); bytebeat.refeshCalc();">

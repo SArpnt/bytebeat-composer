@@ -11,7 +11,7 @@
 		return entry;
 	}
 
-	function stripEntryToSong({ code, sampleRate, mode }, includeCode = true) {
+	function stripEntryToSong({ code, sampleRate, mode }, includeCode = false) {
 		if (includeCode)
 			return { code, sampleRate, mode };
 		else
@@ -66,11 +66,12 @@
 			entryElem.innerHTML += ` <span class="samplerate">${entry.mode}</span>`;
 
 		if (entry.starred) {
+			console.info(entry);
 			let starElem = document.createElement("span");
 			starElem.className = [
 				"star-white",
-				"star-yellow"
-			][entry.starred];
+				"star-yellow",
+			][entry.starred - 1];
 			entryElem.append(" ", starElem);
 		}
 
@@ -78,7 +79,12 @@
 			entryElem.innerHTML += "<br>\n";
 
 		if (entry.codeFile) {
-			entryElem.innerHTML += `<a class="code-load" data-code-file="${entry.codeFile}" data-songdata=${JSON.stringify(stripEntryToSong(entry))}>► Click to load pretty code</a>`;
+			let codeFileElem = document.createElement("a");
+			codeFileElem.className = "code-load";
+			codeFileElem.dataset.codeFile = entry.codeFile;
+			codeFileElem.dataset.songdata = JSON.stringify(stripEntryToSong(entry));
+			codeFileElem.innerText = "► Click to load pretty code";
+			entryElem.append(codeFileElem);
 		}
 		if (entry.code) {
 			let codeElem = document.createElement("code");
@@ -87,10 +93,11 @@
 			let pre = document.createElement("pre");
 			pre.style.margin = "0";
 			pre.style.whiteSpace = "pre-wrap";
+			pre.style.display = "inline";
 			pre.append(codeElem);
 			entryElem.append(pre);
 
-			entryElem.innerHTML += `<span class="codelength">${entry.code.length}C</span>`;
+			entryElem.innerHTML += ` <span class="codelength">${entry.code.length}C</span>`;
 		}
 
 		if (entry.children) {

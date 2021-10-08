@@ -33,7 +33,7 @@ function BytebeatClass() {
 	this.imageData = null;
 	this.isPlaying = false;
 	this.isRecording = false;
-	this.mode = "bytebeat";
+	this.mode = "Bytebeat";
 	this.pageIdx = 0;
 	this.recChunks = [];
 	this.sampleRate = 8000;
@@ -155,13 +155,13 @@ BytebeatClass.prototype = {
 				if (!this.isPlaying)
 					lastValue = 0;
 				else if (lastTime !== flooredTime) {
-					if (this.mode == "bytebeat") {
+					if (this.mode == "Bytebeat") {
 						lastByteValue = this.func(flooredTime * this.sampleRateDivisor) & 255;
 						lastValue = lastByteValue / 127.5 - 1;
-					} else if (this.mode == "signed bytebeat") {
+					} else if (this.mode == "Signed Bytebeat") {
 						lastByteValue = (this.func(flooredTime * this.sampleRateDivisor) + 128) & 255;
 						lastValue = lastByteValue / 127.5 - 1;
-					} else {
+					} else if (this.mode == "Floatbeat") {
 						lastValue = this.func(flooredTime * this.sampleRateDivisor);
 						lastByteValue = Math.round((lastValue + 1) * 127.5);
 					}
@@ -261,7 +261,7 @@ BytebeatClass.prototype = {
 		libraryEl.onclick = function (e) {
 			let el = e.target;
 			if (el.tagName === 'CODE')
-				this.loadCode(JSON.parse(el.dataset.songdata));
+				this.loadCode(Object.assign({ code: el.innerText }, JSON.parse(el.dataset.songdata)));
 			else if (el.classList.contains('code-load')) {
 				let xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = function () {
@@ -282,7 +282,7 @@ BytebeatClass.prototype = {
 	loadCode: function ({ code, sampleRate, mode }, start = true) {
 		this.inputElem.value = code;
 		this.applySampleRate(+sampleRate || 8000);
-		this.applyMode(mode || "bytebeat");
+		this.applyMode(mode || "Bytebeat");
 		if (start) {
 			this.refreshCalc();
 			this.resetTime();
@@ -325,7 +325,7 @@ BytebeatClass.prototype = {
 		let pData = { code: codeText };
 		if (this.sampleRate != 8000)
 			pData.sampleRate = this.sampleRate;
-		if (this.mode != "bytebeat")
+		if (this.mode != "Bytebeat")
 			pData.mode = this.mode;
 
 		pData = JSON.stringify(pData);
