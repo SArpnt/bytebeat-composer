@@ -15,7 +15,7 @@
 		if (includeCode)
 			return { code, sampleRate, mode };
 		else
-			return { sampleRate, mode }
+			return { sampleRate, mode };
 	}
 
 	function createEntryElem(entry) {
@@ -24,7 +24,7 @@
 		if (entry.description) {
 			let descriptionElem;
 			if (entry.url)
-				descriptionElem = `<a href="${entry.url}" target="_blank">${entry.description}</a>`
+				descriptionElem = `<a href="${entry.url}" target="_blank">${entry.description}</a>`;
 			else
 				descriptionElem = entry.description;
 			entryElem.innerHTML += descriptionElem;
@@ -59,6 +59,12 @@
 
 			entryElem.innerHTML += authorListElem;
 		}
+
+		if (entry.sampleRate)
+			entryElem.innerHTML += ` <span class="samplerate">${entry.sampleRate.substring(0, entry.sampleRate.length - 3)}kHz</span>`;
+		if (entry.mode)
+			entryElem.innerHTML += ` <span class="samplerate">${entry.mode}</span>`;
+
 		if (entry.starred) {
 			let starElem = document.createElement("span");
 			starElem.className = [
@@ -68,12 +74,12 @@
 			entryElem.append(" ", starElem);
 		}
 
-		entryElem.innerHTML += "<br>\n"
+		if (entryElem.innerHTML)
+			entryElem.innerHTML += "<br>\n";
 
 		if (entry.codeFile) {
-			entryElem.innerHTML += `<a class="code-load" data-code-file="${entry.codeFile}" data-songdata=${JSON.stringify(stripEntryToSong(entry))}>► Click to load pretty code</a>`
+			entryElem.innerHTML += `<a class="code-load" data-code-file="${entry.codeFile}" data-songdata=${JSON.stringify(stripEntryToSong(entry))}>► Click to load pretty code</a>`;
 		}
-
 		if (entry.code) {
 			let codeElem = document.createElement("code");
 			codeElem.innerText = entry.code;
@@ -83,6 +89,8 @@
 			pre.style.whiteSpace = "pre-wrap";
 			pre.append(codeElem);
 			entryElem.append(pre);
+
+			entryElem.innerHTML += `<span class="codelength">${entry.code.length}C</span>`;
 		}
 
 		if (entry.children) {
