@@ -23,11 +23,12 @@ function BytebeatClass() {
 	this.audioRecorder = null;
 	this.bufferSize = 2048;
 	this.canvasCtx = null;
-	this.canvasEleme = null;
+	this.canvasElem = null;
 	this.canvasWidth = 0;
 	this.canvasHeight = 0;
-	this.contFixedEleme = null;
+	this.contFixedElem = null;
 	this.contScrollElem = null;
+	this.inputElem = null;
 	this.errorElem = null;
 	this.imageData = null;
 	this.isPlaying = false;
@@ -42,8 +43,8 @@ function BytebeatClass() {
 	this.scale = 6;
 	this.time = 0;
 	document.addEventListener('DOMContentLoaded', function () {
-		this.contScrollEl = $q('.container-scroll');
-		this.contFixedEl = $q('.container-fixed');
+		this.contFixedElem = $q('.container-fixed');
+		this.contScrollElem = $q('.container-scroll');
 		this.setScrollHeight();
 		document.defaultView.addEventListener('resize', this.setScrollHeight);
 		this.initLibrary();
@@ -203,12 +204,12 @@ BytebeatClass.prototype = {
 		audioGain.connect(mediaDest);
 	},
 	initCodeInput: function () {
-		this.errorEl = $id('error');
-		this.inputEl = $id('input-code');
-		this.inputEl.addEventListener('onchange', this.refreshCalc.bind(this));
-		this.inputEl.addEventListener('onkeyup', this.refreshCalc.bind(this));
-		this.inputEl.addEventListener('input', this.refreshCalc.bind(this));
-		this.inputEl.addEventListener('keydown', function (e) {
+		this.errorElem = $id('error');
+		this.inputElem = $id('input-code');
+		this.inputElem.addEventListener('onchange', this.refreshCalc.bind(this));
+		this.inputElem.addEventListener('onkeyup', this.refreshCalc.bind(this));
+		this.inputElem.addEventListener('input', this.refreshCalc.bind(this));
+		this.inputElem.addEventListener('keydown', function (e) {
 			if (e.keyCode === 9 /* TAB */ && !e.shiftKey) {
 				e.preventDefault();
 				let el = e.target;
@@ -219,7 +220,7 @@ BytebeatClass.prototype = {
 			}
 		});
 		if (window.location.hash.indexOf('#b64') === 0) {
-			this.inputEl.value = pako.inflateRaw(
+			this.inputElem.value = pako.inflateRaw(
 				atob(decodeURIComponent(window.location.hash.substr(4))), { to: 'string' }
 			) + ';';
 		} else if (window.location.hash.indexOf('#v3b64') === 0) {
@@ -231,15 +232,15 @@ BytebeatClass.prototype = {
 			} catch (err) {
 				console.error("Couldn't load data from url:", err);
 			}
-			this.loadCode(pData);
+			this.loadCode(pData, false);
 		}
 	},
 	initCanvas: function () {
 		this.timeCursor = $id('canvas-timecursor');
-		this.canvEl = $id('canvas-main');
-		this.canvasCtx = this.canvasEleme.getContext('2d');
-		this.canvWidth = this.canvasEleme.width;
-		this.canvHeight = this.canvasEleme.height;
+		this.canvasElem = $id('canvas-main');
+		this.canvasCtx = this.canvasElem.getContext('2d');
+		this.canvasWidth = this.canvasElem.width;
+		this.canvasHeight = this.canvasElem.height;
 		this.imageData = this.canvasCtx.createImageData(this.canvasWidth, this.canvasHeight);
 	},
 	initControls: function () {
@@ -278,13 +279,15 @@ BytebeatClass.prototype = {
 				el.title = 'Click to play this code';
 		};
 	},
-	loadCode: function ({ code, sampleRate, mode }) {
-		this.inputEl.value = code;
+	loadCode: function ({ code, sampleRate, mode }, start = true) {
+		this.inputElem.value = code;
 		this.applySampleRate(+sampleRate || 8000);
 		this.applyMode(mode || "bytebeat");
-		this.refreshCalc();
-		this.resetTime();
-		this.togglePlay(true);
+		if (start) {
+			this.refreshCalc();
+			this.resetTime();
+			this.togglePlay(true);
+		}
 	},
 	rec: function () {
 		if (this.audioCtx && !this.isRecording) {
@@ -297,7 +300,7 @@ BytebeatClass.prototype = {
 	},
 	refreshCalc: function () {
 		let oldF = this.func;
-		let codeText = this.inputEl.value;
+		let codeText = this.inputElem.value;
 
 		// create shortened functions
 		let params = Object.getOwnPropertyNames(Math);
@@ -355,7 +358,7 @@ BytebeatClass.prototype = {
 	},
 	setScrollHeight: function () {
 		if (this.contScrollElem)
-			this.contScrollElem.style.maxHeight = (document.documentElement.clientHeight - this.contFixedEleme.offsetHeight - 4) + 'px';
+			this.contScrollElem.style.maxHeight = (document.documentElement.clientHeight - this.contFixedElem.offsetHeight - 4) + 'px';
 	},
 	toggleCursor: function () {
 		this.timeCursor.style.display = this.scale <= 3 ? 'none' : 'block';
