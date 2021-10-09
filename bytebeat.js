@@ -24,8 +24,6 @@ function BytebeatClass() {
 	this.bufferSize = 2048;
 	this.canvasCtx = null;
 	this.canvasElem = null;
-	this.canvasWidth = 0;
-	this.canvasHeight = 0;
 	this.contFixedElem = null;
 	this.contScrollElem = null;
 	this.inputElem = null;
@@ -34,7 +32,7 @@ function BytebeatClass() {
 	this.isPlaying = false;
 	this.isRecording = false;
 	this.mode = "Bytebeat";
-	this.pageIdx = 0;
+	this.drawXpos = 0;
 	this.recChunks = [];
 	this.sampleRate = 8000;
 	this.sampleRateDivisor = 1;
@@ -45,14 +43,16 @@ function BytebeatClass() {
 	document.addEventListener("DOMContentLoaded", function () {
 		this.contFixedElem = $q(".container-fixed");
 		this.contScrollElem = $q(".container-scroll");
-		this.setScrollHeight();
-		document.defaultView.addEventListener("resize", this.setScrollHeight.bind(this));
+
 		this.initLibrary();
 		this.initCodeInput();
 		this.initControls();
 		this.initCanvas();
 		this.refreshCalc();
 		this.initAudioContext();
+
+		this.handleWindowResize();
+		document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this));
 	}.bind(this));
 }
 BytebeatClass.prototype = {
@@ -83,7 +83,7 @@ BytebeatClass.prototype = {
 	changeScale: function (isIncrement) {
 		if (!isIncrement && this.scale > 0 || isIncrement && this.scale < this.scaleMax) {
 			this.scale += isIncrement ? 1 : -1;
-			this.pageIdx = 0;
+			this.drawXpos = 0;
 			this.clearCanvas();
 			if (this.scale === 0)
 				this.controlScaleDown.setAttribute("disabled", true);
@@ -97,33 +97,33 @@ BytebeatClass.prototype = {
 		}
 	},
 	changeVolume: function (el) {
-		let fraction = parseInt(el.value) / parseInt(el.max);
+		let fraction = parseInt(el.value) / parseInt(el.max);3
 		// Let's use an x * x curve (x-squared) instead of simple linear (x)
 		this.audioGain.gain.value = fraction * fraction;
 	},
 	clearCanvas: function () {
-		this.canvasCtx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-		this.imageData = this.canvasCtx.getImageData(0, 0, this.canvasWidth, this.canvasHeight);
+		this.canvasCtx.clearRect(0, 0, this.canvasElem.width, this.canvasElem.height);
+		this.imageData = this.canvasCtx.getImageData(0, 0, this.canvasElem.width, this.canvasElem.height);
 	},
 	// "| 0" is Math.floor but fastee
 	drawGraphics: function (buffer) {
-		let width = this.canvasWidth;
-		let height = this.canvasHeight;
+		let width = this.canvasElem.width;
+		let height = this.canvasElem.height;
 		let scale = this.scale;
 		let pageWidth = width >> scale;
-		let pageIdx = this.pageIdx;
-		this.canvasCtx.clearRect(pageWidth * pageIdx, 0, pageWidth, height);
+		let drawXpos = this.drawXpos;
+		this.canvasCtx.clearRect(pageWidth * drawXpos, 0, pageWidth, height);
 		this.imageData = this.canvasCtx.getImageData(0, 0, width, height);
 		let imageData = this.imageData.data;
 		let bufLen = buffer.length;
 		for (let i = 0; i < bufLen; i++) {
-			let pos = (width * (255 - buffer[i]) + pageWidth * (pageIdx + i / bufLen)) << 2;
+			let pos = (width * (255 - buffer[i]) + pageWidth * (drawXpos + i / bufLen)) << 2;
 			imageData[pos++] = imageData[pos++] = imageData[pos++] = imageData[pos] = 255;
 		}
 		this.canvasCtx.putImageData(this.imageData, 0, 0);
-		this.pageIdx = pageIdx === (1 << scale) - 1 ? 0 : pageIdx + 1;
+		this.drawXpos = (drawXpos + 1) % (1 << scale);
 		if (this.scale > 3)
-			this.timeCursor.style.left = this.pageIdx / (1 << bytebeat.scale) * 100 + "%";
+			this.timeCursor.style.left = this.drawXpos / (1 << bytebeat.scale) * 100 + "%";
 	},
 	func: function () {
 		return 0;
@@ -237,9 +237,7 @@ BytebeatClass.prototype = {
 		this.timeCursor = $id("canvas-timecursor");
 		this.canvasElem = $id("canvas-main");
 		this.canvasCtx = this.canvasElem.getContext("2d");
-		this.canvasWidth = this.canvasElem.width;
-		this.canvasHeight = this.canvasElem.height;
-		this.imageData = this.canvasCtx.createImageData(this.canvasWidth, this.canvasHeight);
+		this.imageData = this.canvasCtx.createImageData(this.canvasElem.width, this.canvasElem.height);
 	},
 	initControls: function () {
 		this.canvasTogglePlay = $id("canvas-toggleplay");
@@ -329,13 +327,13 @@ BytebeatClass.prototype = {
 		pData = JSON.stringify(pData);
 
 		window.location.hash = "#v3b64" + btoa(pako.deflateRaw(pData, { to: "string" }));
-		this.setScrollHeight();
-		this.pageIdx = 0;
+		this.handleWindowResize();
+		this.drawXpos = 0;
 		this.clearCanvas();
 	},
 	resetTime: function () {
 		this.controlCounter.textContent = this.time = 0;
-		this.pageIdx = 0;
+		this.drawXpos = 0;
 		this.clearCanvas();
 		this.timeCursor.style.cssText = "display: none; left: 0px;";
 		if (!this.isPlaying)
@@ -354,9 +352,20 @@ BytebeatClass.prototype = {
 		if (this.audioCtx)
 			this.sampleRatio = this.sampleRate / this.sampleRateDivisor / this.audioCtx.sampleRate;
 	},
-	setScrollHeight: function () {
+	handleWindowResize: function () {
+		let newWidth;
+		if (document.body.clientWidth >= 768 + 4)
+			newWidth = 1024;
+		else
+			newWidth = 512;
+		if (newWidth != this.canvasElem.width) {
+			this.canvasElem.width = newWidth;
+			this.canvasElem.style.maxWidth = newWidth + "px";
+			$q(".content").style.maxWidth = (newWidth + 4) + "px";
+		}
+
 		if (this.contScrollElem)
-			this.contScrollElem.style.height = (document.documentElement.clientHeight - this.contFixedElem.offsetHeight) + "px";
+			this.contScrollElem.style.height = (document.body.clientHeight - this.contFixedElem.offsetHeight) + "px";
 	},
 	toggleCursor: function () {
 		this.timeCursor.style.display = this.scale <= 3 ? "none" : "block";

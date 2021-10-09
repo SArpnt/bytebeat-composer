@@ -41,10 +41,15 @@ body {
 }
 
 .buttons-control {
-	display: inline-block;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+	column-gap: 1em;
+
 	margin: 3px 0;
 }
-.buttons-control > button {
+.buttons-control button {
 	display: inline-block;
 	min-width: 50px;
 	font-family: Courier, Sans, sans-serif;
@@ -72,7 +77,6 @@ body {
 }
 
 #canvas-main {
-	max-width: 1024px;
 	width: 100%;
 	height: auto;
 }
@@ -129,6 +133,7 @@ code {
 
 #control-counter {
 	font-size: 15px;
+	margin-bottom: -.15em;
 	cursor: pointer;
 }
 
@@ -163,10 +168,6 @@ li {
 	font-size: 11px;
 	color: #47d738;
 	cursor: default;
-}
-
-select {
-	vertical-align: -2px;
 }
 
 .star-white::after, .star-yellow::after {

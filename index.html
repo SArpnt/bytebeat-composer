@@ -17,28 +17,36 @@
 		<div class="middle container-fixed">
 			<textarea id="input-code" spellcheck="false" style="resize: vertical;">(t*(1+(5&t>>10))*(3+(t>>17&1?(2^2&t>>14)/3:3&(t>>13)+1))>>(3&t>>9))&(t&4096?(t*(t^t%9)|t>>3)>>1:255)</textarea>
 			<div class="buttons-control">
-				<button id="control-toggleplay" onclick="bytebeat.togglePlay(!bytebeat.isPlaying)">Play</button><!--
-				--><button id="control-scaledown" onclick="bytebeat.changeScale(false);">+</button><!--
-				--><button id="control-scaleup" onclick="bytebeat.changeScale(true);">-</button><!--
-				--><button onclick="bytebeat.rec()">Rec</button><!--
-				--><select id="mode-change" onchange="bytebeat.mode = this.value;">
+				<span>
+					<button id="control-toggleplay" onclick="bytebeat.togglePlay(!bytebeat.isPlaying)">Play</button><!--
+					--><button id="control-scaledown" onclick="bytebeat.changeScale(false);">+</button><!--
+					--><button id="control-scaleup" onclick="bytebeat.changeScale(true);">-</button><!--
+					--><button onclick="bytebeat.rec()">Rec</button>
+				</span>
+				<span>
+					<select id="mode-change" onchange="bytebeat.mode = this.value;">
 						<option value="Bytebeat" selected>Bytebeat</option>
 						<option value="Signed Bytebeat">Signed Bytebeat</option>
 						<option value="Floatbeat">Floatbeat</option>
-					</select><!--
-				--><input id="samplerate-change" type="number" min="0" step="any" list="samplerates" value="8000" style="width: 8em;" onchange="bytebeat.setSampleRate(+this.value); bytebeat.refeshCalc();">Hz
-				/ <input id="samplerate-divisor" type="number" min="1" step="1" value="1" style="width: 3em;" onchange="bytebeat.setSampleRateDivisor(+this.value); bytebeat.refeshCalc();">
-				<datalist id="samplerates">
-					<option value="8000">
-					<option value="11025">
-					<option value="16000">
-					<option value="22050">
-					<option value="32000">
-					<option value="44100">
-				</datalist>
-				<input id="control-volume" type="range" min="0" max="100" value="35" oninput="bytebeat.changeVolume(this);">
+					</select>
+				</span>
+				<span>
+					<input id="samplerate-change" type="number" min="0" step="any" list="samplerates" value="8000" style="width: 8em;" onchange="bytebeat.setSampleRate(+this.value); bytebeat.refreshCalc();">Hz
+					/ <input id="samplerate-divisor" type="number" min="1" step="1" value="1" style="width: 3em;" onchange="bytebeat.setSampleRateDivisor(+this.value); bytebeat.refreshCalc();">
+					<datalist id="samplerates">
+						<option value="8000">
+						<option value="11025">
+						<option value="16000">
+						<option value="22050">
+						<option value="32000">
+						<option value="44100">
+					</datalist>
+				</span>
 				<span id="control-counter" onclick="bytebeat.resetTime();" title="Click to set t = 0">t =
 					<span id="control-counter-value">0</span>
+				</span>
+				<span>
+					Volume:<input id="control-volume" type="range" min="0" max="100" value="35" oninput="bytebeat.changeVolume(this);">
 				</span>
 			</div>
 			<div id="error"></div>
