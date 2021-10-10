@@ -451,6 +451,11 @@
 				"starred": 1
 			}]
 		}, {
+			"description": "Vl-Tone Rock 1 rhythm emulation",
+			"author": "spikkks",
+			"url": "https://www.reddit.com/r/bytebeat/comments/chkme0/vltone_rock_1_rhythm_emulation/",
+			"code": "n=[0,1,2,2,0,1,2,1],f=n[floor(t%14664/1833)],(f==0?3.2*(325>t%1833?(t%1833*-3.15>>6)+16:0)/16*(t%1833*3.15&16):0+(f==1)?3.2*(163>t%1833?(t%1833*-6.3>>6)+16:0)/16*(t%1833*6.3&16):0+(f==2)?51.2*random()*(1449>t%1833?1536/(t%1833+1024)-.5:0):0)+127"
+		}, {
 			"description": "Never Gonna Give You Up",
 			"author": "Gasman",
 			"url": "http://www.pouet.net/topic.php?which=8357&page=12#c389109",
@@ -496,6 +501,17 @@
 			}, {
 				"description": "No 5",
 				"code": "u=3*t>>t/4096%4&-t%(t>>16|16)*t>>14&8191,u/(u>>6|1)*4"
+			}]
+		}, {
+			"author": "RealZynx92",
+			"children": [{
+				"description": "remix of 'I hear the long meowing of a cat :)'",
+				"url": "https://www.reddit.com/r/bytebeat/comments/pz264e/remix_of_i_hear_the_long_meowing_of_a_cat/",
+				"code": "t*((t/2>>10|t%16*t>>8)&8*t>>12&18)|-(t/16)+64"
+			}, {
+				"description": "the 69 melody",
+				"url": "https://www.reddit.com/r/bytebeat/comments/pymhqk/the_69_melody_nice/",
+				"code": "128*sin(t*pow(1.4,t>>9&69)/40)+128|-t/16"
 			}]
 		}, {
 			"description": "Industrial chiptune",
@@ -600,6 +616,13 @@
 			"codeFile": "raphaelgoulart - 1k dance.js",
 			"starred": 1
 		}, {
+			"description": "Fortnite Default Dance in Bytebeat",
+			"author": "raphaelgoulart",
+			"url": "https://www.reddit.com/r/bytebeat/comments/b48xrx/fortnite_default_dance_in_bytebeat/",
+			"sampleRate": "44100",
+			"code": "d=.127*t,b=int(t/1578),a=[0,0,0,0,0,0,0,0,4,4,4.75,4.75,5.3,0,5.3,5.3,5.3,5.3,5.3,5.3,4.75,4.75,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,4,4.75,4.75,5.3,0,5.3,5.3,5.3,5.3,4.75,4.75,0,0,4,4,0,0,3.55,3.55,4,4,0,0],n=d*random(),r=int(b/2)%64,([0,3,6,10].includes(int(b/4%16))?d:0)%64+d*a[r]%64+d*a[r]/1.33%64+(b%4==0?n:0)%20+(b%32==16?n:0)%44",
+			"starred": 1
+		}, {
 			"description": "A NΞW DIMΞNSION",
 			"author": "burlynn n01se",
 			"url": "https://battleofthebits.org/arena/Entry/A+N%CE%9EW+DIM%CE%9ENSION/42606/",
@@ -633,6 +656,29 @@
 			"code": "128+sin(t/24*((t>>10)&42)+1*sin(t/64*(t/1>>15)&21))*24+(sin(t*1/3/4*1+4*sin(t*1/6/4*1))*((t>>11)&1))*16+(sin(t*1/6/4*1+4*sin(t*1/12/4*1))*((t>>10)&1))*16+((3e3/(y=t*4&16383))&1)*56+((3e2/(y=t*32&28600))&1)*56+sin(t/16*((t>>10)&42)+1*sin(t/64*(t/1>>7)&8))*12",
 			"starred": 2
 		}, {
+			"description": "cool loop i guess",
+			"author": "RealZynx92",
+			"url": "https://www.reddit.com/r/bytebeat/comments/q1tesu/cool_loop_i_guess/",
+			"sampleRate": "44100",
+			"code": "t2=t/44100,p=1.05946309,a=14080,as=a*p,b=as*p,c=b*p,cs=c*p,d=cs*p,ds=d*p,e=ds*p,f=e*p,fs=f*p,g=fs*p,gs=g*p,saw=function(h){return t2*h&63},sqr=function(h){return t2*h&64},sine=function(h){return 32*sin(t2*h/10.25)+32},kick=25*(3E3/(t&16383)&3),snare=10*(3E4/(t+16383&32767)&4),hihat=((-t>>8)%16+16)%t*random(),arpch=[c,e,g,a,f,g,a,c,e,g/2,a,c],bs=[g/2,a/2,c/2,e/2],sine(bs[(t>>16)%4])+sqr(arpch[(t>>12)%3+(t>>16)%4*3])+kick+snare+hihat",
+			"codeFile": "RealZynx92 - cool loop i guess.js",
+			"starred": 1
+		}, {
+			"description": "Sunset",
+			"author": "InfinitySnapz",
+			"url": "https://www.reddit.com/r/bytebeat/comments/bxmsl7/sunset/",
+			"sampleRate": "44100",
+			"code": "c=1.51873344*t,n1=[1875,3750,7500],p1=[1,.8,.75,.5,.25],p2=[.89,.75,2/3,.6,.3],p3=[.8,.75,2/3,.5,.25],p4=[.75,2/3,.6,.375,.1875],o1=[p1[int(t/15E3)%4],p2[int(t/15E3)%4],p3[int(t/15E3)%4],p4[int(t/15E3)%4]],o2=[.5,.445,.4,.375],o3=[p1[abs(int(t/n1[int(t/24E4)%3]%4)%8-4)],p2[abs(int(t/n1[int(t/24E4)%3])%8-4)],p3[abs(int(t/n1[int(t/24E4)%3])%8-4)],p4[abs(int(t/n1[int(t/24E4)%3])%8-4)]],c*o1[int(t/24E4)%4]%256/4+c/1.01*o2[int(t/24E4)%4]%256/4+4.02*c*o3[int(t/24E4)%4]%256/6+20*random()+sqrt(5E12*random())/(t%24E4)%256/3",
+			"codeFile": "InfinitySnapz - Sunset.js",
+			"starred": 1
+		}, {
+			"description": "rain",
+			"author": "InfinitySnapz",
+			"url": "https://www.reddit.com/r/bytebeat/comments/ceg1gu/rain/",
+			"sampleRate": "44100",
+			"code": "t<2?(a=0,b=0,c=0):(a=.999*a+.001*random(),b<0?(b=.7*random(),c=random()):b-=1/44100,abs(256*a*(5*sin(t/5E4)+10)%256-128)+255*(t/300*(10*c+200)&2)*pow(b,random()/5+4))",
+			"starred": 1
+		}, {
 			"description": "War Tradition",
 			"author": "petet",
 			"url": "https://battleofthebits.org/arena/Entry/War+Tradition/31413/",
@@ -650,24 +696,31 @@
 			"description": "Cool waveform i guess",
 			"author": "1583736",
 			"url": "https://www.reddit.com/r/bytebeat/comments/ntpnza/cool_waveform_i_guess/",
-			"children": [
-				{
-					"sampleRate": "32000",
-					"code": "t=(6*(t-((t>>10&4|t>>13&3)|(t>>17&6|t>>14&4))*t/((t>>16&7)+4))),Math.pow(Math.abs(1-Math.abs(0.5+cos(t/64.25))**0.3)+Math.abs(0.35-Math.abs(5.5+cos(t/64.5))**0.5),1-Math.abs(1-Math.abs(0.5-sin(t/63.75))**0.5+1-Math.abs(2.1-Math.abs(2.3-sin(t/96))**0.75)))*80+15"
-				},
-				{
+
+			"children": [{
+				"sampleRate": "32000",
+				"code": "t=(6*(t-((t>>10&4|t>>13&3)|(t>>17&6|t>>14&4))*t/((t>>16&7)+4))),Math.pow(Math.abs(1-Math.abs(0.5+cos(t/64.25))**0.3)+Math.abs(0.35-Math.abs(5.5+cos(t/64.5))**0.5),1-Math.abs(1-Math.abs(0.5-sin(t/63.75))**0.5+1-Math.abs(2.1-Math.abs(2.3-sin(t/96))**0.75)))*80+15"
+			}, {
 					"sampleRate": "32000",
 					"code": "t=3*(t-(t>>10&4|t>>13&3|t>>17&6|t>>14&4)*t/((t>>16&7)+4)),128*pow(abs(1-pow(abs(.5+cos(t/64.25)),.3)),1-abs(1-pow(abs(.5-sin(t/63.75)),.5)))+32"
-				}
-			]
-			
+			}]
 		}, {
 			"author": "neverforgettoleave",
 			"children": [{
-				"description": "a simple step sequencer",
+				"description": "simple step sequencer",
 				"url": "https://www.reddit.com/r/bytebeat/comments/jmaz4f/techno_synth/",
 				"sampleRate": "44100",
 				"code": "t*pow(1.0594630943592953,[0,3,7,12,19,12,7,3,-12,7,12,15,0,7,12,14,-4,3,12,15,20,24,27,19,-12,7,12,15,0,7,12,14][floor(t/4096)%32])"
+			}, {
+				"description": "32 steps",
+				"url": "https://www.reddit.com/r/bytebeat/comments/jmaz4f/techno_synth/gis7o23/?utm_source=reddit&utm_medium=web2x&context=3",
+				"sampleRate": "44100",
+				"code": "t*pow(1.0594630943592953,[0,3,7,12,19,12,7,3,-12,7,12,15,0,7,12,14,-4,3,12,15,20,24,27,19,-12,7,12,15,0,7,12,14][int(t/4096)%32])"
+			}, {
+				"description": "pentatonics",
+				"url": "https://www.reddit.com/r/bytebeat/comments/jmaj6d/pentatonics/",
+				"sampleRate": "44100",
+				"code": "2*t*pow(1.0594630943592953,[0,3,5,7,10,12,15,17,19,22,24,22,19,17,15,12,10,7,5,3,0,-2,-5,-7,-9,-12,-14,-17,-19,-21,-24,-26,-24,-21,-19,-17,-14,-12,-9,-7,-5,-2][int(t/8192)%42]-1)|t>>t/8192"
 			}, {
 				"description": "Turbo Pentatonics",
 				"url": "https://www.reddit.com/r/bytebeat/comments/kuktmt/turbo_pentatonics_sawtooth_funky_shifting/",
@@ -727,11 +780,35 @@
 				"code": "a=t-2048,((t&t>>6)&(t*(t>>((t&65535)>>12))))+((t*3/4&t>>12)&127)+(t*(a>>7&a>>8&a>>9&16)>>t/64)"
 			}]
 		}, {
+			"author": "RealZynx92",
+			"description": "2-bit song",
+			"sampleRate": "32000",
+			"url": "https://www.reddit.com/r/bytebeat/comments/q36kta/2bit_song/",
+			"code": "(pow(2.75,-t/2048%8+8)&128)+(t*(t&t>>11)&64)|t/[2,2,2,2,3,3,4,4][(t>>14)%8]&128"
+		}, {
 			"description": "Chip arpeggio that eats itself",
 			"author": "Kb_",
 			"url": "http://www.pouet.net/topic.php?which=8357&page=8#c388898",
 			"sampleRate": "44100",
 			"code": "((t>>1)*(15&0x234568a0>>(t>>8&28))|t>>1>>(t>>11)^t>>12)+(t>>4&t&24)"
+		}, {
+			"author": "kOLbOSa_exe",
+			"children": [{
+				"description": "cool sinusoidal beat (some parts bring from 'no limit')",
+				"url": "https://www.reddit.com/r/bytebeat/comments/pzb9mz/cool_sinusoidal_beat_some_parts_bring_from_no/",
+				"sampleRate": "11025",
+				"code": "wv=function(a,b){return sin(t/a)*b+128},wv((t&4095)+1E3,32)"
+			}, {
+				"description": "wow that was pretty cool",
+				"url": "https://www.reddit.com/r/bytebeat/comments/q4glqu/wow_that_was_pretty_cool/",
+				"sampleRate": "44100",
+				"code": "(4e3/~(4095&t/3)%20)*'1213'[(t>>5)%4]*'3944'[(t>>12)%4]-2"
+			}, {
+				"description": "fiery sin-waveform",
+				"url": "https://www.reddit.com/r/bytebeat/comments/q4s2dl/some_cool_thingy_here/",
+				"sampleRate": "44100",
+				"code": "per=t/2048,64*sin(t/1E4)+80+10*random()+(4E4/(t/4&4095)%100>>random()*t)+(128<per?[13,-12,11,-10,9,-8,7,-6,5,-4,3,-2,1,0][(t>>12)%14]+15&t%[34,32,33,35][(t>>14)%4]:0)+(64<per?4E4/(t/4%4095)%82:0)"
+			}]
 		}
 	],
 	"bigcode": [
@@ -802,7 +879,7 @@
 			"codeFile": "Savestate - Bit-Shift Melodies.js",
 			"starred": 2
 		}, {
-			"author": "Bp1033",
+			"author": "Bp103",
 			"children": [{
 				"description": "the proto-version",
 				"url": "https://twitter.com/Bp103/status/934396842850291712",

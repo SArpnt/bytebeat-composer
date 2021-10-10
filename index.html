@@ -6,8 +6,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="Bytebeat music is a very short single-line JS expressions generating musical output. Bytebeat composer is an algorhithmic music generator.">
 	<title>Bytebeat composer</title>
-	<link rel="shortcut icon" href="/favicon.png">
+	<link rel="shortcut icon" href="favicon.png">
 	<link rel="stylesheet" type="text/css" href="bytebeat.css">
+	<script src="helpers.js"></script>
 	<script src="bytebeat.js"></script>
 	<script src="playlist.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.3/pako.min.js"></script>
@@ -51,7 +52,7 @@
 					</datalist>
 				</span>
 				<span id="control-counter">
-					t=<input id="control-counter-value" type="number" placeholder="0" style="width: 8em;" onchange="bytebeat.setTime(+this.value); this.value = '';"></input>
+					t=<input id="control-counter-value" type="number" placeholder="0" style="width: 8em;" onchange="bytebeat.setByteSample(+this.value); this.value = '';"></input>
 				</span>
 				<span>
 					Volume:<input id="control-volume" type="range" min="0" max="100" value="35" oninput="bytebeat.changeVolume(this);">
@@ -120,7 +121,9 @@
 				</div>
 				<div id="library-sarpnt" class="paragraph" style="display: none;"></div>
 			</div>
-			<a class="link-home" href="/" title="Home">&lt;--</a>
+			<a class="link" href="https://dollchan.net/btb/" title="Dollchan Bytebeat discussion threads" target="_blank">&gt;&gt; Dollchan Discussion threads</a><br>
+			<a class="link" href="https://github.com/SArpnt/bytebeat-composer" title="Github repo" target="_blank">&gt;&gt; Github</a><br>
+			<a class="link" href="/" title="Home">&lt;--</a>
 		</div>
 	</div>
 </body>

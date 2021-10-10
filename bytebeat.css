@@ -80,7 +80,7 @@ body {
 	cursor: pointer;
 
 	box-sizing: border-box;
-	border: 2px solid #fcc33d;
+	border: 2px solid #fc4;
 }
 #canvas-container:hover > #canvas-toggleplay::after {
 	display: block;
@@ -130,7 +130,7 @@ body {
 }
 
 code {
-	color: #ffcc53;
+	color: #fc4;
 	word-wrap: break-word;
 	cursor: pointer;
 }
@@ -158,8 +158,11 @@ code {
 	margin-bottom: -1px;
 }
 
-#error {
+#error[data-err-type="compile"] {
 	color: #f92672;
+}
+#error[data-err-type="runtime"] {
+	color: #fc4;
 }
 
 li {
@@ -202,10 +205,4 @@ a, a:visited {
 }
 a:hover, .button-toggle:hover, code:hover {
 	color: #ed88fb !important;
-}
-a.link-home {
-	text-decoration: none;
-}
-a.link-home:not(:hover) {
-	color: #fff;
 }

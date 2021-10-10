@@ -1,8 +1,5 @@
 (function () {
 	"use strict";
-	function $id(id) {
-		return document.getElementById(id);
-	};
 
 	function parseEntry(entry) {
 		if (Array.isArray(entry.code))
