@@ -5,7 +5,7 @@ function $toggle(el) {
 		el.style.display = "none";
 }
 
-function BytebeatClass() {
+function Bytebeat() {
 	this.audioCtx = null;
 	this.audioGain = null;
 	this.audioRecorder = null;
@@ -53,7 +53,7 @@ function BytebeatClass() {
 		document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this));
 	}.bind(this));
 }
-BytebeatClass.prototype = {
+Bytebeat.prototype = {
 	get saveData() {
 		let a = document.createElement("a");
 		document.body.appendChild(a);
@@ -351,7 +351,7 @@ BytebeatClass.prototype = {
 
 		try {
 			this.errorElem.dataset.errType = "compile";
-			this.func = Function(...params, "t", `return (${codeText.trim()}\n);`).bind(window, ...values);
+			this.func = new Function(...params, "t", `return ${codeText.trim()}\n;`).bind(window, ...values);
 			this.errorElem.dataset.errType = "runtime";
 			this.func(0);
 		} catch (err) {
@@ -439,4 +439,4 @@ BytebeatClass.prototype = {
 	}
 };
 
-const bytebeat = new BytebeatClass();
+const bytebeat = new Bytebeat();
