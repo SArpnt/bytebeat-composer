@@ -113,30 +113,38 @@ BytebeatClass.prototype = {
 		let width = this.canvasElem.width;
 		let height = this.canvasElem.height;
 		let drawArea = buffer.length;
-		//if (drawArea > width) // TODO: prevent graphics from drawing over itself
-		//	buffer = buffer.slice(buffer.length - width);
 		let back = this.playSpeed > 0 ? 1 : -1;
 		let mod = (a, b) => ((a % b) + b) % b;
 		let drawX = (i = 0) => mod((this.byteSample + i) >> this.drawScale, width);
 		let drawX2 = (i = 0) => (mod(this.byteSample, width << this.drawScale) + i) >> this.drawScale;
 		let drawX3 = (i = 0) => back * !!mod(this.byteSample + i, 1 << this.drawScale);
-		this.canvasCtx.clearRect(
-			drawX() + drawX3(),
-			0,
-			Math.min(
-				(back * drawArea >> this.drawScale) + drawX3(back * drawArea),
-				width - drawX() - drawX3()
-			),
-			height
-		);
-		if (this.playSpeed > 0 ? (drawX2(drawArea) + drawX3(drawArea) > width) : (drawX2(-drawArea) + drawX3(-drawArea) < 0))
-			this.canvasCtx.clearRect(this.playSpeed > 0 ? 0 : width, 0, drawX(back * drawArea + drawX3(back * drawArea)), height);
+
+		// clear canvas
+		if (drawArea >> this.drawScale > width)
+			this.canvasCtx.clearRect(0, 0, width, height);
+		else {
+			this.canvasCtx.clearRect(
+				drawX() + drawX3(),
+				0,
+				Math.min(
+					(back * drawArea >> this.drawScale) + drawX3(back * drawArea),
+					width - drawX() - drawX3()
+				),
+				height
+			);
+			if (this.playSpeed > 0 ? (drawX2(drawArea) + drawX3(drawArea) > width) : (drawX2(-drawArea) + drawX3(-drawArea) < 0))
+				this.canvasCtx.clearRect(this.playSpeed > 0 ? 0 : width, 0, drawX(back * drawArea + drawX3(back * drawArea)), height);
+		}
+
+		// draw
 		let imageData = this.canvasCtx.getImageData(0, 0, width, height);
 		for (let i = 0; i < buffer.length; i++) {
 			let pos = (width * (255 - buffer[i]) + drawX(back * i)) << 2;
 			imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos] = 255;
 		}
 		this.canvasCtx.putImageData(imageData, 0, 0);
+
+		// cursor
 		if (this.sampleRate >> this.drawScale < 3950) {
 			if (this.playSpeed > 0) {
 				this.timeCursor.style.left = drawX(drawArea) / width * 100 + "%";
