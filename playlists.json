@@ -650,8 +650,17 @@
 			"description": "Cool waveform i guess",
 			"author": "1583736",
 			"url": "https://www.reddit.com/r/bytebeat/comments/ntpnza/cool_waveform_i_guess/",
-			"sampleRate": "32000",
-			"code":  "t=3*(t-(t>>10&4|t>>13&3|t>>17&6|t>>14&4)*t/((t>>16&7)+4)),128*pow(abs(1-pow(abs(.5+cos(t/64.25)),.3)),1-abs(1-pow(abs(.5-sin(t/63.75)),.5)))+32"
+			"children": [
+				{
+					"sampleRate": "32000",
+					"code": "t=(6*(t-((t>>10&4|t>>13&3)|(t>>17&6|t>>14&4))*t/((t>>16&7)+4))),Math.pow(Math.abs(1-Math.abs(0.5+cos(t/64.25))**0.3)+Math.abs(0.35-Math.abs(5.5+cos(t/64.5))**0.5),1-Math.abs(1-Math.abs(0.5-sin(t/63.75))**0.5+1-Math.abs(2.1-Math.abs(2.3-sin(t/96))**0.75)))*80+15"
+				},
+				{
+					"sampleRate": "32000",
+					"code": "t=3*(t-(t>>10&4|t>>13&3|t>>17&6|t>>14&4)*t/((t>>16&7)+4)),128*pow(abs(1-pow(abs(.5+cos(t/64.25)),.3)),1-abs(1-pow(abs(.5-sin(t/63.75)),.5)))+32"
+				}
+			]
+			
 		}, {
 			"author": "neverforgettoleave",
 			"children": [{

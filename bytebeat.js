@@ -106,40 +106,43 @@ BytebeatClass.prototype = {
 	clearCanvas: function () {
 		this.canvasCtx.clearRect(0, 0, this.canvasElem.width, this.canvasElem.height);
 	},
-	// "| 0" is Math.floor but faster
 	drawGraphics: function (buffer) {
 		if (!buffer.length)
 			return;
 		let width = this.canvasElem.width;
 		let height = this.canvasElem.height;
-		let drawArea = buffer.length;
-		let back = this.playSpeed > 0 ? 1 : -1;
+		let playDir = this.playSpeed > 0 ? 1 : -1;
+		let drawArea = playDir * buffer.length;
+		
 		let mod = (a, b) => ((a % b) + b) % b;
-		let drawX = (i = 0) => mod((this.byteSample + i) >> this.drawScale, width);
-		let drawX2 = (i = 0) => (mod(this.byteSample, width << this.drawScale) + i) >> this.drawScale;
-		let drawX3 = (i = 0) => back * !!mod(this.byteSample + i, 1 << this.drawScale);
+		let drawX = (i = 0, j = 0) => mod(((this.byteSample + i) / (1 << this.drawScale)) + j, width);
+		let drawLen = (i = 0, j = 0) => i / (1 << this.drawScale) + j;
 
 		// clear canvas
 		if (drawArea >> this.drawScale > width)
 			this.canvasCtx.clearRect(0, 0, width, height);
 		else {
+			let startX = drawX();
+			let lenX = drawLen(drawArea);
+			let endX = startX + playDir * lenX;
 			this.canvasCtx.clearRect(
-				drawX() + drawX3(),
+				(this.playSpeed > 0 ? Math.ceil : Math.floor)(startX),
 				0,
-				Math.min(
-					(back * drawArea >> this.drawScale) + drawX3(back * drawArea),
-					width - drawX() - drawX3()
-				),
+				(endX >= 0 && endX < width) ?
+					playDir * (Math.ceil(endX) - (this.playSpeed > 0 ? Math.ceil : Math.floor)(startX)) :
+					width - Math.floor(startX),
 				height
 			);
-			if (this.playSpeed > 0 ? (drawX2(drawArea) + drawX3(drawArea) > width) : (drawX2(-drawArea) + drawX3(-drawArea) < 0))
-				this.canvasCtx.clearRect(this.playSpeed > 0 ? 0 : width, 0, drawX(back * drawArea + drawX3(back * drawArea)), height);
+			if (endX < 0 || endX >= width) {
+				let startX = this.playSpeed > 0 ? 0 : width;
+				this.canvasCtx.clearRect(startX, 0, Math.floor(mod(Math.ceil(endX), width)), height);
+			}
 		}
 
 		// draw
 		let imageData = this.canvasCtx.getImageData(0, 0, width, height);
 		for (let i = 0; i < buffer.length; i++) {
-			let pos = (width * (255 - buffer[i]) + drawX(back * i)) << 2;
+			let pos = (width * (255 - buffer[i]) + drawX(playDir * i)) << 2;
 			imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos] = 255;
 		}
 		this.canvasCtx.putImageData(imageData, 0, 0);
@@ -147,11 +150,11 @@ BytebeatClass.prototype = {
 		// cursor
 		if (this.sampleRate >> this.drawScale < 3950) {
 			if (this.playSpeed > 0) {
-				this.timeCursor.style.left = drawX(drawArea) / width * 100 + "%";
+				this.timeCursor.style.left = Math.ceil(drawX(drawArea)) / width * 100 + "%";
 				this.timeCursor.style.removeProperty("right");
 			} else {
 				this.timeCursor.style.removeProperty("left");
-				this.timeCursor.style.right = (1 - drawX(-drawArea) / width) * 100 + "%";
+				this.timeCursor.style.right = (1 - Math.ceil(drawX(drawArea, 1)) / width) * 100 + "%";
 			}
 			this.timeCursor.style.display = "block";
 		} else
@@ -162,9 +165,9 @@ BytebeatClass.prototype = {
 	},
 	updateSampleRatio: function () {
 		if (this.audioCtx) {
-			let flooredTimeOffset = this.lastFlooredTime - ((this.sampleRatio * this.audioSample) | 0);
+			let flooredTimeOffset = this.lastFlooredTime - Math.floor(this.sampleRatio * this.audioSample);
 			this.sampleRatio = this.sampleRate * this.playSpeed / this.audioCtx.sampleRate;
-			this.lastFlooredTime = ((this.sampleRatio * this.audioSample) | 0) - flooredTimeOffset;
+			this.lastFlooredTime = Math.floor(this.sampleRatio * this.audioSample) - flooredTimeOffset;
 			return this.sampleRatio;
 		}
 	},
@@ -189,12 +192,12 @@ BytebeatClass.prototype = {
 			let byteSample = this.byteSample;
 			for (let i = 0; i < chData.length; i++) {
 				time += this.sampleRatio;
-				let flooredTime = time | 0;
+				let flooredTime = Math.floor(time);
 				if (!this.isPlaying)
 					this.lastValue = 0;
 				else if (this.lastFlooredTime != flooredTime) {
 					if (flooredTime % this.sampleRateDivisor == 0 || isNaN(this.lastValue)) {
-						let roundSample = ((byteSample / this.sampleRateDivisor) | 0) * this.sampleRateDivisor;
+						let roundSample = Math.floor(byteSample / this.sampleRateDivisor) * this.sampleRateDivisor;
 						if (this.mode == "Bytebeat") {
 							this.lastByteValue = this.func(roundSample) & 255;
 							this.lastValue = this.lastByteValue / 127.5 - 1;
