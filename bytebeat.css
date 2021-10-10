@@ -98,9 +98,9 @@ body {
 	display: none;
 	top: 0;
 	bottom: 0;
-	border-left: 2px solid red;
+	width: 2px;
+	background: red;
 	position: absolute;
-	left: 0;
 }
 
 #canvas-toggleplay::after {

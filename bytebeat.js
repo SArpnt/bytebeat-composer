@@ -115,28 +115,36 @@ BytebeatClass.prototype = {
 		let drawArea = buffer.length;
 		//if (drawArea > width) // TODO: prevent graphics from drawing over itself
 		//	buffer = buffer.slice(buffer.length - width);
-		let drawX = (i = 0) => ((this.byteSample + i) >> this.drawScale) % width;
-		let drawX2 = (i = 0) => ((this.byteSample % (width << this.drawScale)) + i) >> this.drawScale;
-		let drawX3 = (i = 0) => !!((this.byteSample + i) % (1 << this.drawScale));
+		let back = this.playSpeed > 0 ? 1 : -1;
+		let mod = (a, b) => ((a % b) + b) % b;
+		let drawX = (i = 0) => mod((this.byteSample + i) >> this.drawScale, width);
+		let drawX2 = (i = 0) => (mod(this.byteSample, width << this.drawScale) + i) >> this.drawScale;
+		let drawX3 = (i = 0) => back * !!mod(this.byteSample + i, 1 << this.drawScale);
 		this.canvasCtx.clearRect(
 			drawX() + drawX3(),
 			0,
 			Math.min(
-				(drawArea >> this.drawScale) + drawX3(drawArea),
+				(back * drawArea >> this.drawScale) + drawX3(back * drawArea),
 				width - drawX() - drawX3()
 			),
 			height
 		);
-		if (drawX2(drawArea) + drawX3() > width)
-			this.canvasCtx.clearRect(0, 0, drawX(drawArea), height);
+		if (this.playSpeed > 0 ? (drawX2(drawArea) + drawX3(drawArea) > width) : (drawX2(-drawArea) + drawX3(-drawArea) < 0))
+			this.canvasCtx.clearRect(this.playSpeed > 0 ? 0 : width, 0, drawX(back * drawArea + drawX3(back * drawArea)), height);
 		let imageData = this.canvasCtx.getImageData(0, 0, width, height);
 		for (let i = 0; i < buffer.length; i++) {
-			let pos = (width * (255 - buffer[i]) + drawX(i)) << 2;
+			let pos = (width * (255 - buffer[i]) + drawX(back * i)) << 2;
 			imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos] = 255;
 		}
 		this.canvasCtx.putImageData(imageData, 0, 0);
 		if (this.sampleRate >> this.drawScale < 3950) {
-			this.timeCursor.style.left = drawX(drawArea) / width * 100 + "%";
+			if (this.playSpeed > 0) {
+				this.timeCursor.style.left = drawX(drawArea) / width * 100 + "%";
+				this.timeCursor.style.removeProperty("right");
+			} else {
+				this.timeCursor.style.removeProperty("left");
+				this.timeCursor.style.right = (1 - drawX(-drawArea) / width) * 100 + "%";
+			}
 			this.timeCursor.style.display = "block";
 		} else
 			this.timeCursor.style.display = "none";
@@ -145,8 +153,12 @@ BytebeatClass.prototype = {
 		return 0;
 	},
 	updateSampleRatio: function () {
-		if (this.audioCtx)
-			return this.sampleRatio = this.sampleRate * this.playSpeed / this.audioCtx.sampleRate;
+		if (this.audioCtx) {
+			let flooredTimeOffset = this.lastFlooredTime - ((this.sampleRatio * this.audioSample) | 0);
+			this.sampleRatio = this.sampleRate * this.playSpeed / this.audioCtx.sampleRate;
+			this.lastFlooredTime = ((this.sampleRatio * this.audioSample) | 0) - flooredTimeOffset;
+			return this.sampleRatio;
+		}
 	},
 	initAudioContext: function () {
 		this.audioCtx = new (window.AudioContext || window.webkitAudioContext ||
