@@ -1,15 +1,3 @@
-function $q(path, root = document.body) {
-	return root.querySelector(path);
-}
-
-function $Q(path, root = document.body) {
-	return root.querySelectorAll(path);
-}
-
-function $id(id) {
-	return document.getElementById(id);
-}
-
 function $toggle(el) {
 	if (el.style.display)
 		el.style.removeProperty("display");
@@ -29,6 +17,7 @@ function BytebeatClass() {
 	this.byteSample = 0;
 	this.lastValue = NaN;
 	this.lastByteValue = NaN;
+	this.func = () => 0;
 
 	this.canvasCtx = null;
 	this.drawScale = 5;
@@ -73,22 +62,20 @@ BytebeatClass.prototype = {
 			a.href = url;
 			a.download = fileName;
 			a.click();
-			setTimeout(function revokeSaveDataUrl() {
-				window.URL.revokeObjectURL(url);
-			});
+			setTimeout(() => window.URL.revokeObjectURL(url));
 		};
 		Object.defineProperty(this, "saveData", { value: fn });
 		return fn;
 	},
-	applySampleRate: function (rate) {
+	applySampleRate(rate) {
 		this.setSampleRate(rate);
 		$id("samplerate-change").value = rate;
 	},
-	applyMode: function (mode) {
+	applyMode(mode) {
 		this.mode = mode;
 		$id("mode-change").value = mode;
 	},
-	changeScale: function (amount) {
+	changeScale(amount) {
 		if (amount) {
 			this.drawScale = Math.max(this.drawScale + amount, 0);
 			this.clearCanvas();
@@ -98,15 +85,14 @@ BytebeatClass.prototype = {
 				this.controlScaleDown.removeAttribute("disabled");
 		}
 	},
-	changeVolume: function (el) {
+	changeVolume(el) {
 		let fraction = parseInt(el.value) / parseInt(el.max);
-		// Let's use an x * x curve (x-squared) instead of simple linear (x)
 		this.audioGain.gain.value = fraction * fraction;
 	},
-	clearCanvas: function () {
+	clearCanvas() {
 		this.canvasCtx.clearRect(0, 0, this.canvasElem.width, this.canvasElem.height);
 	},
-	drawGraphics: function (buffer) {
+	drawGraphics(buffer) {
 		if (!buffer.length)
 			return;
 		let width = this.canvasElem.width;
@@ -160,10 +146,7 @@ BytebeatClass.prototype = {
 		} else
 			this.timeCursor.style.display = "none";
 	},
-	func: function () {
-		return 0;
-	},
-	updateSampleRatio: function () {
+	updateSampleRatio() {
 		if (this.audioCtx) {
 			let flooredTimeOffset = this.lastFlooredTime - Math.floor(this.sampleRatio * this.audioSample);
 			this.sampleRatio = this.sampleRate * this.playSpeed / this.audioCtx.sampleRate;
@@ -171,7 +154,7 @@ BytebeatClass.prototype = {
 			return this.sampleRatio;
 		}
 	},
-	initAudioContext: function () {
+	initAudioContext() {
 		this.audioCtx = new (window.AudioContext || window.webkitAudioContext ||
 			window.mozAudioContext || window.oAudioContext || window.msAudioContext)();
 		if (!this.audioCtx.createGain)
@@ -219,7 +202,7 @@ BytebeatClass.prototype = {
 			if (this.isPlaying) {
 				this.audioSample += chData.length;
 				this.drawGraphics(drawBuffer);
-				this.setTime(byteSample, false);
+				this.setByteSample(byteSample, false);
 			}
 		}.bind(this);
 		let audioGain = this.audioGain = this.audioCtx.createGain();
@@ -236,20 +219,17 @@ BytebeatClass.prototype = {
 			let file, type;
 			let types = ["audio/webm", "audio/ogg"];
 			let files = ["track.webm", "track.ogg"];
-			let check = (MediaRecorder.isTypeSupported || function (type) {
-				return MediaRecorder.canRecordMimeType && MediaRecordercanRecordMimeType(type) === "probably";
-			});
-			while ((file = files.pop()) && !check(type = types.pop())) {
+			while ((file = files.pop()) && !MediaRecorder.isTypeSupported(type = types.pop())) {
 				if (types.length === 0) {
 					console.error("Saving not supported in this browser!");
 					break;
 				}
 			}
-			this.saveData(new Blob(this.recChunks, { type: type }), file);
+			this.saveData(new Blob(this.recChunks, { type }), file);
 		}.bind(this);
 		audioGain.connect(mediaDest);
 	},
-	initCodeInput: function () {
+	initCodeInput() {
 		this.errorElem = $id("error");
 		this.inputElem = $id("input-code");
 		this.inputElem.addEventListener("onchange", this.refreshCalc.bind(this));
@@ -259,10 +239,8 @@ BytebeatClass.prototype = {
 			if (e.keyCode === 9 /* TAB */ && !e.shiftKey) {
 				e.preventDefault();
 				let el = e.target;
-				let value = el.value;
-				let selStart = el.selectionStart;
-				el.value = `${value.slice(0, selStart)}\t${value.slice(el.selectionEnd)}`;
-				el.setSelectionRange(selStart + 1, selStart + 1);
+				el.value = `${el.value.slice(0, el.selectionStart)}\t${el.value.slice(el.selectionEnd)}`;
+				el.setSelectionRange(el.selectionStart + 1, el.selectionStart + 1);
 			}
 		});
 		if (window.location.hash.indexOf("#b64") === 0) {
@@ -281,26 +259,22 @@ BytebeatClass.prototype = {
 			this.loadCode(pData, false);
 		}
 	},
-	initCanvas: function () {
+	initCanvas() {
 		this.timeCursor = $id("canvas-timecursor");
 		this.canvasElem = $id("canvas-main");
 		this.canvasCtx = this.canvasElem.getContext("2d");
 	},
-	initControls: function () {
+	initControls() {
 		this.canvasTogglePlay = $id("canvas-toggleplay");
 		this.controlScaleUp = $id("control-scaleup");
 		this.controlScaleDown = $id("control-scaledown");
 		this.controlCounter = $id("control-counter-value");
 		this.controlVolume = $id("control-volume");
 	},
-	initLibrary: function () {
-		Array.prototype.forEach.call($Q(".button-toggle"), function (el) {
-			el.onclick = function () {
-				$toggle(el.nextElementSibling);
-			};
-		});
+	initLibrary() {
+		$Q(".button-toggle").forEach(el => (el.onclick = () => $toggle(el.nextElementSibling)));
 		let libraryEl = $q(".container-scroll");
-		libraryEl.onclick = function (e) {
+		libraryEl.onclick = function loadLibrary(e) {
 			let el = e.target;
 			if (el.tagName === "CODE")
 				this.loadCode(Object.assign({ code: el.innerText }, JSON.parse(el.dataset.songdata)));
@@ -321,7 +295,7 @@ BytebeatClass.prototype = {
 				el.title = "Click to play this code";
 		};
 	},
-	loadCode: function ({ code, sampleRate, mode }, start = true) {
+	loadCode({ code, sampleRate, mode }, start = true) {
 		this.inputElem.value = code;
 		this.applySampleRate(+sampleRate || 8000);
 		this.applyMode(mode || "Bytebeat");
@@ -331,7 +305,7 @@ BytebeatClass.prototype = {
 			this.togglePlay(true);
 		}
 	},
-	rec: function () {
+	rec() {
 		if (this.audioCtx && !this.isRecording) {
 			this.audioRecorder.start();
 			this.isRecording = true;
@@ -340,7 +314,7 @@ BytebeatClass.prototype = {
 				this.togglePlay(true);
 		}
 	},
-	refreshCalc: function () {
+	refreshCalc() {
 		let oldFunc = this.func;
 		let codeText = this.inputElem.value;
 
@@ -374,14 +348,14 @@ BytebeatClass.prototype = {
 
 		window.location.hash = "#v3b64" + btoa(pako.deflateRaw(pData, { to: "string" }));
 	},
-	resetTime: function () {
-		this.setTime(0);
+	resetTime() {
+		this.setByteSample(0);
 		this.clearCanvas();
 		this.timeCursor.style.cssText = "display: none; left: 0px;";
 		if (!this.isPlaying)
 			this.canvasTogglePlay.classList.add("canvas-toggleplay-show");
 	},
-	setTime: function (value, resetAudio = true) {
+	setByteSample(value, resetAudio = true) {
 		this.controlCounter.placeholder = value;
 		this.byteSample = value;
 		if (resetAudio) {
@@ -391,19 +365,19 @@ BytebeatClass.prototype = {
 			this.lastByteValue = NaN;
 		}
 	},
-	setPlaySpeed: function (speed) {
+	setPlaySpeed(speed) {
 		this.playSpeed = speed;
 		this.updateSampleRatio();
 	},
-	setSampleRate: function (rate) {
+	setSampleRate(rate) {
 		this.sampleRate = rate;
 		this.updateSampleRatio();
 	},
-	setSampleRateDivisor: function (div) {
+	setSampleRateDivisor(div) {
 		this.sampleRateDivisor = div;
 		this.updateSampleRatio();
 	},
-	handleWindowResize: function (force = false) {
+	handleWindowResize(force = false) {
 		let newWidth;
 		if (document.body.clientWidth >= 768 + 4)
 			newWidth = 1024;
@@ -418,7 +392,7 @@ BytebeatClass.prototype = {
 		if (this.contScrollElem)
 			this.contScrollElem.style.height = (document.body.clientHeight - this.contFixedElem.offsetHeight) + "px";
 	},
-	togglePlay: function (isPlay) {
+	togglePlay(isPlay) {
 		this.canvasTogglePlay.classList.toggle("canvas-toggleplay-stop", isPlay);
 		if (isPlay) {
 			// Play
@@ -438,4 +412,4 @@ BytebeatClass.prototype = {
 	}
 };
 
-let bytebeat = new BytebeatClass();
+const bytebeat = new BytebeatClass();
