@@ -18,6 +18,7 @@ function BytebeatClass() {
 	this.lastValue = NaN;
 	this.lastByteValue = NaN;
 	this.func = () => 0;
+	this.audioAnimationFrame = null;
 
 	this.canvasCtx = null;
 	this.drawScale = 5;
@@ -128,8 +129,17 @@ BytebeatClass.prototype = {
 		// draw
 		let imageData = this.canvasCtx.getImageData(0, 0, width, height);
 		for (let i = 0; i < buffer.length; i++) {
-			let pos = (width * (255 - buffer[i]) + drawX(playDir * i)) << 2;
-			imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos] = 255;
+			if (isNaN(buffer[i])) {
+				let xPos = drawX(playDir * i);
+				for (let h = 0; h < 256; h++) {
+					let pos = (width * h + xPos) << 2;
+					imageData.data[pos] = 128;
+					imageData.data[pos + 3] = 255;
+				}
+			} else if (buffer[i] >= 0 && buffer[i] < 256) {
+				let pos = (width * (255 - buffer[i]) + drawX(playDir * i)) << 2;
+				imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos] = 255;
+			}
 		}
 		this.canvasCtx.putImageData(imageData, 0, 0);
 
@@ -181,15 +191,30 @@ BytebeatClass.prototype = {
 				else if (this.lastFlooredTime != flooredTime) {
 					if (flooredTime % this.sampleRateDivisor == 0 || isNaN(this.lastValue)) {
 						let roundSample = Math.floor(byteSample / this.sampleRateDivisor) * this.sampleRateDivisor;
-						if (this.mode == "Bytebeat") {
-							this.lastByteValue = this.func(roundSample) & 255;
-							this.lastValue = this.lastByteValue / 127.5 - 1;
-						} else if (this.mode == "Signed Bytebeat") {
-							this.lastByteValue = (this.func(roundSample) + 128) & 255;
-							this.lastValue = this.lastByteValue / 127.5 - 1;
-						} else if (this.mode == "Floatbeat") {
-							this.lastValue = this.func(roundSample);
-							this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
+						let funcValue;
+						try {
+							funcValue = this.func(roundSample);
+						} catch (err) {
+							if (!this.audioAnimationFrame) {
+								this.audioAnimationFrame = window.requestAnimationFrame(function showRuntimeErr() {
+									this.errorElem.dataset.errType = "runtime";
+									this.errorElem.innerText = err.toString();
+									this.audioAnimationFrame = null
+								}.bind(this))
+								this.lastByteValue = this.lastValue = funcValue = NaN;
+							}
+						}
+						if (!isNaN(funcValue)) {
+							if (this.mode == "Bytebeat") {
+								this.lastByteValue = funcValue & 255;
+								this.lastValue = this.lastByteValue / 127.5 - 1;
+							} else if (this.mode == "Signed Bytebeat") {
+								this.lastByteValue = (funcValue + 128) & 255;
+								this.lastValue = this.lastByteValue / 127.5 - 1;
+							} else if (this.mode == "Floatbeat") {
+								this.lastValue = funcValue;
+								this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
+							}
 						}
 					}
 					drawBuffer.length = Math.abs(flooredTime - startFlooredTime); // TODO: reduce samples added when using sampleRateDivisor
@@ -325,11 +350,13 @@ BytebeatClass.prototype = {
 		values.push(Math.floor);
 
 		try {
-			bytebeat.func = Function(...params, "t", `return ${codeText}\n;`).bind(window, ...values);
-			bytebeat.func(0);
+			this.errorElem.dataset.errType = "compile";
+			this.func = Function(...params, "t", `return ${codeText}\n;`).bind(window, ...values);
+			this.errorElem.dataset.errType = "runtime";
+			this.func(0);
 		} catch (err) {
-			bytebeat.func = oldFunc;
-			bytebeat.errorElem.innerText = err.toString();
+			this.func = oldFunc;
+			this.errorElem.innerText = err.toString();
 			return;
 		}
 		// delete single letter variables to prevent persistent variable errors (covers a good enough range)
