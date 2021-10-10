@@ -21,25 +21,33 @@ function BytebeatClass() {
 	this.audioCtx = null;
 	this.audioGain = null;
 	this.audioRecorder = null;
+	this.recChunks = [];
 	this.bufferSize = 2048;
+
+	this.audioSample = 0;
+	this.lastFlooredTime = -1;
+	this.byteSample = 0;
+	this.lastValue = NaN;
+	this.lastByteValue = NaN;
+
 	this.canvasCtx = null;
+	this.drawScale = 5;
+
+	this.isPlaying = false;
+	this.isRecording = false;
+
+	this.mode = "Bytebeat";
+	this.sampleRate = 8000;
+	this.sampleRateDivisor = 1;
+	this.playSpeed = 1;
+	this.sampleRatio = 1;
+
 	this.canvasElem = null;
 	this.contFixedElem = null;
 	this.contScrollElem = null;
 	this.inputElem = null;
 	this.errorElem = null;
-	this.imageData = null;
-	this.isPlaying = false;
-	this.isRecording = false;
-	this.mode = "Bytebeat";
-	this.drawXpos = 0;
-	this.recChunks = [];
-	this.sampleRate = 8000;
-	this.sampleRateDivisor = 1;
-	this.sampleRatio = 1;
-	this.scaleMax = 10;
-	this.scale = 6;
-	this.time = 0;
+
 	document.addEventListener("DOMContentLoaded", function () {
 		this.contFixedElem = $q(".container-fixed");
 		this.contScrollElem = $q(".container-scroll");
@@ -51,7 +59,7 @@ function BytebeatClass() {
 		this.refreshCalc();
 		this.initAudioContext();
 
-		this.handleWindowResize();
+		this.handleWindowResize(true);
 		document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this));
 	}.bind(this));
 }
@@ -80,106 +88,123 @@ BytebeatClass.prototype = {
 		this.mode = mode;
 		$id("mode-change").value = mode;
 	},
-	changeScale: function (isIncrement) {
-		if (!isIncrement && this.scale > 0 || isIncrement && this.scale < this.scaleMax) {
-			this.scale += isIncrement ? 1 : -1;
-			this.drawXpos = 0;
+	changeScale: function (amount) {
+		if (amount) {
+			this.drawScale = Math.max(this.drawScale + amount, 0);
 			this.clearCanvas();
-			if (this.scale === 0)
+			if (this.drawScale === 0)
 				this.controlScaleDown.setAttribute("disabled", true);
-			else if (this.scale === this.scaleMax)
-				this.controlScaleUp.setAttribute("disabled", true);
-			else {
+			else
 				this.controlScaleDown.removeAttribute("disabled");
-				this.controlScaleUp.removeAttribute("disabled");
-			}
-			this.toggleCursor();
 		}
 	},
 	changeVolume: function (el) {
-		let fraction = parseInt(el.value) / parseInt(el.max);3
+		let fraction = parseInt(el.value) / parseInt(el.max);
 		// Let's use an x * x curve (x-squared) instead of simple linear (x)
 		this.audioGain.gain.value = fraction * fraction;
 	},
 	clearCanvas: function () {
 		this.canvasCtx.clearRect(0, 0, this.canvasElem.width, this.canvasElem.height);
-		this.imageData = this.canvasCtx.getImageData(0, 0, this.canvasElem.width, this.canvasElem.height);
 	},
-	// "| 0" is Math.floor but fastee
+	// "| 0" is Math.floor but faster
 	drawGraphics: function (buffer) {
+		if (!buffer.length)
+			return;
 		let width = this.canvasElem.width;
 		let height = this.canvasElem.height;
-		let scale = this.scale;
-		let pageWidth = width >> scale;
-		let drawXpos = this.drawXpos;
-		this.canvasCtx.clearRect(pageWidth * drawXpos, 0, pageWidth, height);
-		this.imageData = this.canvasCtx.getImageData(0, 0, width, height);
-		let imageData = this.imageData.data;
-		let bufLen = buffer.length;
-		for (let i = 0; i < bufLen; i++) {
-			let pos = (width * (255 - buffer[i]) + pageWidth * (drawXpos + i / bufLen)) << 2;
-			imageData[pos++] = imageData[pos++] = imageData[pos++] = imageData[pos] = 255;
+		let drawArea = buffer.length;
+		//if (drawArea > width) // TODO: prevent graphics from drawing over itself
+		//	buffer = buffer.slice(buffer.length - width);
+		let drawX = (i = 0) => ((this.byteSample + i) >> this.drawScale) % width;
+		let drawX2 = (i = 0) => ((this.byteSample % (width << this.drawScale)) + i) >> this.drawScale;
+		let drawX3 = (i = 0) => !!((this.byteSample + i) % (1 << this.drawScale));
+		this.canvasCtx.clearRect(
+			drawX() + drawX3(),
+			0,
+			Math.min(
+				(drawArea >> this.drawScale) + drawX3(drawArea),
+				width - drawX() - drawX3()
+			),
+			height
+		);
+		if (drawX2(drawArea) + drawX3() > width)
+			this.canvasCtx.clearRect(0, 0, drawX(drawArea), height);
+		let imageData = this.canvasCtx.getImageData(0, 0, width, height);
+		for (let i = 0; i < buffer.length; i++) {
+			let pos = (width * (255 - buffer[i]) + drawX(i)) << 2;
+			imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos] = 255;
 		}
-		this.canvasCtx.putImageData(this.imageData, 0, 0);
-		this.drawXpos = (drawXpos + 1) % (1 << scale);
-		if (this.scale > 3)
-			this.timeCursor.style.left = this.drawXpos / (1 << bytebeat.scale) * 100 + "%";
+		this.canvasCtx.putImageData(imageData, 0, 0);
+		if (this.sampleRate >> this.drawScale < 3950) {
+			this.timeCursor.style.left = drawX(drawArea) / width * 100 + "%";
+			this.timeCursor.style.display = "block";
+		} else
+			this.timeCursor.style.display = "none";
 	},
 	func: function () {
 		return 0;
 	},
+	updateSampleRatio: function () {
+		if (this.audioCtx)
+			return this.sampleRatio = this.sampleRate * this.playSpeed / this.audioCtx.sampleRate;
+	},
 	initAudioContext: function () {
-		let audioCtx = this.audioCtx = new (window.AudioContext || window.webkitAudioContext ||
+		this.audioCtx = new (window.AudioContext || window.webkitAudioContext ||
 			window.mozAudioContext || window.oAudioContext || window.msAudioContext)();
-		if (!audioCtx.createGain)
-			audioCtx.createGain = audioCtx.createGainNode;
-		if (!audioCtx.createDelay)
-			audioCtx.createDelay = audioCtx.createDelayNode;
-		if (!audioCtx.createScriptProcessor)
-			audioCtx.createScriptProcessor = audioCtx.createJavaScriptNode;
-		this.sampleRatio = this.sampleRate / this.sampleRateDivisor / audioCtx.sampleRate;
-		let processor = audioCtx.createScriptProcessor(this.bufferSize, 1, 1);
+		if (!this.audioCtx.createGain)
+			this.audioCtx.createGain = this.audioCtx.createGainNode;
+		if (!this.audioCtx.createDelay)
+			this.audioCtx.createDelay = this.audioCtx.createDelayNode;
+		if (!this.audioCtx.createScriptProcessor)
+			this.audioCtx.createScriptProcessor = this.audioCtx.createJavaScriptNode;
+		this.updateSampleRatio();
+		let processor = this.audioCtx.createScriptProcessor(this.bufferSize, 1, 1);
 		processor.onaudioprocess = function (e) {
 			let chData = e.outputBuffer.getChannelData(0);
-			let dataLen = chData.length;
-			if (!dataLen)
+			if (!chData.length)
 				return;
-			let lastValue, lastByteValue;
-			let time = this.sampleRatio * this.time;
-			let lastTime = -1;
+			let time = this.sampleRatio * this.audioSample;
+			let startFlooredTime = this.lastFlooredTime;
 			let drawBuffer = [];
-			for (let i = 0; i < dataLen; ++i) {
+			let byteSample = this.byteSample;
+			for (let i = 0; i < chData.length; i++) {
+				time += this.sampleRatio;
 				let flooredTime = time | 0;
 				if (!this.isPlaying)
-					lastValue = 0;
-				else if (lastTime !== flooredTime) {
-					if (this.mode == "Bytebeat") {
-						lastByteValue = this.func(flooredTime * this.sampleRateDivisor) & 255;
-						lastValue = lastByteValue / 127.5 - 1;
-					} else if (this.mode == "Signed Bytebeat") {
-						lastByteValue = (this.func(flooredTime * this.sampleRateDivisor) + 128) & 255;
-						lastValue = lastByteValue / 127.5 - 1;
-					} else if (this.mode == "Floatbeat") {
-						lastValue = this.func(flooredTime * this.sampleRateDivisor);
-						lastByteValue = Math.round((lastValue + 1) * 127.5);
+					this.lastValue = 0;
+				else if (this.lastFlooredTime != flooredTime) {
+					if (flooredTime % this.sampleRateDivisor == 0 || isNaN(this.lastValue)) {
+						let roundSample = ((byteSample / this.sampleRateDivisor) | 0) * this.sampleRateDivisor;
+						if (this.mode == "Bytebeat") {
+							this.lastByteValue = this.func(roundSample) & 255;
+							this.lastValue = this.lastByteValue / 127.5 - 1;
+						} else if (this.mode == "Signed Bytebeat") {
+							this.lastByteValue = (this.func(roundSample) + 128) & 255;
+							this.lastValue = this.lastByteValue / 127.5 - 1;
+						} else if (this.mode == "Floatbeat") {
+							this.lastValue = this.func(roundSample);
+							this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
+						}
 					}
-					lastTime = flooredTime;
+					drawBuffer.length = Math.abs(flooredTime - startFlooredTime); // TODO: reduce samples added when using sampleRateDivisor
+					drawBuffer.fill(this.lastByteValue, Math.abs(this.lastFlooredTime - startFlooredTime));
+					byteSample += flooredTime - this.lastFlooredTime;
+					this.lastFlooredTime = flooredTime;
 				}
-				chData[i] = lastValue;
-				drawBuffer[i] = lastByteValue;
-				time += this.sampleRatio;
+				chData[i] = this.lastValue;
 			}
 			if (this.isPlaying) {
-				this.setTime(this.time + dataLen);
+				this.audioSample += chData.length;
 				this.drawGraphics(drawBuffer);
+				this.setTime(byteSample, false);
 			}
 		}.bind(this);
-		let audioGain = this.audioGain = audioCtx.createGain();
+		let audioGain = this.audioGain = this.audioCtx.createGain();
 		this.changeVolume(this.controlVolume);
 		processor.connect(audioGain);
-		audioGain.connect(audioCtx.destination);
+		audioGain.connect(this.audioCtx.destination);
 
-		let mediaDest = audioCtx.createMediaStreamDestination();
+		let mediaDest = this.audioCtx.createMediaStreamDestination();
 		let audioRecorder = this.audioRecorder = new MediaRecorder(mediaDest.stream);
 		audioRecorder.ondataavailable = function (e) {
 			this.recChunks.push(e.data);
@@ -237,11 +262,9 @@ BytebeatClass.prototype = {
 		this.timeCursor = $id("canvas-timecursor");
 		this.canvasElem = $id("canvas-main");
 		this.canvasCtx = this.canvasElem.getContext("2d");
-		this.imageData = this.canvasCtx.createImageData(this.canvasElem.width, this.canvasElem.height);
 	},
 	initControls: function () {
 		this.canvasTogglePlay = $id("canvas-toggleplay");
-		this.controlTogglePlay = $id("control-toggleplay");
 		this.controlScaleUp = $id("control-scaleup");
 		this.controlScaleDown = $id("control-scaledown");
 		this.controlCounter = $id("control-counter-value");
@@ -295,7 +318,7 @@ BytebeatClass.prototype = {
 		}
 	},
 	refreshCalc: function () {
-		let oldF = this.func;
+		let oldFunc = this.func;
 		let codeText = this.inputElem.value;
 
 		// create shortened functions
@@ -308,7 +331,7 @@ BytebeatClass.prototype = {
 			bytebeat.func = Function(...params, "t", `return ${codeText}\n;`).bind(window, ...values);
 			bytebeat.func(0);
 		} catch (err) {
-			bytebeat.func = oldF;
+			bytebeat.func = oldFunc;
 			bytebeat.errorElem.innerText = err.toString();
 			return;
 		}
@@ -327,38 +350,43 @@ BytebeatClass.prototype = {
 		pData = JSON.stringify(pData);
 
 		window.location.hash = "#v3b64" + btoa(pako.deflateRaw(pData, { to: "string" }));
-		this.handleWindowResize();
-		this.drawXpos = 0;
-		this.clearCanvas();
 	},
 	resetTime: function () {
-		this.controlCounter.textContent = this.time = 0;
-		this.drawXpos = 0;
+		this.setTime(0);
 		this.clearCanvas();
 		this.timeCursor.style.cssText = "display: none; left: 0px;";
 		if (!this.isPlaying)
 			this.canvasTogglePlay.classList.add("canvas-toggleplay-show");
 	},
-	setTime: function (value) {
-		this.controlCounter.textContent = this.time = value;
+	setTime: function (value, resetAudio = true) {
+		this.controlCounter.placeholder = value;
+		this.byteSample = value;
+		if (resetAudio) {
+			this.audioSample = 0;
+			this.lastFlooredTime = -1;
+			this.lastValue = NaN;
+			this.lastByteValue = NaN;
+		}
+	},
+	setPlaySpeed: function (speed) {
+		this.playSpeed = speed;
+		this.updateSampleRatio();
 	},
 	setSampleRate: function (rate) {
 		this.sampleRate = rate;
-		if (this.audioCtx)
-			this.sampleRatio = this.sampleRate / this.sampleRateDivisor / this.audioCtx.sampleRate;
+		this.updateSampleRatio();
 	},
 	setSampleRateDivisor: function (div) {
 		this.sampleRateDivisor = div;
-		if (this.audioCtx)
-			this.sampleRatio = this.sampleRate / this.sampleRateDivisor / this.audioCtx.sampleRate;
+		this.updateSampleRatio();
 	},
-	handleWindowResize: function () {
+	handleWindowResize: function (force = false) {
 		let newWidth;
 		if (document.body.clientWidth >= 768 + 4)
 			newWidth = 1024;
 		else
 			newWidth = 512;
-		if (newWidth != this.canvasElem.width) {
+		if (newWidth != this.canvasElem.width || force) {
 			this.canvasElem.width = newWidth;
 			this.canvasElem.style.maxWidth = newWidth + "px";
 			$q(".content").style.maxWidth = (newWidth + 4) + "px";
@@ -367,16 +395,11 @@ BytebeatClass.prototype = {
 		if (this.contScrollElem)
 			this.contScrollElem.style.height = (document.body.clientHeight - this.contFixedElem.offsetHeight) + "px";
 	},
-	toggleCursor: function () {
-		this.timeCursor.style.display = this.scale <= 3 ? "none" : "block";
-	},
 	togglePlay: function (isPlay) {
-		this.controlTogglePlay.textContent = isPlay ? "Stop" : "Play";
 		this.canvasTogglePlay.classList.toggle("canvas-toggleplay-stop", isPlay);
 		if (isPlay) {
 			// Play
 			this.canvasTogglePlay.classList.remove("canvas-toggleplay-show");
-			this.toggleCursor();
 			if (this.audioCtx.resume)
 				this.audioCtx.resume();
 			if (!this.isPlaying)

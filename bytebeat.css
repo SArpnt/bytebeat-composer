@@ -40,7 +40,7 @@ body {
 	outline: none;
 }
 
-.buttons-control {
+.controls {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
@@ -49,11 +49,24 @@ body {
 
 	margin: 3px 0;
 }
-.buttons-control button {
+.controls button {
 	display: inline-block;
-	min-width: 50px;
 	font-family: Courier, Sans, sans-serif;
 	margin-right: 3px;
+}
+.buttons-playback button {
+	width: 2em;
+	height: 1.8em;
+	text-align: center;
+	vertical-align: middle;
+	padding: 0;
+}
+.buttons-zoom button {
+	width: 2em;
+	height: 1.8em;
+	text-align: center;
+	vertical-align: middle;
+	padding: 0;
 }
 .button-toggle {
 	cursor: pointer;
@@ -132,8 +145,6 @@ code {
 }
 
 #control-counter {
-	font-size: 15px;
-	margin-bottom: -.15em;
 	cursor: pointer;
 }
 
@@ -141,7 +152,7 @@ code {
 	-webkit-appearance: none;
 	background-color: #959595;
 	height: 10px;
-	width: 200px;
+	width: 10em;
 	border-radius: 15px;
 	padding: 0 3px;
 	margin-bottom: -1px;
