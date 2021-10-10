@@ -351,7 +351,7 @@ BytebeatClass.prototype = {
 
 		try {
 			this.errorElem.dataset.errType = "compile";
-			this.func = Function(...params, "t", `return ${codeText}\n;`).bind(window, ...values);
+			this.func = Function(...params, "t", `return (${codeText.trim()}\n);`).bind(window, ...values);
 			this.errorElem.dataset.errType = "runtime";
 			this.func(0);
 		} catch (err) {
