@@ -371,11 +371,14 @@ Bytebeat.prototype = {
 			this.errorElem.innerText = err.toString();
 			return;
 		}
+		cancelAnimationFrame(this.audioAnimationFrame);
+		this.audioAnimationFrame = null;
+		if (this.errorElem)
+			this.errorElem.innerText = "";
+
 		// delete single letter variables to prevent persistent variable errors (covers a good enough range)
 		for (i = 0; i < 26; i++)
 			delete window[String.fromCharCode(65 + i)], window[String.fromCharCode(97 + i)];
-
-		this.errorElem.innerText = "";
 
 		let pData = { code: codeText };
 		if (this.sampleRate != 8000)
