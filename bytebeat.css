@@ -46,12 +46,12 @@ body {
 	flex-wrap: wrap;
 	align-items: center;
 	column-gap: 1em;
+	font-size: 14px;
 
 	margin: 3px 0;
 }
 .controls button {
 	display: inline-block;
-	font-family: Courier, Sans, sans-serif;
 	margin-right: 3px;
 }
 .buttons-playback button {
@@ -141,10 +141,6 @@ code {
 }
 
 .code-load {
-	cursor: pointer;
-}
-
-#control-counter {
 	cursor: pointer;
 }
 

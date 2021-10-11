@@ -50,7 +50,7 @@ function Bytebeat() {
 		this.initAudioContext();
 
 		this.handleWindowResize(true);
-		document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this));
+		document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
 	}.bind(this));
 }
 Bytebeat.prototype = {
@@ -100,7 +100,7 @@ Bytebeat.prototype = {
 		let height = this.canvasElem.height;
 		let playDir = this.playSpeed > 0 ? 1 : -1;
 		let drawArea = playDir * buffer.length;
-		
+
 		let mod = (a, b) => ((a % b) + b) % b;
 		let drawX = (i = 0, j = 0) => mod(((this.byteSample + i) / (1 << this.drawScale)) + j, width);
 		let drawLen = (i = 0, j = 0) => i / (1 << this.drawScale) + j;
@@ -199,8 +199,8 @@ Bytebeat.prototype = {
 								this.audioAnimationFrame = window.requestAnimationFrame(function showRuntimeErr() {
 									this.errorElem.dataset.errType = "runtime";
 									this.errorElem.innerText = err.toString();
-									this.audioAnimationFrame = null
-								}.bind(this))
+									this.audioAnimationFrame = null;
+								}.bind(this));
 								this.lastByteValue = this.lastValue = funcValue = NaN;
 							}
 						}
