@@ -111,19 +111,29 @@ Bytebeat.prototype = {
 		else {
 			let startX = drawX();
 			let lenX = drawLen(drawArea);
-			let endX = startX + playDir * lenX;
+			let endX = startX + lenX;
+			let drawStartX = (this.playSpeed > 0 ? Math.ceil : Math.floor)(startX);
+			if (endX < 0 || endX >= width) {
+				let a = ()=>0;
+				a();
+			}
 			this.canvasCtx.clearRect(
-				(this.playSpeed > 0 ? Math.ceil : Math.floor)(startX),
+				drawStartX,
 				0,
-				(endX >= 0 && endX < width) ?
-					playDir * (Math.ceil(endX) - (this.playSpeed > 0 ? Math.ceil : Math.floor)(startX)) :
-					width - Math.floor(startX),
+				(endX >= 0) ?
+					(endX < width) ?
+						Math.ceil(endX) - drawStartX :
+						width - Math.floor(startX) :
+					-Math.floor(startX),
 				height
 			);
-			if (endX < 0 || endX >= width) {
-				let startX = this.playSpeed > 0 ? 0 : width;
-				this.canvasCtx.clearRect(startX, 0, Math.floor(mod(Math.ceil(endX), width)), height);
-			}
+			if (endX < 0 || endX >= width)
+				this.canvasCtx.clearRect(
+					this.playSpeed > 0 ? 0 : width,
+					0,
+					Math.floor(mod(Math.ceil(endX), width)),
+					height
+				);
 		}
 
 		// draw
