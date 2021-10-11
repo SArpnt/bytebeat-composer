@@ -127,13 +127,15 @@ Bytebeat.prototype = {
 					-Math.floor(startX),
 				height
 			);
-			if (endX < 0 || endX >= width)
+			if (endX < 0 || endX >= width) {
+				let drawStartX = this.playSpeed > 0 ? 0 : width;
 				this.canvasCtx.clearRect(
-					this.playSpeed > 0 ? 0 : width,
+					drawStartX,
 					0,
-					Math.floor(mod(Math.ceil(endX), width)),
+					Math.floor(mod(Math.ceil(endX), width)) - drawStartX,
 					height
 				);
+			}
 		}
 
 		// draw
