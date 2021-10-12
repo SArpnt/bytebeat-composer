@@ -18,6 +18,7 @@ function Bytebeat() {
 	this.drawBuffer = [];
 	this.lastValue = NaN;
 	this.lastByteValue = NaN;
+	this.lastFuncValue = null;
 	this.func = () => 0;
 	this.audioAnimationFrame = null;
 
@@ -207,20 +208,16 @@ Bytebeat.prototype = {
 				chData.fill(0);
 				return;
 			}
-			performance.clearMarks();
-			window.performance.mark("start stuff");
 			let time = this.sampleRatio * this.audioSample;
 			//let startFlooredTime = this.lastFlooredTime;
 			let byteSample = this.byteSample;
 			for (let i = 0; i < chDataLen; i++) {
-				window.performance.mark("startLoop");
 				time += this.sampleRatio;
 				let flooredTime = Math.floor(time);
 				if (this.lastFlooredTime != flooredTime) {
 					if (flooredTime % this.sampleRateDivisor == 0 || isNaN(this.lastValue)) { // TODO: proper sampleRateDivisor check for when skipping over values (check if range between lastFlooredTime and flooredTime contains correct value)
 						let roundSample = Math.floor(byteSample / this.sampleRateDivisor) * this.sampleRateDivisor;
 						let funcValue;
-						window.performance.mark("calcFuncValue");
 						try {
 							funcValue = this.func(roundSample);
 						} catch (err) {
@@ -233,33 +230,30 @@ Bytebeat.prototype = {
 								this.lastByteValue = this.lastValue = funcValue = NaN;
 							}
 						}
-						window.performance.mark("calculateValues");
-						if (!isNaN(funcValue)) {
-							if (this.mode == "Bytebeat") {
-								this.lastByteValue = funcValue & 255;
-								this.lastValue = this.lastByteValue / 127.5 - 1;
-							} else if (this.mode == "Signed Bytebeat") {
-								this.lastByteValue = (funcValue + 128) & 255;
-								this.lastValue = this.lastByteValue / 127.5 - 1;
-							} else if (this.mode == "Floatbeat") {
-								this.lastValue = funcValue;
-								this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
+						if (funcValue != this.lastFuncValue) {
+							if (!isNaN(funcValue)) {
+								if (this.mode == "Bytebeat") {
+									this.lastByteValue = funcValue & 255;
+									this.lastValue = this.lastByteValue / 127.5 - 1;
+								} else if (this.mode == "Signed Bytebeat") {
+									this.lastByteValue = (funcValue + 128) & 255;
+									this.lastValue = this.lastByteValue / 127.5 - 1;
+								} else if (this.mode == "Floatbeat") {
+									this.lastValue = funcValue;
+									this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
+								}
 							}
+							this.drawBuffer.push({ t: roundSample, value: this.lastByteValue });
 						}
-						window.performance.mark("startDrawBuffer");
-						this.drawBuffer.push({ t: roundSample, value: this.lastByteValue });
-						window.performance.mark("finishDrawBuffer");
 						byteSample += flooredTime - this.lastFlooredTime;
+						this.lastFuncValue = funcValue
 						this.lastFlooredTime = flooredTime;
 					}
 				}
 				chData[i] = this.lastValue;
-				window.performance.mark("endLoop");
 			}
 			this.audioSample += chDataLen;
-			window.performance.mark("start graphics");
 			this.drawGraphics();
-			window.performance.mark("finish graphics");
 			this.setByteSample(byteSample, false);
 		}.bind(this);
 		let audioGain = this.audioGain = this.audioCtx.createGain();
@@ -426,6 +420,7 @@ Bytebeat.prototype = {
 			this.lastFlooredTime = -1;
 			this.lastValue = NaN;
 			this.lastByteValue = NaN;
+			this.lastFuncValue = undefined;
 		}
 	},
 	setPlaySpeed(speed) {
