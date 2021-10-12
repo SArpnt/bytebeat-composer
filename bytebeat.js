@@ -314,7 +314,7 @@ Bytebeat.prototype = {
 		libraryEl.onclick = function loadLibrary(e) {
 			let el = e.target;
 			if (el.tagName === "CODE")
-				this.loadCode(Object.assign({ code: el.innerText }, JSON.parse(el.dataset.songdata)));
+				this.loadCode(Object.assign({ code: el.innerText }, el.hasAttribute("data-songdata") ? JSON.parse(el.dataset.songdata) : {}));
 			else if (el.classList.contains("code-load")) {
 				let xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = function () {
