@@ -109,43 +109,50 @@ Bytebeat.prototype = {
 			endTime = this.drawBuffer[bufferLen].t,
 			lenTime = endTime - startTime;
 
-		let mod = (a, b) => ((a % b) + b) % b;
-		let getXpos = t => t / (1 << this.drawScale);
-		let forwardCeil = (this.playSpeed > 0 ? Math.ceil : Math.floor);
-		let forwardFloor = (this.playSpeed > 0 ? Math.floor : Math.ceil);
+		const
+			fmod = (a, b) => ((a % b) + b) % b,
+			getXpos = t => t / (1 << this.drawScale),
+			roundForward = (this.playSpeed > 0 ? Math.ceil : Math.floor),
+			roundBackward = (this.playSpeed > 0 ? Math.floor : Math.ceil);
+
+		let startXPos = fmod(getXpos(startTime), width); // in canvas bounds
+		let endXPos = startXPos + getXpos(lenTime); // relative to startXPos, can be outside canvas bounds
 
 		// clear canvas
 		performance.mark('clear');
+		this.canvasCtx.fillStyle = `#${Math.floor(Math.random()*0xc0+0x40).toString(16).padStart(6,0)}`;
 		if (lenTime >> this.drawScale > width)
-			this.canvasCtx.clearRect(0, 0, width, height);
+			this.canvasCtx.fillRect(0, 0, width, height);
 		else {
-			let startX = mod(getXpos(startTime), width);
-			let endX = startX + getXpos(lenTime);
-			let drawStartX = forwardCeil(startX);
-			this.canvasCtx.clearRect(
-				drawStartX,
+			let clearStartX = roundForward(startXPos);
+			let clearEndX = roundForward(startXPos);
+			this.canvasCtx.fillRect(
+				clearStartX,
 				0,
-				(endX >= 0) ?
-					(endX < width) ?
-						Math.ceil(endX) - drawStartX :
-						width - Math.floor(startX) :
-					-Math.floor(startX),
+				(endXPos > 0) ? // if equal default to overflow, since it's faster to calculate
+					(endXPos < width) ?
+						roundForward(endXPos) - clearStartX :
+						width - clearStartX :
+					-clearStartX,
 				height
 			);
-			if (endX < 0 || endX >= width) {
+			if (endXPos < 0 || endXPos >= width) {
 				let drawStartX = this.playSpeed > 0 ? 0 : width;
-				this.canvasCtx.clearRect(
+				this.canvasCtx.fillRect(
 					drawStartX,
 					0,
-					Math.floor(mod(Math.ceil(endX), width)) - drawStartX,
+					fmod(roundForward(endXPos), width) - drawStartX,
 					height
 				);
 			}
 		}
 
+		// create imageData
+		//let drawStartX = Math.floor(startX);
+		//let drawEndX = Math.floor(endX) + 1;
+		performance.mark('createData');
+		/*let imageData = this.canvasCtx.createImageData(drawEndX - drawStartX, height);
 		// draw
-		performance.mark('getData');
-		let imageData = this.canvasCtx.getImageData(0, 0, width, height);
 		performance.mark('draw');
 		for (let i = 0; i < bufferLen; i++) {
 			if (isNaN(this.drawBuffer[i].value)) {
@@ -166,18 +173,19 @@ Bytebeat.prototype = {
 				}
 			}
 		}
+		// apply imageData
 		performance.mark('applyData');
-		this.canvasCtx.putImageData(imageData, 0, 0);
+		this.canvasCtx.putImageData(imageData, drawStartX, 0);*/
 
 		// cursor
 		performance.mark('cursor');
 		if (this.sampleRate >> this.drawScale < 3950) {
 			if (this.playSpeed > 0) {
-				this.timeCursor.style.left = Math.ceil(mod(getXpos(endTime), width)) / width * 100 + "%";
+				this.timeCursor.style.left = fmod(Math.ceil(getXpos(endTime)), width) / width * 100 + "%";
 				this.timeCursor.style.removeProperty("right");
 			} else {
 				this.timeCursor.style.removeProperty("left");
-				this.timeCursor.style.right = (1 - (Math.ceil(mod(getXpos(endTime), width)) + 1) / width) * 100 + "%";
+				this.timeCursor.style.right = (1 - (fmod(Math.ceil(getXpos(endTime)), width) + 1) / width) * 100 + "%";
 			}
 			this.timeCursor.style.display = "block";
 		} else
@@ -189,10 +197,10 @@ Bytebeat.prototype = {
 		performance.mark('finish');
 
 		performance.measure('init', 'init', 'clear');
-		performance.measure('clear', 'clear', 'getData');
-		performance.measure('getData', 'getData', 'draw');
-		performance.measure('draw', 'draw', 'applyData');
-		performance.measure('applyData', 'applyData', 'cursor');
+		performance.measure('clear', 'clear', 'createData');
+		//performance.measure('createData', 'createData', 'draw');
+		//performance.measure('draw', 'draw', 'applyData');
+		//performance.measure('applyData', 'applyData', 'cursor');
 		performance.measure('cursor', 'cursor', 'clearBuffer');
 		performance.measure('clearBuffer', 'clearBuffer', 'finish');
 		performance.measure('total', 'init', 'finish');
