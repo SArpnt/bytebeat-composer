@@ -13,4 +13,4 @@ all single letter variables are deleted when the bytebeat is input, so variables
 
 Longline Theory and Information Theory are played correctly since a signed bytebeat mode has been added
 
-i plan on adding an improved scope, time skipping, and many other quality of life features
+i plan on improving performance and adding many helpful features for developing and playing
