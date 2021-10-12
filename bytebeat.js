@@ -96,9 +96,19 @@ Bytebeat.prototype = {
 		this.canvasCtx.clearRect(0, 0, this.canvasElem.width, this.canvasElem.height);
 	},
 	drawGraphics() {
+		/**
+		 * performance.measure('init','init','clear')
+		 * performance.measure('clear','clear','getData')
+		 * performance.measure('getData','getData','draw')
+		 * performance.measure('draw','draw','applyData')
+		 * performance.measure('applyData','applyData','cursor')
+		 * performance.measure('cursor','cursor','clearBuffer')
+		 * performance.measure('clearBuffer','clearBuffer','finish')
+		 */
 		let bufferLen = this.drawBuffer.length - 1;
 		if (bufferLen < 1)
 			return;
+		performance.mark('init')
 		//let playDir = this.playSpeed > 0 ? 1 : -1;
 		let
 			width = this.canvasElem.width,
@@ -114,6 +124,7 @@ Bytebeat.prototype = {
 		let forwardFloor = (this.playSpeed > 0 ? Math.floor : Math.ceil);
 
 		// clear canvas
+		performance.mark('clear')
 		if (lenTime >> this.drawScale > width)
 			this.canvasCtx.clearRect(0, 0, width, height);
 		else {
@@ -142,7 +153,9 @@ Bytebeat.prototype = {
 		}
 
 		// draw
+		performance.mark('getData')
 		let imageData = this.canvasCtx.getImageData(0, 0, width, height);
+		performance.mark('draw')
 		for (let i = 0; i < bufferLen; i++) {
 			if (isNaN(this.drawBuffer[i].value)) {
 				let startX = Math.floor(getXpos(this.drawBuffer[i].t))
@@ -162,9 +175,11 @@ Bytebeat.prototype = {
 				}
 			}
 		}
+		performance.mark('applyData')
 		this.canvasCtx.putImageData(imageData, 0, 0);
 
 		// cursor
+		performance.mark('cursor')
 		if (this.sampleRate >> this.drawScale < 3950) {
 			if (this.playSpeed > 0) {
 				this.timeCursor.style.left = Math.ceil(mod(getXpos(endTime), width)) / width * 100 + "%";
@@ -178,7 +193,9 @@ Bytebeat.prototype = {
 			this.timeCursor.style.display = "none";
 
 		// clear buffer except last sample
+		performance.mark('clearBuffer')
 		this.drawBuffer = [this.drawBuffer[bufferLen]];
+		performance.mark('finish')
 	},
 	updateSampleRatio() {
 		if (this.audioCtx) {
