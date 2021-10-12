@@ -94,12 +94,14 @@ Bytebeat.prototype = {
 		this.canvasCtx.clearRect(0, 0, this.canvasElem.width, this.canvasElem.height);
 	},
 	drawGraphics(buffer) {
-		if (!buffer.length)
+		let bufferLen = buffer.length;
+		if (!bufferLen)
 			return;
+		buffer.push({ t: buffer.samples });
 		let width = this.canvasElem.width;
 		let height = this.canvasElem.height;
 		let playDir = this.playSpeed > 0 ? 1 : -1;
-		let drawArea = playDir * buffer.length;
+		let drawArea = playDir * buffer.samples;
 
 		let mod = (a, b) => ((a % b) + b) % b;
 		let drawX = (i = 0, j = 0) => mod(((this.byteSample + i) / (1 << this.drawScale)) + j, width);
@@ -114,7 +116,7 @@ Bytebeat.prototype = {
 			let endX = startX + lenX;
 			let drawStartX = (this.playSpeed > 0 ? Math.ceil : Math.floor)(startX);
 			if (endX < 0 || endX >= width) {
-				let a = ()=>0;
+				let a = () => 0;
 				a();
 			}
 			this.canvasCtx.clearRect(
@@ -140,17 +142,21 @@ Bytebeat.prototype = {
 
 		// draw
 		let imageData = this.canvasCtx.getImageData(0, 0, width, height);
-		for (let i = 0; i < buffer.length; i++) {
-			if (isNaN(buffer[i])) {
-				let xPos = drawX(playDir * i);
-				for (let h = 0; h < 256; h++) {
-					let pos = (width * h + xPos) << 2;
-					imageData.data[pos] = 128;
-					imageData.data[pos + 3] = 255;
+		for (let i = 0; i < bufferLen; i++) {
+			if (isNaN(buffer[i].value)) {
+				let endX = Math.ceil(drawX(playDir * (buffer[i + 1].t - this.byteSample))) % width;
+				for (let xPos = Math.floor(drawX(playDir * (buffer[i].t - this.byteSample))); xPos < endX; xPos = (xPos + 1) % width)
+					for (let h = 0; h < 256; h++) {
+						let pos = (width * h + xPos) << 2;
+						imageData.data[pos] = 128;
+						imageData.data[pos + 3] = 255;
+					}
+			} else if (buffer[i].value >= 0 && buffer[i].value < 256) {
+				let endX = Math.ceil(drawX(playDir * (buffer[i + 1].t - this.byteSample))) % width;
+				for (let xPos = Math.floor(drawX(playDir * (buffer[i].t - this.byteSample))); xPos != endX; xPos = (xPos + 1) % width) {
+					let pos = (width * (255 - buffer[i].value) + xPos) << 2;
+					imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos] = 255;
 				}
-			} else if (buffer[i] >= 0 && buffer[i] < 256) {
-				let pos = (width * (255 - buffer[i]) + drawX(playDir * i)) << 2;
-				imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos] = 255;
 			}
 		}
 		this.canvasCtx.putImageData(imageData, 0, 0);
@@ -189,21 +195,29 @@ Bytebeat.prototype = {
 		let processor = this.audioCtx.createScriptProcessor(this.bufferSize, 1, 1);
 		processor.onaudioprocess = function (e) {
 			let chData = e.outputBuffer.getChannelData(0);
-			if (!chData.length)
+			let chDataLen = chData.length; // for performance
+			if (!chDataLen)
 				return;
+			if (!this.isPlaying) {
+				chData.fill(0);
+				return;
+			}
+			performance.clearMarks();
+			window.performance.mark("start stuff");
 			let time = this.sampleRatio * this.audioSample;
-			let startFlooredTime = this.lastFlooredTime;
-			let drawBuffer = [];
+			//let startFlooredTime = this.lastFlooredTime;
+			let drawBuffer = []; // TODO: reduce samples added when using sampleRateDivisor
+			drawBuffer.samples = this.sampleRatio * chDataLen;
 			let byteSample = this.byteSample;
-			for (let i = 0; i < chData.length; i++) {
+			for (let i = 0; i < chDataLen; i++) {
+				window.performance.mark("startLoop");
 				time += this.sampleRatio;
 				let flooredTime = Math.floor(time);
-				if (!this.isPlaying)
-					this.lastValue = 0;
-				else if (this.lastFlooredTime != flooredTime) {
-					if (flooredTime % this.sampleRateDivisor == 0 || isNaN(this.lastValue)) {
+				if (this.lastFlooredTime != flooredTime) {
+					if (flooredTime % this.sampleRateDivisor == 0 || isNaN(this.lastValue)) { // TODO: proper sampleRateDivisor check for when skipping over values (check if range between lastFlooredTime and flooredTime contains correct value)
 						let roundSample = Math.floor(byteSample / this.sampleRateDivisor) * this.sampleRateDivisor;
 						let funcValue;
+						window.performance.mark("calcFuncValue");
 						try {
 							funcValue = this.func(roundSample);
 						} catch (err) {
@@ -216,6 +230,7 @@ Bytebeat.prototype = {
 								this.lastByteValue = this.lastValue = funcValue = NaN;
 							}
 						}
+						window.performance.mark("calculateValues");
 						if (!isNaN(funcValue)) {
 							if (this.mode == "Bytebeat") {
 								this.lastByteValue = funcValue & 255;
@@ -228,17 +243,21 @@ Bytebeat.prototype = {
 								this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
 							}
 						}
+						window.performance.mark("startDrawBuffer");
+						drawBuffer.push({ t: flooredTime, value: this.lastByteValue });
+						window.performance.mark("finishDrawBuffer");
+						byteSample += flooredTime - this.lastFlooredTime;
+						this.lastFlooredTime = flooredTime;
 					}
-					drawBuffer.length = Math.abs(flooredTime - startFlooredTime); // TODO: reduce samples added when using sampleRateDivisor
-					drawBuffer.fill(this.lastByteValue, Math.abs(this.lastFlooredTime - startFlooredTime));
-					byteSample += flooredTime - this.lastFlooredTime;
-					this.lastFlooredTime = flooredTime;
 				}
 				chData[i] = this.lastValue;
+				window.performance.mark("endLoop");
 			}
 			if (this.isPlaying) {
-				this.audioSample += chData.length;
+				this.audioSample += chDataLen;
+				window.performance.mark("start graphics");
 				this.drawGraphics(drawBuffer);
+				window.performance.mark("finish graphics");
 				this.setByteSample(byteSample, false);
 			}
 		}.bind(this);
