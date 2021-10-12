@@ -15,6 +15,7 @@ function Bytebeat() {
 	this.audioSample = 0;
 	this.lastFlooredTime = -1;
 	this.byteSample = 0;
+	this.drawBuffer = [];
 	this.lastValue = NaN;
 	this.lastByteValue = NaN;
 	this.func = () => 0;
@@ -93,32 +94,31 @@ Bytebeat.prototype = {
 	clearCanvas() {
 		this.canvasCtx.clearRect(0, 0, this.canvasElem.width, this.canvasElem.height);
 	},
-	drawGraphics(buffer) {
-		let bufferLen = buffer.length;
-		if (!bufferLen)
+	drawGraphics() {
+		let bufferLen = this.drawBuffer.length - 1;
+		if (bufferLen < 1)
 			return;
-		buffer.push({ t: buffer.samples });
-		let width = this.canvasElem.width;
-		let height = this.canvasElem.height;
-		let playDir = this.playSpeed > 0 ? 1 : -1;
-		let drawArea = playDir * buffer.samples;
+		//let playDir = this.playSpeed > 0 ? 1 : -1;
+		let
+			width = this.canvasElem.width,
+			height = this.canvasElem.height;
+		let
+			startTime = this.drawBuffer[0].t,
+			endTime = this.drawBuffer[bufferLen].t,
+			lenTime = endTime - startTime;
 
 		let mod = (a, b) => ((a % b) + b) % b;
-		let drawX = (i = 0, j = 0) => mod(((this.byteSample + i) / (1 << this.drawScale)) + j, width);
-		let drawLen = (i = 0, j = 0) => i / (1 << this.drawScale) + j;
+		let getXpos = t => t / (1 << this.drawScale);
+		let forwardCeil = (this.playSpeed > 0 ? Math.ceil : Math.floor);
+		let forwardFloor = (this.playSpeed > 0 ? Math.floor : Math.ceil);
 
 		// clear canvas
-		if (drawArea >> this.drawScale > width)
+		if (lenTime >> this.drawScale > width)
 			this.canvasCtx.clearRect(0, 0, width, height);
 		else {
-			let startX = drawX();
-			let lenX = drawLen(drawArea);
-			let endX = startX + lenX;
-			let drawStartX = (this.playSpeed > 0 ? Math.ceil : Math.floor)(startX);
-			if (endX < 0 || endX >= width) {
-				let a = () => 0;
-				a();
-			}
+			let startX = mod(getXpos(startTime), width);
+			let endX = startX + getXpos(lenTime);
+			let drawStartX = forwardCeil(startX);
 			this.canvasCtx.clearRect(
 				drawStartX,
 				0,
@@ -143,18 +143,20 @@ Bytebeat.prototype = {
 		// draw
 		let imageData = this.canvasCtx.getImageData(0, 0, width, height);
 		for (let i = 0; i < bufferLen; i++) {
-			if (isNaN(buffer[i].value)) {
-				let endX = Math.ceil(drawX(playDir * (buffer[i + 1].t - this.byteSample))) % width;
-				for (let xPos = Math.floor(drawX(playDir * (buffer[i].t - this.byteSample))); xPos < endX; xPos = (xPos + 1) % width)
+			if (isNaN(this.drawBuffer[i].value)) {
+				let startX = Math.floor(getXpos(this.drawBuffer[i].t))
+				let endX = mod(Math.floor(getXpos(this.drawBuffer[i + 1].t) + 1), width);
+				for (let xPos = mod(startX, width); xPos < endX; xPos = mod(xPos + 1, width))
 					for (let h = 0; h < 256; h++) {
 						let pos = (width * h + xPos) << 2;
 						imageData.data[pos] = 128;
 						imageData.data[pos + 3] = 255;
 					}
-			} else if (buffer[i].value >= 0 && buffer[i].value < 256) {
-				let endX = Math.ceil(drawX(playDir * (buffer[i + 1].t - this.byteSample))) % width;
-				for (let xPos = Math.floor(drawX(playDir * (buffer[i].t - this.byteSample))); xPos != endX; xPos = (xPos + 1) % width) {
-					let pos = (width * (255 - buffer[i].value) + xPos) << 2;
+			} else if (this.drawBuffer[i].value >= 0 && this.drawBuffer[i].value < 256) {
+				let startX = Math.floor(getXpos(this.drawBuffer[i].t))
+				let endX = mod(Math.floor(getXpos(this.drawBuffer[i + 1].t) + 1), width);
+				for (let xPos = mod(startX, width); xPos != endX; xPos = mod(xPos + 1, width)) {
+					let pos = (width * (255 - this.drawBuffer[i].value) + xPos) << 2;
 					imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos] = 255;
 				}
 			}
@@ -164,15 +166,18 @@ Bytebeat.prototype = {
 		// cursor
 		if (this.sampleRate >> this.drawScale < 3950) {
 			if (this.playSpeed > 0) {
-				this.timeCursor.style.left = Math.ceil(drawX(drawArea)) / width * 100 + "%";
+				this.timeCursor.style.left = Math.ceil(mod(getXpos(endTime), width)) / width * 100 + "%";
 				this.timeCursor.style.removeProperty("right");
 			} else {
 				this.timeCursor.style.removeProperty("left");
-				this.timeCursor.style.right = (1 - Math.ceil(drawX(drawArea, 1)) / width) * 100 + "%";
+				this.timeCursor.style.right = (1 - (Math.ceil(mod(getXpos(endTime), width)) + 1) / width) * 100 + "%";
 			}
 			this.timeCursor.style.display = "block";
 		} else
 			this.timeCursor.style.display = "none";
+
+		// clear buffer except last sample
+		this.drawBuffer = [this.drawBuffer[bufferLen]];
 	},
 	updateSampleRatio() {
 		if (this.audioCtx) {
@@ -206,8 +211,6 @@ Bytebeat.prototype = {
 			window.performance.mark("start stuff");
 			let time = this.sampleRatio * this.audioSample;
 			//let startFlooredTime = this.lastFlooredTime;
-			let drawBuffer = []; // TODO: reduce samples added when using sampleRateDivisor
-			drawBuffer.samples = this.sampleRatio * chDataLen;
 			let byteSample = this.byteSample;
 			for (let i = 0; i < chDataLen; i++) {
 				window.performance.mark("startLoop");
@@ -244,7 +247,7 @@ Bytebeat.prototype = {
 							}
 						}
 						window.performance.mark("startDrawBuffer");
-						drawBuffer.push({ t: flooredTime, value: this.lastByteValue });
+						this.drawBuffer.push({ t: roundSample, value: this.lastByteValue });
 						window.performance.mark("finishDrawBuffer");
 						byteSample += flooredTime - this.lastFlooredTime;
 						this.lastFlooredTime = flooredTime;
@@ -253,13 +256,11 @@ Bytebeat.prototype = {
 				chData[i] = this.lastValue;
 				window.performance.mark("endLoop");
 			}
-			if (this.isPlaying) {
-				this.audioSample += chDataLen;
-				window.performance.mark("start graphics");
-				this.drawGraphics(drawBuffer);
-				window.performance.mark("finish graphics");
-				this.setByteSample(byteSample, false);
-			}
+			this.audioSample += chDataLen;
+			window.performance.mark("start graphics");
+			this.drawGraphics();
+			window.performance.mark("finish graphics");
+			this.setByteSample(byteSample, false);
 		}.bind(this);
 		let audioGain = this.audioGain = this.audioCtx.createGain();
 		this.changeVolume(this.controlVolume);
@@ -416,10 +417,11 @@ Bytebeat.prototype = {
 		if (!this.isPlaying)
 			this.canvasTogglePlay.classList.add("canvas-toggleplay-show");
 	},
-	setByteSample(value, resetAudio = true) {
+	setByteSample(value, jump = true) {
 		this.controlCounter.placeholder = value;
 		this.byteSample = value;
-		if (resetAudio) {
+		if (jump) {
+			this.drawBuffer = [];
 			this.audioSample = 0;
 			this.lastFlooredTime = -1;
 			this.lastValue = NaN;
