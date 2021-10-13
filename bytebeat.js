@@ -16,6 +16,7 @@ function Bytebeat() {
 	this.lastFlooredTime = -1;
 	this.byteSample = 0;
 	this.drawBuffer = [];
+	this.drawImageData = null;
 	this.lastValue = NaN;
 	this.lastByteValue = NaN;
 	this.lastFuncValue = null;
@@ -99,6 +100,7 @@ Bytebeat.prototype = {
 		let bufferLen = this.drawBuffer.length;
 		if (!bufferLen)
 			return;
+		performance.mark('start');
 
 		let
 			width = this.canvasElem.width,
@@ -112,36 +114,9 @@ Bytebeat.prototype = {
 			getXpos = t => t / (1 << this.drawScale),
 			playingForward = this.playSpeed > 0;
 
-		let startXPos = fmod(getXpos(startTime), width); // in canvas bounds
-		let endXPos = startXPos + getXpos(lenTime); // relative to startXPos, can be outside canvas bounds
-
-		// clear canvas
-		if (lenTime >> this.drawScale > width)
-			this.canvasCtx.fillRect(0, 0, width, height);
-		else {
-			const roundForward = (playingForward ? Math.ceil : Math.floor);
-			let clearStartX = roundForward(startXPos);
-			let clearEndX = roundForward(endXPos);
-			this.canvasCtx.fillRect(
-				clearStartX,
-				0,
-				(clearEndX > 0) ? // if equal default to overflow, since it's faster to calculate
-					(clearEndX < width) ?
-						clearEndX - clearStartX :
-						width - clearStartX :
-					-clearStartX,
-				height
-			);
-			if (clearEndX < 0 || clearEndX >= width) {
-				let drawStartX = playingForward ? 0 : width;
-				this.canvasCtx.fillRect(
-					drawStartX,
-					0,
-					fmod(clearEndX, width) - drawStartX,
-					height
-				);
-			}
-		}
+		let
+			startXPos = fmod(getXpos(startTime), width), // in canvas bounds
+			endXPos = startXPos + getXpos(lenTime); // relative to startXPos, can be outside canvas bounds
 
 		{
 			let drawStartX = Math.floor(startXPos);
@@ -149,9 +124,12 @@ Bytebeat.prototype = {
 			let drawLenX = Math.abs(drawEndX - drawStartX) + 1;
 			let imagePos = Math.min(drawStartX, drawEndX);
 			// create imageData
-			let dataCanvas = new OffscreenCanvas(drawLenX, height); // TODO: store column of imageData instead of relying on transparency
-			let dataContext = dataCanvas.getContext('2d');
-			let imageData = dataContext.createImageData(drawLenX, height);
+			let imageData = this.canvasCtx.createImageData(drawLenX, height);
+			// fill with transparent black
+			for (let x = 0; x < drawLenX; x++)
+				for (let y = 0; y < height; y++) {
+					imageData.data[((drawLenX * y + x) << 2) + 3] = 255;
+				}
 			// draw
 			const iterateOverLine = (function iterateOverLine(bufferElem, nextBufferElemTime, callback) {
 				let startX = fmod(Math.floor(getXpos(playingForward ? bufferElem.t : nextBufferElemTime + 1)) - imagePos, width);
@@ -180,12 +158,11 @@ Bytebeat.prototype = {
 				}
 			}
 			// put imageData
-			dataContext.putImageData(imageData, 0, 0);
-			this.canvasCtx.drawImage(dataCanvas, imagePos, 0);
+			this.canvasCtx.putImageData(imageData, imagePos, 0);
 			if (endXPos >= width)
-				this.canvasCtx.drawImage(dataCanvas, imagePos - width, 0);
+				this.canvasCtx.putImageData(imageData, imagePos - width, 0);
 			else if (endXPos < 0)
-				this.canvasCtx.drawImage(dataCanvas, imagePos + width, 0);
+				this.canvasCtx.putImageData(imageData, imagePos + width, 0);
 		}
 
 		// cursor
@@ -199,6 +176,8 @@ Bytebeat.prototype = {
 
 		// clear buffer except last sample
 		this.drawBuffer = [{ t: endTime, value: this.drawBuffer[bufferLen - 1].value }];
+		performance.mark('end');
+		performance.measure('graphics', 'start', 'end');
 	},
 	updateSampleRatio() {
 		if (this.audioCtx) {
