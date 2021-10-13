@@ -15,16 +15,19 @@ function Bytebeat() {
 	this.audioSample = 0;
 	this.lastFlooredTime = -1;
 	this.byteSample = 0;
-	this.drawBuffer = [];
-	this.drawImageData = null;
 	this.lastValue = NaN;
 	this.lastByteValue = NaN;
 	this.lastFuncValue = null;
 	this.func = () => 0;
-	this.audioAnimationFrame = null;
+
+	this.nextErrType = null;
+	this.nextErr = null;
+	this.errorPriority = -Infinity;
 
 	this.canvasCtx = null;
 	this.drawScale = 5;
+	this.drawBuffer = [];
+	this.drawImageData = null;
 
 	this.isPlaying = false;
 	this.isRecording = false;
@@ -42,6 +45,8 @@ function Bytebeat() {
 	this.errorElem = null;
 
 	document.addEventListener("DOMContentLoaded", function () {
+		this.animationFrame = this.animationFrame.bind(this)
+
 		this.contFixedElem = $q(".container-fixed");
 		this.contScrollElem = $q(".container-scroll");
 
@@ -154,7 +159,7 @@ Bytebeat.prototype = {
 				let bufferElem = this.drawBuffer[i];
 				let nextBufferElemTime = this.drawBuffer[i + 1]?.t || endTime;
 				if (isNaN(bufferElem.value)) {
-					iterateOverLine(xPos => {
+					iterateOverLine(bufferElem, nextBufferElemTime, xPos => {
 						for (let h = 0; h < 256; h++) {
 							let pos = (drawLenX * h + xPos) << 2;
 							imageData.data[pos] = 128;
@@ -238,14 +243,9 @@ Bytebeat.prototype = {
 						try {
 							funcValue = this.func(roundSample);
 						} catch (err) {
-							if (!this.audioAnimationFrame) {
-								this.audioAnimationFrame = window.requestAnimationFrame(function showRuntimeErr() {
-									this.errorElem.dataset.errType = "runtime";
-									this.errorElem.innerText = err.toString();
-									this.audioAnimationFrame = null;
-								}.bind(this));
-								this.lastByteValue = this.lastValue = funcValue = NaN;
-							}
+							this.nextErrType = "runtime";
+							this.nextErr = err;
+							this.lastByteValue = this.lastValue = funcValue = NaN;
 						}
 						if (funcValue != this.lastFuncValue) {
 							if (!isNaN(funcValue)) {
@@ -271,7 +271,6 @@ Bytebeat.prototype = {
 			}
 			this.audioSample += chDataLen;
 			this.setByteSample(byteSample, false);
-			this.drawGraphics(byteSample);
 		}.bind(this);
 		let audioGain = this.audioGain = this.audioCtx.createGain();
 		this.changeVolume(this.controlVolume);
@@ -296,6 +295,19 @@ Bytebeat.prototype = {
 			this.saveData(new Blob(this.recChunks, { type }), file);
 		}.bind(this);
 		audioGain.connect(mediaDest);
+	},
+	hideErrorMessage() {
+		if (this.errorElem) {
+			this.errorElem.innerText = "";
+			this.errorPriority = -Infinity;
+		}
+	},
+	showErrorMessage(errType, err, priority = 0) {
+		if (this.errorElem && priority > this.errorPriority) {
+			this.errorElem.dataset.errType = errType;
+			this.errorElem.innerText = err.toString();
+			this.errorPriority = priority;
+		}
 	},
 	initCodeInput() {
 		this.errorElem = $id("error");
@@ -393,19 +405,16 @@ Bytebeat.prototype = {
 		values.push(Math.floor);
 
 		try {
-			this.errorElem.dataset.errType = "compile";
+			this.nextErrType = "compile";
 			this.func = new Function(...params, "t", `return ${codeText.trim()}\n;`).bind(window, ...values);
-			this.errorElem.dataset.errType = "runtime";
+			this.nextErrType = "runtime";
 			this.func(0);
 		} catch (err) {
 			this.func = oldFunc;
-			this.errorElem.innerText = err.toString();
+			this.showErrorMessage(this.nextErrType, err, 1);
 			return;
 		}
-		cancelAnimationFrame(this.audioAnimationFrame);
-		this.audioAnimationFrame = null;
-		if (this.errorElem)
-			this.errorElem.innerText = "";
+		this.hideErrorMessage();
 
 		// delete single letter variables to prevent persistent variable errors (covers a good enough range)
 		for (i = 0; i < 26; i++)
@@ -473,18 +482,23 @@ Bytebeat.prototype = {
 		if (isPlay) {
 			// Play
 			this.canvasTogglePlay.classList.remove("canvas-toggleplay-show");
-			if (this.audioCtx.resume)
+			if (this.audioCtx?.resume)
 				this.audioCtx.resume();
-			if (!this.isPlaying)
-				this.isPlaying = true;
-			return;
+			window.requestAnimationFrame(this.animationFrame);
+		} else {
+			if (this.isRecording) {
+				this.audioRecorder.stop();
+				this.isRecording = false;
+			}
 		}
-		// Stop
-		if (this.isRecording) {
-			this.audioRecorder.stop();
-			this.isRecording = false;
-		}
-		this.isPlaying = false;
+		this.isPlaying = isPlay;
+	},
+	animationFrame() {
+		this.drawGraphics(this.byteSample);
+		if (this.nextErr)
+			this.showErrorMessage(this.nextErrType, this.nextErr);
+
+		window.requestAnimationFrame(this.animationFrame);
 	}
 };
 
