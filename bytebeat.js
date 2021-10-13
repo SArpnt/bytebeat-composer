@@ -235,37 +235,35 @@ Bytebeat.prototype = {
 			let byteSample = this.byteSample;
 			for (let i = 0; i < chDataLen; i++) {
 				time += this.sampleRatio;
-				let flooredTime = Math.floor(time);
+				let flooredTime = Math.floor(time / this.sampleRateDivisor) * this.sampleRateDivisor;
 				if (this.lastFlooredTime != flooredTime) {
-					if (flooredTime % this.sampleRateDivisor == 0 || isNaN(this.lastValue)) { // TODO: proper sampleRateDivisor check for when skipping over values (check if range between lastFlooredTime and flooredTime contains correct value)
-						let roundSample = Math.floor(byteSample / this.sampleRateDivisor) * this.sampleRateDivisor;
-						let funcValue;
-						try {
-							funcValue = this.func(roundSample);
-						} catch (err) {
-							this.nextErrType = "runtime";
-							this.nextErr = err;
-							this.lastByteValue = this.lastValue = funcValue = NaN;
-						}
-						if (funcValue != this.lastFuncValue) {
-							if (!isNaN(funcValue)) {
-								if (this.mode == "Bytebeat") {
-									this.lastByteValue = funcValue & 255;
-									this.lastValue = this.lastByteValue / 127.5 - 1;
-								} else if (this.mode == "Signed Bytebeat") {
-									this.lastByteValue = (funcValue + 128) & 255;
-									this.lastValue = this.lastByteValue / 127.5 - 1;
-								} else if (this.mode == "Floatbeat") {
-									this.lastValue = funcValue;
-									this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
-								}
-							}
-							this.drawBuffer.push({ t: roundSample, value: this.lastByteValue });
-						}
-						byteSample += flooredTime - this.lastFlooredTime;
-						this.lastFuncValue = funcValue;
-						this.lastFlooredTime = flooredTime;
+					let roundSample = Math.floor(byteSample / this.sampleRateDivisor) * this.sampleRateDivisor;
+					let funcValue;
+					try {
+						funcValue = this.func(roundSample);
+					} catch (err) {
+						this.nextErrType = "runtime";
+						this.nextErr = err;
+						this.lastByteValue = this.lastValue = funcValue = NaN;
 					}
+					if (funcValue != this.lastFuncValue) {
+						if (!isNaN(funcValue)) {
+							if (this.mode == "Bytebeat") {
+								this.lastByteValue = funcValue & 255;
+								this.lastValue = this.lastByteValue / 127.5 - 1;
+							} else if (this.mode == "Signed Bytebeat") {
+								this.lastByteValue = (funcValue + 128) & 255;
+								this.lastValue = this.lastByteValue / 127.5 - 1;
+							} else if (this.mode == "Floatbeat") {
+								this.lastValue = funcValue;
+								this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
+							}
+						}
+						this.drawBuffer.push({ t: roundSample, value: this.lastByteValue });
+					}
+					byteSample += flooredTime - this.lastFlooredTime;
+					this.lastFuncValue = funcValue;
+					this.lastFlooredTime = flooredTime;
 				}
 				chData[i] = this.lastValue;
 			}
