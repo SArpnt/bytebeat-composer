@@ -299,6 +299,9 @@ Bytebeat.prototype = {
 	hideErrorMessage() {
 		if (this.errorElem) {
 			this.errorElem.innerText = "";
+
+			this.nextErr = null;
+			this.nextErrType = null;
 			this.errorPriority = -Infinity;
 		}
 	},
@@ -306,23 +309,26 @@ Bytebeat.prototype = {
 		if (this.errorElem && priority > this.errorPriority) {
 			this.errorElem.dataset.errType = errType;
 			this.errorElem.innerText = err.toString();
+
+			this.nextErr = null;
+			this.nextErrType = null;
 			this.errorPriority = priority;
 		}
 	},
 	initCodeInput() {
 		this.errorElem = $id("error");
 		this.inputElem = $id("input-code");
-		this.inputElem.addEventListener("onchange", this.refreshCalc.bind(this));
-		this.inputElem.addEventListener("onkeyup", this.refreshCalc.bind(this));
 		this.inputElem.addEventListener("input", this.refreshCalc.bind(this));
-		this.inputElem.addEventListener("keydown", function (e) {
+		this.inputElem.addEventListener("keydown", (function (e) {
 			if (e.keyCode === 9 /* TAB */ && !e.shiftKey) {
 				e.preventDefault();
 				let el = e.target;
-				el.value = `${el.value.slice(0, el.selectionStart)}\t${el.value.slice(el.selectionEnd)}`;
-				el.setSelectionRange(el.selectionStart + 1, el.selectionStart + 1);
+				let selectionStart = el.selectionStart
+				el.value = `${el.value.slice(0, selectionStart)}\t${el.value.slice(el.selectionEnd)}`;
+				el.setSelectionRange(selectionStart + 1, selectionStart + 1);
+				this.refreshCalc();
 			}
-		});
+		}).bind(this));
 		if (window.location.hash.indexOf("#b64") === 0) {
 			this.inputElem.value = pako.inflateRaw(
 				atob(decodeURIComponent(window.location.hash.substr(4))), { to: "string" }
@@ -379,8 +385,8 @@ Bytebeat.prototype = {
 		this.inputElem.value = code;
 		this.applySampleRate(+sampleRate || 8000);
 		this.applyMode(mode || "Bytebeat");
+		this.refreshCalc();
 		if (start) {
-			this.refreshCalc();
 			this.resetTime();
 			this.togglePlay(true);
 		}
@@ -404,6 +410,7 @@ Bytebeat.prototype = {
 		params.push("int");
 		values.push(Math.floor);
 
+		// test bytebeat
 		try {
 			this.nextErrType = "compile";
 			this.func = new Function(...params, "t", `return ${codeText.trim()}\n;`).bind(window, ...values);
@@ -420,6 +427,7 @@ Bytebeat.prototype = {
 		for (i = 0; i < 26; i++)
 			delete window[String.fromCharCode(65 + i)], window[String.fromCharCode(97 + i)];
 
+		// generate url
 		let pData = { code: codeText };
 		if (this.sampleRate != 8000)
 			pData.sampleRate = this.sampleRate;
