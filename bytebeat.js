@@ -100,7 +100,6 @@ Bytebeat.prototype = {
 		if (!bufferLen)
 			return;
 		performance.mark('init');
-		//let playDir = this.playSpeed > 0 ? 1 : -1;
 		let
 			width = this.canvasElem.width,
 			height = this.canvasElem.height;
@@ -110,9 +109,8 @@ Bytebeat.prototype = {
 
 		const
 			fmod = (a, b) => ((a % b) + b) % b,
-			getXpos = t => t / (1 << this.drawScale),
-			roundForward = (this.playSpeed > 0 ? Math.ceil : Math.floor);
-		//roundBackward = (this.playSpeed > 0 ? Math.floor : Math.ceil);
+			getXpos = t => t / (1 << this.drawScale);
+			playingForward = this.playSpeed > 0;
 
 		let startXPos = fmod(getXpos(startTime), width); // in canvas bounds
 		let endXPos = startXPos + getXpos(lenTime); // relative to startXPos, can be outside canvas bounds
@@ -122,6 +120,7 @@ Bytebeat.prototype = {
 		if (lenTime >> this.drawScale > width)
 			this.canvasCtx.fillRect(0, 0, width, height);
 		else {
+			const roundForward = (playingForward ? Math.ceil : Math.floor);
 			let clearStartX = roundForward(startXPos);
 			let clearEndX = roundForward(endXPos);
 			this.canvasCtx.fillRect(
@@ -135,7 +134,7 @@ Bytebeat.prototype = {
 				height
 			);
 			if (clearEndX < 0 || clearEndX >= width) {
-				let drawStartX = this.playSpeed > 0 ? 0 : width;
+				let drawStartX = playingForward ? 0 : width;
 				this.canvasCtx.fillRect(
 					drawStartX,
 					0,
@@ -156,21 +155,19 @@ Bytebeat.prototype = {
 			let dataContext = dataCanvas.getContext('2d');
 			let imageData = dataContext.createImageData(drawLenX, height);
 			// draw
+			performance.mark('draw');
 			const iterateOverLine = (function iterateOverLine(bufferElem, nextBufferElemTime, callback) {
-				let startX = fmod(Math.floor(getXpos(bufferElem.t) - imagePos), width);
-				let endX = fmod(Math.floor(getXpos(nextBufferElemTime) - imagePos + 1), width);
-				if (startX != endX && (this.playSpeed > 0) != (startX < endX))
-					debugger;
+				let startX = fmod(Math.floor(getXpos(playingForward ? bufferElem.t : nextBufferElemTime + 1)) - imagePos, width);
+				let endX = fmod(Math.ceil(getXpos(playingForward ? nextBufferElemTime : bufferElem.t + 1)) - imagePos, width);
 				for (let xPos = startX; xPos != endX; xPos = fmod(xPos + 1, width))
 					callback(xPos);
-				this.canvasCtx.drawImage(dataCanvas, imagePos, 0);
 			}).bind(this);
-			performance.mark('draw');
+
 			for (let i = 0; i < bufferLen; i++) {
 				let bufferElem = this.drawBuffer[i];
 				let nextBufferElemTime = this.drawBuffer[i + 1]?.t || endTime;
 				if (isNaN(bufferElem.value)) {
-					iterateOverLine(xPos => {
+					iterateOverLine(xPos => {z
 						for (let h = 0; h < 256; h++) {
 							let pos = (drawLenX * h + xPos) << 2;
 							imageData.data[pos] = 128;
@@ -197,7 +194,7 @@ Bytebeat.prototype = {
 		// cursor
 		performance.mark('cursor');
 		if (this.sampleRate >> this.drawScale < 3950) {
-			if (this.playSpeed > 0)
+			if (playingForward)
 				this.timeCursor.style.cssText = `display: block; left: ${fmod(Math.ceil(getXpos(endTime)), width) / width * 100}%;`;
 			else
 				this.timeCursor.style.cssText = `display: block; right: ${(1 - (fmod(Math.ceil(getXpos(endTime)), width) + 1) / width) * 100}%;`;
