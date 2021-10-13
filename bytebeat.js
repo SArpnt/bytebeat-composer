@@ -320,7 +320,7 @@ Bytebeat.prototype = {
 		this.inputElem = $id("input-code");
 		this.inputElem.addEventListener("input", this.refreshCalc.bind(this));
 		this.inputElem.addEventListener("keydown", (function (e) {
-			if (e.keyCode === 9 /* TAB */ && !e.shiftKey) {
+			if (e.keyCode === 9 /* TAB */ && !e.shiftKey && !e.altKey && !e.ctrlKey) {
 				e.preventDefault();
 				let el = e.target;
 				let selectionStart = el.selectionStart
