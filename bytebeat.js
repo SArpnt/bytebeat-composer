@@ -130,16 +130,19 @@ Bytebeat.prototype = {
 				for (let y = 0; y < height; y++)
 					imageData.data[((drawLenX * y + x) << 2) + 3] = 255;
 			// create / add drawimageData
-			if (this.drawImageData) {
-				let x = playingForward ? 0 : drawLenX - 1;
-				for (let y = 0; y < height; y++) {
-					imageData.data[(drawLenX * y + x) << 2] = this.drawImageData.data[y << 2];
-					imageData.data[((drawLenX * y + x) << 2) + 1] = this.drawImageData.data[(y << 2) + 1];
-					imageData.data[((drawLenX * y + x) << 2) + 2] = this.drawImageData.data[(y << 2) + 2];
-					imageData.data[((drawLenX * y + x) << 2) + 3] = this.drawImageData.data[(y << 2) + 3];
-				}
+			if (this.drawScale) { // full zoom can't have multiple samples on one pixel
+				if (this.drawImageData) {
+					let x = playingForward ? 0 : drawLenX - 1;
+					for (let y = 0; y < height; y++) {
+						imageData.data[(drawLenX * y + x) << 2] = this.drawImageData.data[y << 2];
+						imageData.data[((drawLenX * y + x) << 2) + 1] = this.drawImageData.data[(y << 2) + 1];
+						imageData.data[((drawLenX * y + x) << 2) + 2] = this.drawImageData.data[(y << 2) + 2];
+						imageData.data[((drawLenX * y + x) << 2) + 3] = this.drawImageData.data[(y << 2) + 3];
+					}
+				} else
+					this.drawImageData = this.canvasCtx.createImageData(1, height);
 			} else
-				this.drawImageData = this.canvasCtx.createImageData(1, height);
+				this.drawImageData = null;
 			// draw
 			const iterateOverLine = (function iterateOverLine(bufferElem, nextBufferElemTime, callback) {
 				let startX = fmod(Math.floor(getXpos(playingForward ? bufferElem.t : nextBufferElemTime + 1)) - imagePos, width);
@@ -173,7 +176,7 @@ Bytebeat.prototype = {
 			else if (endXPos < 0)
 				this.canvasCtx.putImageData(imageData, imagePos + width, 0);
 			// write to drawImageData
-			{
+			if (this.drawScale) { // full zoom can't have multiple samples on one pixel
 				let x = playingForward ? drawLenX - 1 : 0;
 				for (let y = 0; y < height; y++) {
 					this.drawImageData.data[y << 2] = imageData.data[(drawLenX * y + x) << 2];
