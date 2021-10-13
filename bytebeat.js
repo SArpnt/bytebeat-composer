@@ -125,11 +125,21 @@ Bytebeat.prototype = {
 			let imagePos = Math.min(drawStartX, drawEndX);
 			// create imageData
 			let imageData = this.canvasCtx.createImageData(drawLenX, height);
-			// fill with transparent black
-			for (let x = 0; x < drawLenX; x++)
-				for (let y = 0; y < height; y++) {
+			// fill with black
+			for (let x = !!(this.drawImageData); x < drawLenX; x++)
+				for (let y = 0; y < height; y++)
 					imageData.data[((drawLenX * y + x) << 2) + 3] = 255;
+			// create / add drawimageData
+			if (this.drawImageData) {
+				let x = playingForward ? 0 : drawLenX - 1;
+				for (let y = 0; y < height; y++) {
+					imageData.data[(drawLenX * y + x) << 2] = this.drawImageData.data[y << 2];
+					imageData.data[((drawLenX * y + x) << 2) + 1] = this.drawImageData.data[(y << 2) + 1];
+					imageData.data[((drawLenX * y + x) << 2) + 2] = this.drawImageData.data[(y << 2) + 2];
+					imageData.data[((drawLenX * y + x) << 2) + 3] = this.drawImageData.data[(y << 2) + 3];
 				}
+			} else
+				this.drawImageData = this.canvasCtx.createImageData(1, height);
 			// draw
 			const iterateOverLine = (function iterateOverLine(bufferElem, nextBufferElemTime, callback) {
 				let startX = fmod(Math.floor(getXpos(playingForward ? bufferElem.t : nextBufferElemTime + 1)) - imagePos, width);
@@ -143,7 +153,6 @@ Bytebeat.prototype = {
 				let nextBufferElemTime = this.drawBuffer[i + 1]?.t || endTime;
 				if (isNaN(bufferElem.value)) {
 					iterateOverLine(xPos => {
-						z;
 						for (let h = 0; h < 256; h++) {
 							let pos = (drawLenX * h + xPos) << 2;
 							imageData.data[pos] = 128;
@@ -163,6 +172,16 @@ Bytebeat.prototype = {
 				this.canvasCtx.putImageData(imageData, imagePos - width, 0);
 			else if (endXPos < 0)
 				this.canvasCtx.putImageData(imageData, imagePos + width, 0);
+			// write to drawImageData
+			{
+				let x = playingForward ? drawLenX - 1 : 0;
+				for (let y = 0; y < height; y++) {
+					this.drawImageData.data[y << 2] = imageData.data[(drawLenX * y + x) << 2];
+					this.drawImageData.data[(y << 2) + 1] = imageData.data[((drawLenX * y + x) << 2) + 1];
+					this.drawImageData.data[(y << 2) + 2] = imageData.data[((drawLenX * y + x) << 2) + 2];
+					this.drawImageData.data[(y << 2) + 3] = imageData.data[((drawLenX * y + x) << 2) + 3];
+				}
+			}
 		}
 
 		// cursor
@@ -414,6 +433,7 @@ Bytebeat.prototype = {
 		this.byteSample = value;
 		if (jump) {
 			this.drawBuffer = [];
+			this.drawImageData = null;
 			this.audioSample = 0;
 			this.lastFlooredTime = -1;
 			this.lastValue = NaN;
