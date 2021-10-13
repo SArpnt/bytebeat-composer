@@ -100,7 +100,6 @@ Bytebeat.prototype = {
 		let bufferLen = this.drawBuffer.length;
 		if (!bufferLen)
 			return;
-		performance.mark('start');
 
 		let
 			width = this.canvasElem.width,
@@ -198,8 +197,6 @@ Bytebeat.prototype = {
 
 		// clear buffer except last sample
 		this.drawBuffer = [{ t: endTime, value: this.drawBuffer[bufferLen - 1].value }];
-		performance.mark('end');
-		performance.measure('graphics', 'start', 'end');
 	},
 	updateSampleRatio() {
 		if (this.audioCtx) {
