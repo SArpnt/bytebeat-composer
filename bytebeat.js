@@ -129,10 +129,6 @@ Bytebeat.prototype = {
 			let imagePos = Math.min(drawStartX, drawEndX);
 			// create imageData
 			let imageData = this.canvasCtx.createImageData(drawLenX, height);
-			// fill with black
-			for (let x = !!(this.drawImageData); x < drawLenX; x++)
-				for (let y = 0; y < height; y++)
-					imageData.data[((drawLenX * y + x) << 2) + 3] = 255;
 			// create / add drawimageData
 			if (this.drawScale) { // full zoom can't have multiple samples on one pixel
 				if (this.drawImageData) {
@@ -141,12 +137,15 @@ Bytebeat.prototype = {
 						imageData.data[(drawLenX * y + x) << 2] = this.drawImageData.data[y << 2];
 						imageData.data[((drawLenX * y + x) << 2) + 1] = this.drawImageData.data[(y << 2) + 1];
 						imageData.data[((drawLenX * y + x) << 2) + 2] = this.drawImageData.data[(y << 2) + 2];
-						imageData.data[((drawLenX * y + x) << 2) + 3] = this.drawImageData.data[(y << 2) + 3];
 					}
 				} else
 					this.drawImageData = this.canvasCtx.createImageData(1, height);
 			} else
 				this.drawImageData = null;
+			// set alpha
+			for (let x = 0; x < drawLenX; x++)
+				for (let y = 0; y < height; y++)
+					imageData.data[((drawLenX * y + x) << 2) + 3] = 255;
 			// draw
 			const iterateOverLine = (function iterateOverLine(bufferElem, nextBufferElemTime, callback) {
 				let startX = fmod(Math.floor(getXpos(playingForward ? bufferElem.t : nextBufferElemTime + 1)) - imagePos, width);
@@ -169,7 +168,7 @@ Bytebeat.prototype = {
 				} else if (bufferElem.value >= 0 && bufferElem.value < 256) {
 					iterateOverLine(bufferElem, nextBufferElemTime, xPos => {
 						let pos = (drawLenX * (255 - bufferElem.value) + xPos) << 2;
-						imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos] = 255;
+						imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos] = 255;
 					});
 				}
 			}
@@ -186,7 +185,6 @@ Bytebeat.prototype = {
 					this.drawImageData.data[y << 2] = imageData.data[(drawLenX * y + x) << 2];
 					this.drawImageData.data[(y << 2) + 1] = imageData.data[((drawLenX * y + x) << 2) + 1];
 					this.drawImageData.data[(y << 2) + 2] = imageData.data[((drawLenX * y + x) << 2) + 2];
-					this.drawImageData.data[(y << 2) + 3] = imageData.data[((drawLenX * y + x) << 2) + 3];
 				}
 			}
 		}
