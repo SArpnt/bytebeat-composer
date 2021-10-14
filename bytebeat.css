@@ -38,6 +38,7 @@ body {
 	overflow-y: auto;
 	word-wrap: break-word;
 	outline: none;
+	resize: vertical;
 }
 
 .controls {

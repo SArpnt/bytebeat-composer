@@ -10,7 +10,7 @@ function Bytebeat() {
 	this.audioGain = null;
 	this.audioRecorder = null;
 	this.recChunks = [];
-	this.bufferSize = 2048;
+	this.bufferSize = 0;
 
 	this.audioSample = 0;
 	this.lastFlooredTime = -1;
