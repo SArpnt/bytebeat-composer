@@ -10,7 +10,7 @@ class Bytebeat {
 		this.audioCtx = null;
 		this.audioGain = null;
 		this.audioRecorder = null;
-		this.recChunks = [];
+		this.recordChunks = [];
 		this.bufferSize = 0;
 
 		this.audioSample = 0;
@@ -58,53 +58,52 @@ class Bytebeat {
 	}
 
 	get saveData() {
-		let a = document.createElement("a");
+		const a = document.createElement("a");
 		document.body.appendChild(a);
 		a.style.display = "none";
-		let fn = function fn(blob, fileName) {
+		const saveDataInternal = function saveDataInternal(blob, fileName) {
 			url = URL.createObjectURL(blob);
 			a.href = url;
 			a.download = fileName;
 			a.click();
 			setTimeout(() => window.URL.revokeObjectURL(url));
 		};
-		Object.defineProperty(this, "saveData", { value: fn });
-		return fn;
+		Object.defineProperty(this, "saveData", { value: saveDataInternal });
+		return saveDataInternal;
 	}
 	applySampleRate(rate) {
 		this.setSampleRate(rate);
 		document.getElementById("control-samplerate").value = rate;
 	}
 	applyMode(mode) {
-		this.mode = mode;
-		document.getElementById("control-mode").value = mode;
+		this.mode = document.getElementById("control-mode").value = mode;
 	}
 	changeScale(amount) {
 		if (amount) {
 			this.drawScale = Math.max(this.drawScale + amount, 0);
 			this.clearCanvas();
-			if (this.drawScale === 0)
+			if (this.drawScale <= 0)
 				this.controlScaleDown.setAttribute("disabled", true);
 			else
 				this.controlScaleDown.removeAttribute("disabled");
 		}
 	}
 	changeVolume(el) {
-		let fraction = parseInt(el.value) / parseInt(el.max);
+		const fraction = parseInt(el.value) / parseInt(el.max);
 		this.audioGain.gain.value = fraction * fraction;
 	}
 	clearCanvas() {
 		this.canvasCtx.fillRect(0, 0, this.canvasElem.width, this.canvasElem.height);
 	}
 	drawGraphics(endTime) {
-		let bufferLen = this.drawBuffer.length;
+		const bufferLen = this.drawBuffer.length;
 		if (!bufferLen)
 			return;
 
-		let
+		const
 			width = this.canvasElem.width,
 			height = this.canvasElem.height;
-		let
+		const
 			startTime = this.drawBuffer[0].t,
 			lenTime = endTime - startTime;
 
@@ -113,15 +112,15 @@ class Bytebeat {
 			getXpos = t => t / (1 << this.drawScale),
 			playingForward = this.playSpeed > 0;
 
-		let
+		const
 			startXPos = fmod(getXpos(startTime), width), // in canvas bounds
 			endXPos = startXPos + getXpos(lenTime); // relative to startXPos, can be outside canvas bounds
 
 		{
-			let drawStartX = Math.floor(startXPos);
-			let drawEndX = Math.floor(endXPos);
-			let drawLenX = Math.abs(drawEndX - drawStartX) + 1;
-			let imagePos = Math.min(drawStartX, drawEndX);
+			const drawStartX = Math.floor(startXPos);
+			const drawEndX = Math.floor(endXPos);
+			const drawLenX = Math.abs(drawEndX - drawStartX) + 1;
+			const imagePos = Math.min(drawStartX, drawEndX);
 			// create imageData
 			let imageData = this.canvasCtx.createImageData(drawLenX, height);
 			// create / add drawimageData
@@ -143,8 +142,8 @@ class Bytebeat {
 					imageData.data[((drawLenX * y + x) << 2) + 3] = 255;
 			// draw
 			const iterateOverLine = (function iterateOverLine(bufferElem, nextBufferElemTime, callback) {
-				let startX = fmod(Math.floor(getXpos(playingForward ? bufferElem.t : nextBufferElemTime + 1)) - imagePos, width);
-				let endX = fmod(Math.ceil(getXpos(playingForward ? nextBufferElemTime : bufferElem.t + 1)) - imagePos, width);
+				const startX = fmod(Math.floor(getXpos(playingForward ? bufferElem.t : nextBufferElemTime + 1)) - imagePos, width);
+				const endX = fmod(Math.ceil(getXpos(playingForward ? nextBufferElemTime : bufferElem.t + 1)) - imagePos, width);
 				for (let xPos = startX; xPos != endX; xPos = fmod(xPos + 1, width))
 					callback(xPos);
 			}).bind(this);
@@ -155,14 +154,14 @@ class Bytebeat {
 				if (isNaN(bufferElem.value)) {
 					iterateOverLine(bufferElem, nextBufferElemTime, xPos => {
 						for (let h = 0; h < 256; h++) {
-							let pos = (drawLenX * h + xPos) << 2;
+							const pos = (drawLenX * h + xPos) << 2;
 							imageData.data[pos] = 128;
 							imageData.data[pos + 3] = 255;
 						}
 					});
 				} else if (bufferElem.value >= 0 && bufferElem.value < 256) {
 					iterateOverLine(bufferElem, nextBufferElemTime, xPos => {
-						let pos = (drawLenX * (255 - bufferElem.value) + xPos) << 2;
+						const pos = (drawLenX * (255 - bufferElem.value) + xPos) << 2;
 						imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos] = 255;
 					});
 				}
@@ -175,7 +174,7 @@ class Bytebeat {
 				this.canvasCtx.putImageData(imageData, imagePos + width, 0);
 			// write to drawImageData
 			if (this.drawScale) { // full zoom can't have multiple samples on one pixel
-				let x = playingForward ? drawLenX - 1 : 0;
+				const x = playingForward ? drawLenX - 1 : 0;
 				for (let y = 0; y < height; y++) {
 					this.drawImageData.data[y << 2] = imageData.data[(drawLenX * y + x) << 2];
 					this.drawImageData.data[(y << 2) + 1] = imageData.data[((drawLenX * y + x) << 2) + 1];
@@ -214,10 +213,10 @@ class Bytebeat {
 		if (!this.audioCtx.createScriptProcessor)
 			this.audioCtx.createScriptProcessor = this.audioCtx.createJavaScriptNode;
 		this.updateSampleRatio();
-		let processor = this.audioCtx.createScriptProcessor(this.bufferSize, 1, 1);
-		processor.onaudioprocess = function (e) {
-			let chData = e.outputBuffer.getChannelData(0);
-			let chDataLen = chData.length; // for performance
+		const processor = this.audioCtx.createScriptProcessor(this.bufferSize, 1, 1);
+		processor.onaudioprocess = function audioProcess(e) {
+			const chData = e.outputBuffer.getChannelData(0);
+			const chDataLen = chData.length; // for performance
 			if (!chDataLen)
 				return;
 			if (!this.isPlaying) {
@@ -228,9 +227,9 @@ class Bytebeat {
 			let byteSample = this.byteSample;
 			for (let i = 0; i < chDataLen; i++) {
 				time += this.sampleRatio;
-				let flooredTime = Math.floor(time / this.sampleRateDivisor) * this.sampleRateDivisor;
+				const flooredTime = Math.floor(time / this.sampleRateDivisor) * this.sampleRateDivisor;
 				if (this.lastFlooredTime != flooredTime) {
-					let roundSample = Math.floor(byteSample / this.sampleRateDivisor) * this.sampleRateDivisor;
+					const roundSample = Math.floor(byteSample / this.sampleRateDivisor) * this.sampleRateDivisor;
 					let funcValue;
 					try {
 						funcValue = this.func(roundSample);
@@ -263,27 +262,27 @@ class Bytebeat {
 			this.audioSample += chDataLen;
 			this.setByteSample(byteSample, false);
 		}.bind(this);
-		let audioGain = this.audioGain = this.audioCtx.createGain();
+		const audioGain = this.audioGain = this.audioCtx.createGain();
 		this.changeVolume(this.controlVolume);
 		processor.connect(audioGain);
 		audioGain.connect(this.audioCtx.destination);
 
-		let mediaDest = this.audioCtx.createMediaStreamDestination();
-		let audioRecorder = this.audioRecorder = new MediaRecorder(mediaDest.stream);
+		const mediaDest = this.audioCtx.createMediaStreamDestination();
+		const audioRecorder = this.audioRecorder = new MediaRecorder(mediaDest.stream);
 		audioRecorder.ondataavailable = function (e) {
-			this.recChunks.push(e.data);
+			this.recordChunks.push(e.data);
 		}.bind(this);
 		audioRecorder.onstop = function (e) {
 			let file, type;
-			let types = ["audio/webm", "audio/ogg"];
-			let files = ["track.webm", "track.ogg"];
+			const types = ["audio/webm", "audio/ogg"];
+			const files = ["track.webm", "track.ogg"];
 			while ((file = files.pop()) && !MediaRecorder.isTypeSupported(type = types.pop())) {
 				if (types.length === 0) {
 					console.error("Saving not supported in this browser!");
 					break;
 				}
 			}
-			this.saveData(new Blob(this.recChunks, { type }), file);
+			this.saveData(new Blob(this.recordChunks, { type }), file);
 		}.bind(this);
 		audioGain.connect(mediaDest);
 	}
@@ -320,7 +319,7 @@ class Bytebeat {
 				this.refreshCalc();
 			}
 		}).bind(this));
-		if (window.location.hash.indexOf("#b64") === 0) {
+		if (window.location.hash.indexOf("#b64") === 0) { // TODO: remove any unneccecary loading features
 			this.inputElem.value = pako.inflateRaw(
 				atob(decodeURIComponent(window.location.hash.substr(4))), { to: "string" }
 			) + ";";
@@ -351,13 +350,13 @@ class Bytebeat {
 	initLibrary() {
 		for (let el of document.getElementsByClassName("toggle"))
 			el.onclick = () => $toggle(el.nextElementSibling);
-		let libraryEl = document.getElementById("library");
-		libraryEl.onclick = function loadLibrary(e) {
-			let el = e.target;
+		const libraryElem = document.getElementById("library");
+		libraryElem.onclick = function loadLibrary(e) {
+			const el = e.target;
 			if (el.tagName === "CODE")
 				this.loadCode(Object.assign({ code: el.innerText }, el.hasAttribute("data-songdata") ? JSON.parse(el.dataset.songdata) : {}));
 			else if (el.classList.contains("code-load")) {
-				let xhr = new XMLHttpRequest();
+				const xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = function () {
 					if (xhr.readyState === 4 && xhr.status === 200)
 						this.loadCode(Object.assign(JSON.parse(el.dataset.songdata), { code: xhr.responseText }));
@@ -367,8 +366,8 @@ class Bytebeat {
 				xhr.send(null);
 			}
 		}.bind(this);
-		libraryEl.onmouseover = function (e) {
-			let el = e.target;
+		libraryElem.onmouseover = function (e) {
+			const el = e.target;
 			if (el.tagName === "CODE")
 				el.title = "Click to play this code";
 		};
@@ -387,18 +386,18 @@ class Bytebeat {
 		if (this.audioCtx && !this.isRecording) {
 			this.audioRecorder.start();
 			this.isRecording = true;
-			this.recChunks = [];
+			this.recordChunks = [];
 			if (!this.isPlaying)
 				this.togglePlay(true);
 		}
 	}
 	refreshCalc() {
-		let oldFunc = this.func;
-		let codeText = this.inputElem.value;
+		const oldFunc = this.func;
+		const codeText = this.inputElem.value;
 
 		// create shortened functions
-		let params = Object.getOwnPropertyNames(Math);
-		let values = params.map(k => Math[k]);
+		const params = Object.getOwnPropertyNames(Math);
+		const values = params.map(k => Math[k]);
 		params.push("int");
 		values.push(Math.floor);
 
