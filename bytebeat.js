@@ -40,16 +40,11 @@ class Bytebeat {
 		this.sampleRatio = 1;
 
 		this.canvasElem = null;
-		this.contFixedElem = null;
-		this.contScrollElem = null;
 		this.inputElem = null;
 		this.errorElem = null;
 
 		document.addEventListener("DOMContentLoaded", function () {
 			this.animationFrame = this.animationFrame.bind(this);
-
-			this.contFixedElem = $q(".container-fixed");
-			this.contScrollElem = $q(".container-scroll");
 
 			this.initLibrary();
 			this.initCodeInput();
@@ -79,11 +74,11 @@ class Bytebeat {
 	}
 	applySampleRate(rate) {
 		this.setSampleRate(rate);
-		$id("samplerate-change").value = rate;
+		document.getElementById("samplerate-change").value = rate;
 	}
 	applyMode(mode) {
 		this.mode = mode;
-		$id("mode-change").value = mode;
+		document.getElementById("mode-change").value = mode;
 	}
 	changeScale(amount) {
 		if (amount) {
@@ -313,8 +308,8 @@ class Bytebeat {
 		}
 	}
 	initCodeInput() {
-		this.errorElem = $id("error");
-		this.inputElem = $id("input-code");
+		this.errorElem = document.getElementById("error");
+		this.inputElem = document.getElementById("input-code");
 		this.inputElem.addEventListener("input", this.refreshCalc.bind(this));
 		this.inputElem.addEventListener("keydown", (function (e) {
 			if (e.keyCode === 9 /* TAB */ && !e.shiftKey && !e.altKey && !e.ctrlKey) {
@@ -343,20 +338,21 @@ class Bytebeat {
 		}
 	}
 	initCanvas() {
-		this.timeCursor = $id("canvas-timecursor");
-		this.canvasElem = $id("canvas-main");
+		this.timeCursor = document.getElementById("canvas-timecursor");
+		this.canvasElem = document.getElementById("canvas-main");
 		this.canvasCtx = this.canvasElem.getContext("2d", { alpha: false });
 	}
 	initControls() {
-		this.canvasTogglePlay = $id("canvas-toggleplay");
-		this.controlScaleUp = $id("control-scaleup");
-		this.controlScaleDown = $id("control-scaledown");
-		this.controlCounter = $id("control-counter-value");
-		this.controlVolume = $id("control-volume");
+		this.canvasTogglePlay = document.getElementById("canvas-toggleplay");
+		this.controlScaleUp = document.getElementById("control-scaleup");
+		this.controlScaleDown = document.getElementById("control-scaledown");
+		this.controlCounter = document.getElementById("control-counter-value");
+		this.controlVolume = document.getElementById("control-volume");
 	}
 	initLibrary() {
-		$Q(".toggle").forEach(el => (el.onclick = () => $toggle(el.nextElementSibling)));
-		let libraryEl = $q(".container-scroll");
+		for (let el of document.getElementsByClassName("toggle"))
+			el.onclick = () => $toggle(el.nextElementSibling);
+		let libraryEl = document.getElementById("library");
 		libraryEl.onclick = function loadLibrary(e) {
 			let el = e.target;
 			if (el.tagName === "CODE")
@@ -475,7 +471,7 @@ class Bytebeat {
 			newWidth = 512;
 		if (newWidth != this.canvasElem.width || force) {
 			this.canvasElem.width = newWidth;
-			$q(".content").style.maxWidth = (newWidth + 4) + "px";
+			document.getElementById("content").style.maxWidth = (newWidth + 4) + "px";
 		}
 	}
 	togglePlay(isPlay) {

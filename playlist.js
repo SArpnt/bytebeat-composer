@@ -117,7 +117,7 @@
 			let entry = parseEntry(playlist[i]);
 			playlistElem.append(createEntryElem(entry));
 		}
-		$id(`library-${id}`).append(playlistElem);
+		document.getElementById(`library-${id}`).append(playlistElem);
 	}
 
 	document.addEventListener("DOMContentLoaded", function () {
