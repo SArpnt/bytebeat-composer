@@ -319,11 +319,7 @@ class Bytebeat {
 				this.refreshCalc();
 			}
 		}).bind(this));
-		if (window.location.hash.indexOf("#b64") === 0) { // TODO: remove any unneccecary loading features
-			this.inputElem.value = pako.inflateRaw(
-				atob(decodeURIComponent(window.location.hash.substr(4))), { to: "string" }
-			) + ";";
-		} else if (window.location.hash.indexOf("#v3b64") === 0) {
+		if (window.location.hash.indexOf("#v3b64") === 0) { // TODO: remove any unneccecary loading features
 			let pData = pako.inflateRaw(
 				atob(decodeURIComponent(window.location.hash.substr(6))), { to: "string" }
 			);
