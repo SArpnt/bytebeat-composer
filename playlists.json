@@ -229,8 +229,7 @@
 			"url": "https://youtu.be/GtQdIYUtAHg?t=2m55s",
 			"code": "((-t&4095)*(255&t*(t&t>>13))>>12)+(127&t*(234&t>>8&t>>3)>>(3&t>>14))"
 		}, {
-			"description": "8-bit Atari inspired sounds",
-			"description2": "simplified version",
+			"description": "8-bit Atari inspired sounds (simplified version)",
 			"author": "Visy",
 			"url": "http://www.pouet.net/topic.php?which=8357&page=13#c389250",
 			"code": "t%25+(t>>2|15*t)+t>>3"
@@ -392,14 +391,14 @@
 			"codeFile": "Savestate - Earl Grey Groove.js",
 			"starred": 2
 		}, {
+			"starred": 2,
 			"children": [{
 				"description": "Longline Theory",
 				"author": "mu6k",
 				"mode": "Signed Bytebeat",
 				"url": "http://www.pouet.net/topic.php?which=8357&page=13#c389287",
 				"code": "((sb=t>0xffff)&0)+max(min(((y=pow(2,[15,15,23,8][t>>14&3]/12))&0)+(((y*t*0.241)&127-64)+((y*t*0.25)&127-64))*1.2+(((a=1-(t&0x7ff)/0x7ff)&0)+(((5*t&0x7ff)*a)&255-127)*((0x53232323>>(t>>11&31))&1)*a*1.0+(((d=(14*t*t^t)&0x7ff)*a)&255-128)*((0xa444c444>>(t>>11&31))&1)*a*1.5+((a*a*d*(t>>9&1)&0xff-0x80)*0.1337))*sb+((g=(t&0x7ff)/0x7ff)&0)+((g=1-(g*g))&0)+((h=pow(2,([[15,18,17,17,17,17,999,999,22,22,999,18,999,15,20,22],[20,18,17,17,10,10,999,999,20,22,20,18,17,18,17,10]][((t>>14&3)>2)&1][t>>10&15])/12))&0)+(((h*t&31)+(h*t*1.992&31)+(h*t*.497&31)+(h*t*0.977&31)-64))*g*2.0*sb,127),-128)",
-				"codeFile": "mu6k - Longline Theory.js",
-				"starred": 2
+				"codeFile": "mu6k - Longline Theory.js"
 			}, {
 				"description": "300b Information Theory",
 				"author": "Ryg, Las, Decipher, P01",
@@ -430,13 +429,13 @@
 			"description": "Constructivist",
 			"author": "A1k0n",
 			"url": "https://news.ycombinator.com/item?id=3064980",
-			"code": "SS=function(s,o,r,p){var c=s.charCodeAt((t>>r)%p);return c==95?0:31&t*pow(2,c/12-o)},3*SS(\"0_0_____7_7_____037:<<\",6,10,32)+5*(t&4096?SS(\"037\",4,8,3)*(4096-(t&4095))>>12:0)",
+			"code": "SS=function(s,o,r,p){var c=s.charCodeAt((t>>r)%p);return c==32?0:31&t*Math.pow(2,c/12-o)},SS(\"0 0     7 7     037:<<\",6,10,32) + (t&4096?SS(\"037\",4,8,3)*(4096-(t&4095))>>12 : 0)",
 			"starred": 2
 		}, {
 			"description": "I could not explain this to the IT dept",
 			"author": "radian",
 			"url": "https://battleofthebits.org/arena/Entry/I+could+not+explain+this+to+the+IT+dept./17673/",
-			"code": "S=function(c,o,r,p){var c=c.charCodeAt((t>>r)%p);return c==32?0:31&t*pow(2,c/12-o)},C=function(){if(t%8)return t&8096?S(\"047\",4,8,3)*(4096-(t&4095))>>12:0;return t&8096?S(\"259049\",4,8,6)*(4096-(t&4095))>>13:0},S(\"20-0-0-034-4-0-047-259:<<\",7,10,32)+C()+(t&4096?S(\"047\",3,8,3)*(4096-(t&4095))>>12:0)+(t&4096?S(\"0407\",5,16,4)*(4096-(t&4095))>>12:0)+(800/(t&16383)&2)*35",
+			"code": "S=function(c,o,r,p){  var c=c.charCodeAt((t>>r)%p);return c==32?0:31&t*Math.pow(2,c/12-o)},C=function(){if (t%8){return (t&8096?S(\"047\",4,8,3)*(4096-(t&4095))>>12 : 0);}return (t&8096?S(\"259049\",4,8,6)*(4096-(t&4095))>>13 : 0);},S(\"20 0 0 034 4 0 047 259:<<\",7,10,32)+C()+(t&4096?S(\"047\",3,8,3)*(4096-(t&4095))>>12 : 0) +(t&4096?S(\"0407\",5,16,4)*(4096-(t&4095))>>12 : 0) +(((800/(t&16383))&2)*35)",
 			"starred": 1
 		}, {
 			"author": "mu6k",
@@ -638,8 +637,7 @@
 			"codeFile": "beep-eep - __ws2.model.js",
 			"starred": 1
 		}, {
-			"description": "511 - remix of 'arpeggiator fun'",
-			"description2": "<a href=\"https://odysee.com/@johanv:5/511:6\">video with info</a>",
+			"description": "511 - remix of 'arpeggiator fun' (<a href=\"https://odysee.com/@johanv:5/511:6\">video with info</a>)",
 			"author": [
 				["johanvandegriff", "https://www.reddit.com/r/bytebeat/comments/o7e957/511/"],
 				["SArpnt", "https://www.reddit.com/r/bytebeat/comments/fjsa1y/arpeggiator_fun/"]],
@@ -695,18 +693,22 @@
 			"description": "Cool waveform i guess",
 			"author": "1583736",
 			"url": "https://www.reddit.com/r/bytebeat/comments/ntpnza/cool_waveform_i_guess/",
-
 			"children": [{
 				"sampleRate": "32000",
 				"code": "t=(6*(t-((t>>10&4|t>>13&3)|(t>>17&6|t>>14&4))*t/((t>>16&7)+4))),Math.pow(Math.abs(1-Math.abs(0.5+cos(t/64.25))**0.3)+Math.abs(0.35-Math.abs(5.5+cos(t/64.5))**0.5),1-Math.abs(1-Math.abs(0.5-sin(t/63.75))**0.5+1-Math.abs(2.1-Math.abs(2.3-sin(t/96))**0.75)))*80+15"
 			}, {
-					"sampleRate": "32000",
-					"code": "t=3*(t-(t>>10&4|t>>13&3|t>>17&6|t>>14&4)*t/((t>>16&7)+4)),128*pow(abs(1-pow(abs(.5+cos(t/64.25)),.3)),1-abs(1-pow(abs(.5-sin(t/63.75)),.5)))+32"
+				"sampleRate": "32000",
+				"code": "t=3*(t-(t>>10&4|t>>13&3|t>>17&6|t>>14&4)*t/((t>>16&7)+4)),128*pow(abs(1-pow(abs(.5+cos(t/64.25)),.3)),1-abs(1-pow(abs(.5-sin(t/63.75)),.5)))+32"
 			}]
 		}, {
 			"author": "neverforgettoleave",
 			"children": [{
 				"description": "simple step sequencer",
+				"url": "https://www.reddit.com/r/bytebeat/comments/jmbsoh/simple_step_sequencer/",
+				"sampleRate": "44100",
+				"code": "speed=2,length=256,(t*Math.pow(1.0594630943592953,[0,,0,,12,,0,,0,,17,,0,,0,,14,,0,,0,,10,,0,,0,,12,,0,,0,,0,,15,12,7,3,0,,0,,14,12,7,3,0,,0,,12,7,3,0,-12,,0,,15,12,7,3,-4,,-4,,12,,-4,,-4,,15,,-4,,-4,,14,,-4,,-4,,10,,-4,,-4,,12,,-4,,-4,,-4,,12,,-4,,-4,,15,,-4,,-4,,14,,-4,,-4,,10,,-4,,-4,,12,,-4,,-16,,-16,,12,,-16,,-16,,12,,-16,,-17,,14,,-16,,-16,,10,,-16,,-16,,12,,-16,,-16,,-4,,15,12,7,3,-16,,-16,,14,12,7,3,-4,,-4,,12,7,3,-16,-12,,-16,,15,12,7,3,-19,,-19,,12,,-19,,-19,,15,,-19,,-19,,14,,-19,,-19,,10,,-19,,-19,,12,,-19,,-19,,-19,,12,,-19,,-19,,15,,-19,,-19,,14,,-19,,-19,,10,,-19,,-19,,12,,-19,,][int(t*speed/4096)%length])-1)|t>>5"
+			}, {
+				"description": "techno synth",
 				"url": "https://www.reddit.com/r/bytebeat/comments/jmaz4f/techno_synth/",
 				"sampleRate": "44100",
 				"code": "t*pow(1.0594630943592953,[0,3,7,12,19,12,7,3,-12,7,12,15,0,7,12,14,-4,3,12,15,20,24,27,19,-12,7,12,15,0,7,12,14][floor(t/4096)%32])"
@@ -765,7 +767,7 @@
 				"code": "i=t&8191,(((t*((t>>9^((t>>9)-1)^1)%13)&255)/2)+((((t>>3|t<<(t>>12&2))*(i<4096)+(t>>4|t*(t^t+t/256))*(i>4095)))&255)/2)*(2+(t>>16))",
 				"starred": 1
 			}, {
-				"description": "Crude Sinevawe Dubstep",
+				"description": "Crude Sinewave Dubstep",
 				"sampleRate": "44100",
 				"code": "d=(t*(t&t>>12)*8/11025)|0,((d&16)/8-1)*(d*(d^15)+d+127)",
 				"starred": 1
@@ -848,7 +850,6 @@
 				"starred": 2
 			}, {
 				"description": "Spring Fever",
-				"description2": "Warning! Very demanding on the hardware!",
 				"url": "https://battleofthebits.org/arena/Entry/Spring+Fever/21648/",
 				"sampleRate": "22050",
 				"codeFile": "Jimmyoshi - Spring Fever.js",
@@ -864,19 +865,11 @@
 				"starred": 2
 			}, {
 				"description": "frequency machine",
-				"description2": "Freezes in Chrome! Please set a lower sample rate.",
 				"url": "https://battleofthebits.org/arena/Entry/frequency+machine/32329/",
 				"sampleRate": "22050",
 				"codeFile": "funute - frequency machine.js",
 				"starred": 2
 			}]
-		}, {
-			"description": "Bit-Shift Melodies",
-			"author": "Savestate",
-			"url": "https://battleofthebits.org/arena/Entry/Bit-Shift+Melodies/17525/",
-			"sampleRate": "44100",
-			"codeFile": "Savestate - Bit-Shift Melodies.js",
-			"starred": 2
 		}, {
 			"author": "Bp103",
 			"children": [{
@@ -920,6 +913,13 @@
 				"starred": 2
 			}]
 		}, {
+			"description": "Bit-Shift Melodies",
+			"author": "Savestate",
+			"url": "https://battleofthebits.org/arena/Entry/Bit-Shift+Melodies/17525/",
+			"sampleRate": "44100",
+			"codeFile": "Savestate - Bit-Shift Melodies.js",
+			"starred": 2
+		}, {
 			"description": "Impromptu (Diatom)",
 			"author": "Radnyx",
 			"url": "https://battleofthebits.org/arena/Entry/Impromptu+%28Diatom%29/34240/",
@@ -962,7 +962,7 @@
 	],
 	"sthephanshi": [
 		{
-			"description": "Explosive beat<br>- Formulas family discovered by experimenting with \"Explosions\" [<code>(t>>2)*(t>>5)|t>>5</code>]",
+			"description": "\"Explosive beat\". Formulas family discovered by experimenting with \"Explosions\" [<code>(t>>2)*(t>>5)|t>>5</code>]",
 			"children": [{
 				"code": "(t>>4)*(t>>3)|t>>2"
 			}, {
@@ -981,9 +981,9 @@
 				"code": "(t>>5)*(t>>5)|t>>2"
 			}]
 		}, {
-			"description": "Robocop<br>- Cool beat discovered by experimenting with [<code>(t>>2)*(t&16)|t>>2</code>]",
+			"description": "\"Robocop\". Cool beat discovered by experimenting with [<code>(t>>2)*(t&16)|t>>2</code>]",
 			"children": [{
-				"description": "\"Robocop\". Very cool sound with biting blows",
+				"description": "Very cool sound with biting blows",
 				"code": "(t>>2)*(t&(t&32768?16:24)|t>>(t>>8&28))|t>>2",
 				"starred": 1
 			}, {
@@ -994,14 +994,14 @@
 				"code": "(t>>2)*(t&(t&32768?16:24)|t>>(t>>8&24))|t>>3"
 			}]
 		}, {
-			"description": "Trance beat<br>- Experiments with t>>N and ternary operations",
+			"description": "\"Trance beat\". Experiments with t>>N and ternary operations",
 			"children": [{
 				"code": "t>>(t%16?4:6)|t>>(t%128?10:4)"
 			}, {
 				"code": "t>>(t%32?4:3)|(t%128?t>>3:t>>3|t>>9)"
 			}]
 		}, {
-			"description": "Toy phone<br>- Interesting formulas, sounds very similar to children's toys",
+			"description": "\"Toy phone\". Interesting formulas, sounds similar to children's toys",
 			"children": [{
 				"description": "Someone is calling by phone",
 				"code": "t*((t>>10|t%16*t>>5)&8*t>>10&18)"
@@ -1014,26 +1014,21 @@
 				"code": "t*((t>>10|t%16*t>>8)&8*t>>12&18)"
 			}]
 		}, {
-			"description": "Cat-girl",
-			"description2": "Nya!",
+			"description": "\"Cat-girl\". Nya!",
 			"code": "17*t|(t>>2)+(t&32768?13:14)*t|t>>3|t>>5",
 			"starred": 1
 		}, {
-			"description": "Child swing seats",
-			"description2": "Cool happy tune",
+			"description": "\"Child swing seats\". Cool happy tune!",
 			"code": "t>>9&2*t&10*t|t>>5&6*t",
 			"starred": 2
 		}, {
-			"description": "Brain burner",
-			"description2": "RIP headphone users!",
+			"description": "\"Brain burner\". RIP headphone users!",
 			"code": "129*t%(t>>7)"
 		}, {
-			"description": "Psychedelica",
-			"description2": "Experimenting with resonance",
+			"description": "\"Psychedelica\". Experimenting with resonance",
 			"code": "t^t%1001+t^t%1002"
 		}, {
-			"description": "Protoss engine",
-			"description2": "Experimenting with resonance, a pretty hypnotic result",
+			"description": "\"Protoss engine\". Experimenting with resonance, a pretty hypnotic result",
 			"code": "2*(-t%128|t%130)"
 		}, {
 			"description": "Harmonics",
@@ -1051,7 +1046,7 @@
 				"code": "t%((t&-16|t>>11)&42)<<2|t>>4"
 			}]
 		}, {
-			"description": "Boss level<br>- Series of formulas discovered by experimenting with \"Running man\" [<code>t*(3+(1^5&t>>10))*(5+(3&t>>14))>>(3&t>>8)</code>]<br>- Allows to get different interesting chiptune sounds<br>",
+			"description": "\"Game levels\"<br>Series of formulas discovered by experimenting with \"Running man\" [<code>t*(3+(1^5&t>>10))*(5+(3&t>>14))>>(3&t>>8)</code>]<br>Allows to get different interesting chiptune sounds!<br>",
 			"children": [{
 				"description": "Let replace (3+(1^5&t>>10)) with (2-(1&-t>>11))",
 				"code": "t*(2-(1&-t>>11))*(5+(3&t>>14))>>(3&t>>8)"
@@ -1069,8 +1064,10 @@
 				"description": "By playing with the \"Boss level\" I made a different percussion",
 				"code": "t*(t&16384?6:5)*(1+(1&t>>12))>>(3&t>>8)|t>>3"
 			}, {
-				"description": "\"Boss level #2\". |t>>4 rhythm sounds cool!<br>",
+				"description": "\"Boss level #2\". |t>>4 rhythm sounds cool!",
 				"code": "t*(t&16384?6:5)*(1+(1&t>>12))>>(3&t>>8)|t>>4"
+			}, {
+
 			}, {
 				"description": "Replacing (1+(1&t>>12)) with 3+(1&t>>8) adds an awesome harmonics",
 				"code": "t*(t&16384?6:5)*(3+(1&t>>8))>>(3&t>>8)|t>>4"
@@ -1093,8 +1090,10 @@
 				"code": "t*(t&16384?6:5)*(4-(1&t>>8))>>(3&t>>9)|t>>6",
 				"starred": 2
 			}, {
-				"description": "Inverted explosions give us mysterious sounds<br>",
+				"description": "Inverted explosions give us mysterious sounds",
 				"code": "t*(t&16384?6:5)*(4-(1&t>>8))>>(3&-t>>9)|t>>6"
+			}, {
+				
 			}, {
 				"description": "\"Aliens attack\". Complicated (t|t*3)>>5 rhythm with explosion drums. Cool!",
 				"code": "t*(t&16384?6:5)*(4-(1&t>>8))>>(3&t>>9)|(t|t*3)>>5",
@@ -1104,32 +1103,40 @@
 				"code": "t*(t&16384?6:5)*(4-(1&t>>8))>>(3&t>>9)|t>>(t&4096?3:4)",
 				"starred": 2
 			}, {
-				"description": "Funny inverted sounds :D<br>",
+				"description": "Funny inverted sounds :D",
 				"code": "t*(t&16384?6:5)*(3+(3&t>>7))>>(3&t>>9)|t>>(t&4096?3:4)"
+			}, {
+
 			}, {
 				"description": "\"Prepare to fight\". Long period, sound is changing from low to high",
 				"code": "t*(t&16384?6:5)*(4-(1&t>>8))>>(3&-t>>15)|t>>(t&4096?3:4)",
 				"starred": 1
 			}, {
-				"description": "\"Prepare to fight #2\". Previous formula with doubled freqency bass<br><br>Suddenly I discovered that replacing 3&t>>9 with 3&t>>2 in \"Aliens encounter\" gives a noise sound.<br>This is an excellent instrument for drums. For example, a ternary 3&t>>(t&4096?2:9)",
+				"description": "\"Prepare to fight #2\". Previous formula with doubled freqency bass",
 				"code": "2*t*(t&16384?6:5)*(4-(3&t>>8))>>(3&-t>>15)|t>>(t&4096?3:4)",
 				"starred": 1
+			}, {
+				"description": "<br>Suddenly I discovered that replacing 3&t>>9 with 3&t>>2 in \"Aliens encounter\" gives a noise sound.<br>This is an excellent instrument for drums. For example, a ternary 3&t>>(t&4096?2:9)"
 			}, {
 				"description": "\"Aliens encounter + drums\". Impressive sound!",
 				"code": "t*(t&16384?6:5)*(4-(1&t>>8))>>(3&t>>(t&4096?2:9))|t>>(t&4096?3:4)",
 				"starred": 2
 			}, {
-				"description": "\"Prepare to fight #2 + drums\"<br><br>Finally you can use complex ternary operators to create more complex drums:",
+				"description": "\"Prepare to fight #2 + drums\"",
 				"code": "2*t*(t&16384?6:5)*(4-(3&t>>8))>>(3&-t>>(t&4096?2:15))|t>>(t&4096?3:4)",
 				"starred": 2
+			}, {
+				"description": "<br>Finally you can use complex ternary operators to create more complex drums:"
 			}, {
 				"description": "\"Ready to fight?\". Cool for a fighting game :)",
 				"code": "2*t*(t&16384?6:5)*(4-(3&t>>8))>>(3&-t>>(t&4096?2:15))|t>>(t&8192?t&4096?4:5:3)",
 				"starred": 2
 			}, {
-				"description": "\"Hard level\". My favorite!<br><br>Fantastic! Let's continue our experiments:",
+				"description": "\"Hard level\". My favorite!",
 				"code": "t*(t&16384?7:5)*(5-(3&t>>8))>>(3&-t>>(t&4096?2:16))|t>>(t&16384?t&4096?3:4:3)",
 				"starred": 2
+			}, {
+				"description": "<br>Fantastic! Let's continue our experiments:"
 			}, {
 				"description": "\"Boss level #2\" variation with (1+(3&t>>10)) expression and t>>2 rhythm",
 				"code": "t*(t&16384?6:5)*(1+(3&t>>10))>>(3&t>>8)|t>>2"
@@ -1156,6 +1163,8 @@
 				"code": "t*(t&16384?6:5)*(5-(3&t>>(t&4096?7:14)))>>(3&t>>9)|t>>3",
 				"starred": 2
 			}, {
+
+			}, {
 				"description": "\"Alien dungeon\". So sinister.. t>>6 gives a fading effect",
 				"code": "t*(t&16384?7:5)*(3+(3&t>>14))>>(3&t>>9)|t>>6",
 				"starred": 1
@@ -1163,8 +1172,11 @@
 				"description": "\"Alien dungeon\" with a complicated rhytm (t|t*3)>>5",
 				"code": "t*(t&16384?7:5)*(3+(3&t>>14))>>(3&t>>9)|(t|t*3)>>5"
 			}, {
-				"description": "Previous with a slightly different tune<br><br>Other \"Boss level\" variations:",
-				"code": "t*(t&16384?7:5)*(4-(3&t>>14))>>(3&t>>9)|(t|t*3)>>5"
+				"description": "Previous with a slightly different tune",
+				"code": "t*(t&16384?7:5)*(4-(3&t>>14))>>(3&t>>9)|(t|t*3)>>5",
+				"starred": 1
+			}, {
+				"description": "<br>Other \"Boss level\" variations:"
 			}, {
 				"code": "t*(6+(1&t>>14))>>(3&t>>8)|t>>(t&4096?3:4)"
 			}, {
