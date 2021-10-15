@@ -320,7 +320,7 @@ class Bytebeat {
 			}
 		}).bind(this));
 		if (window.location.hash.indexOf("#v3b64") === 0) {
-			let pData = pako.inflateRaw(
+			const pData = pako.inflateRaw(
 				atob(decodeURIComponent(window.location.hash.substr(6))), { to: "string" }
 			);
 			try {
