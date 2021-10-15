@@ -45,7 +45,7 @@ function Bytebeat() {
 	this.errorElem = null;
 
 	document.addEventListener("DOMContentLoaded", function () {
-		this.animationFrame = this.animationFrame.bind(this)
+		this.animationFrame = this.animationFrame.bind(this);
 
 		this.contFixedElem = $q(".container-fixed");
 		this.contScrollElem = $q(".container-scroll");
@@ -319,7 +319,7 @@ Bytebeat.prototype = {
 			if (e.keyCode === 9 /* TAB */ && !e.shiftKey && !e.altKey && !e.ctrlKey) {
 				e.preventDefault();
 				let el = e.target;
-				let selectionStart = el.selectionStart
+				let selectionStart = el.selectionStart;
 				el.value = `${el.value.slice(0, selectionStart)}\t${el.value.slice(el.selectionEnd)}`;
 				el.setSelectionRange(selectionStart + 1, selectionStart + 1);
 				this.refreshCalc();
@@ -409,7 +409,7 @@ Bytebeat.prototype = {
 		// test bytebeat
 		try {
 			this.nextErrType = "compile";
-			this.func = new Function(...params, "t", `return ${codeText.trim()}\n;`).bind(window, ...values);
+			this.func = new Function(...params, "t", `return 0, ${codeText.trim() || "undefined"} \n;`).bind(window, ...values);
 			this.nextErrType = "runtime";
 			this.func(0);
 		} catch (err) {
