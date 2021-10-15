@@ -1,80 +1,87 @@
+/**
+ * main page
+ */
 html {
 	background-color: #000;
 	color: #fff;
-	font-size: 16px;
+	font-size: 15px;
 	font-family: Courier, Sans, sans-serif;
 }
 
 body {
-	text-align: center;
-	margin: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 	height: 100vh;
+	margin: 0;
 }
 
 .content {
-	position: relative;
 	display: flex;
 	flex-direction: column;
+	align-items: center;
+	gap: 2px;
 	height: 100%;
-	overflow: hidden;
-
-	text-align: left;
-	display: inline-block;
 }
 
 .container-fixed {
 	display: flex;
 	flex-direction: column;
+	box-sizing: border-box;
+	max-height: 100%;
 }
 
+/**
+ * code input
+ */
 #input-code {
-	box-sizing: border-box;
-	font: 14px/14px Monospace;
-	color: #fff;
-	background: #000;
-	border: 2px solid white;
 	height: 200px;
 	padding: 0 5px;
+	box-sizing: border-box;
 	overflow-y: auto;
+	resize: vertical;
+	border: 2px solid white;
+	color: #fff;
+	background: #000;
+	font: 14px/14px Monospace;
 	word-wrap: break-word;
 	outline: none;
-	resize: vertical;
 }
 
+/**
+ * playback controls
+ */
 .controls {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
-	align-items: center;
 	column-gap: 1em;
-	font-size: 14px;
 
-	margin: 3px 0;
+	margin: 2px 0;
+}
+.control, .control-group {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
 }
 .controls button {
+	width: 2em;
+	height: 1.8em;
+	padding: 0;
 	display: inline-block;
 	margin-right: 3px;
 }
-.buttons-playback button {
-	width: 2em;
-	height: 1.8em;
-	text-align: center;
-	vertical-align: middle;
-	padding: 0;
+.controls .text {
+	align-self: center;
 }
-.buttons-zoom button {
-	width: 2em;
-	height: 1.8em;
-	text-align: center;
-	vertical-align: middle;
-	padding: 0;
-}
-.button-toggle {
-	cursor: pointer;
-	font-weight: bold;
-	margin: 5px 0;
+#control-volume {
+	width: 10em;
+	align-self: center;
 }
 
+/**
+ * scope
+ */
 #canvas-container {
 	display: flex;
 	position: relative;
@@ -97,11 +104,11 @@ body {
 
 #canvas-timecursor {
 	display: none;
+	position: absolute;
 	top: 0;
 	bottom: 0;
 	width: 2px;
 	background: red;
-	position: absolute;
 }
 
 #canvas-toggleplay::after {
@@ -110,11 +117,11 @@ body {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	padding: 16px 30px;
-	margin: -22px 0 0 -32px;
+	padding: 1.2em 2em;
 	background-color: rgba(0, 180, 255, 0.5);
 	border-radius: 16px;
 	line-height: 0;
+	transform: translate(-50%, -50%);
 }
 #canvas-toggleplay.canvas-toggleplay-show::after {
 	display: block;
@@ -124,8 +131,21 @@ body {
 	content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAWAQMAAAAcpuUBAAAABlBMVEUAAAD///+l2Z/dAAAAAXRSTlMAQObYZgAAABBJREFUCNdjgAE7O6pgGAAAhGMIudWId/YAAAAASUVORK5CYII=");
 }
 
+
+/**
+ * status message
+ */
+#error[data-err-type="compile"] {
+	color: #f92672;
+}
+#error[data-err-type="runtime"] {
+	color: #fc4;
+}
+
+/**
+ * text
+ */
 .container-scroll {
-	position: absolute;
 	overflow-y: auto;
 	width: 100%;
 }
@@ -145,29 +165,15 @@ code {
 	cursor: pointer;
 }
 
-#control-volume {
-	-webkit-appearance: none;
-	background-color: #959595;
-	height: 10px;
-	width: 10em;
-	border-radius: 15px;
-	padding: 0 3px;
-	margin-bottom: -1px;
-}
 
-#error[data-err-type="compile"] {
-	color: #f92672;
-}
-#error[data-err-type="runtime"] {
-	color: #fc4;
+.toggle {
+	cursor: pointer;
+	font-weight: bold;
+	margin: 5px 0;
 }
 
 li {
 	padding-bottom: 7px;
-}
-
-.middle {
-	padding-top: 2px;
 }
 
 .paragraph {
@@ -200,6 +206,6 @@ ul {
 a, a:visited {
 	color: #88d2fb;
 }
-a:hover, .button-toggle:hover, code:hover {
+a:hover, .toggle:hover, code:hover {
 	color: #ed88fb !important;
 }

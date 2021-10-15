@@ -474,12 +474,8 @@ Bytebeat.prototype = {
 			newWidth = 512;
 		if (newWidth != this.canvasElem.width || force) {
 			this.canvasElem.width = newWidth;
-			this.canvasElem.style.maxWidth = newWidth + "px";
 			$q(".content").style.maxWidth = (newWidth + 4) + "px";
 		}
-
-		if (this.contScrollElem)
-			this.contScrollElem.style.height = (document.body.clientHeight - this.contFixedElem.offsetHeight) + "px";
 	},
 	togglePlay(isPlay) {
 		this.canvasTogglePlay.classList.toggle("canvas-toggleplay-stop", isPlay);
