@@ -150,7 +150,7 @@ class Bytebeat {
 
 			for (let i = 0; i < bufferLen; i++) {
 				let bufferElem = this.drawBuffer[i];
-				let nextBufferElemTime = this.drawBuffer[i + 1]?.t || endTime;
+				let nextBufferElemTime = this.drawBuffer[i + 1]?.t ?? endTime;
 				if (isNaN(bufferElem.value)) {
 					iterateOverLine(bufferElem, nextBufferElemTime, xPos => {
 						for (let h = 0; h < 256; h++) {
@@ -319,8 +319,8 @@ class Bytebeat {
 				this.refreshCalc();
 			}
 		}).bind(this));
-		if (window.location.hash.indexOf("#v3b64") === 0) {
-			const pData = pako.inflateRaw(
+		if (window.location.hash.startsWith("#v3b64")) {
+			let pData = pako.inflateRaw(
 				atob(decodeURIComponent(window.location.hash.substr(6))), { to: "string" }
 			);
 			try {
@@ -329,7 +329,7 @@ class Bytebeat {
 				console.error("Couldn't load data from url:", err);
 			}
 			this.loadCode(pData, false);
-		} else {
+		} else if (window.location.hash) {
 			console.error("Unrecognized url data");
 		}
 	}
