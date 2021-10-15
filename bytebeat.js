@@ -162,7 +162,7 @@ class Bytebeat {
 				} else if (bufferElem.value >= 0 && bufferElem.value < 256) {
 					iterateOverLine(bufferElem, nextBufferElemTime, xPos => {
 						const pos = (drawLenX * (255 - bufferElem.value) + xPos) << 2;
-						imageData.data[pos++] = imageData.data[pos++] = imageData.data[pos] = 255;
+						imageData.data[pos] = imageData.data[pos + 1] = imageData.data[pos + 2] = 255;
 					});
 				}
 			}
