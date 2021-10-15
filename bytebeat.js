@@ -320,15 +320,19 @@ class Bytebeat {
 			}
 		}).bind(this));
 		if (window.location.hash.startsWith("#v3b64")) {
-			let pData = pako.inflateRaw(
-				atob(decodeURIComponent(window.location.hash.substr(6))), { to: "string" }
-			);
+			let pData;
 			try {
-				pData = JSON.parse(pData);
+				pData = JSON.parse(
+					pako.inflateRaw(
+						atob(decodeURIComponent(window.location.hash.substr(6))), { to: "string" }
+					)
+				);
 			} catch (err) {
 				console.error("Couldn't load data from url:", err);
+				pData = null;
 			}
-			this.loadCode(pData, false);
+			if (!pData === null)
+				this.loadCode(pData, false);
 		} else if (window.location.hash) {
 			console.error("Unrecognized url data");
 		}
