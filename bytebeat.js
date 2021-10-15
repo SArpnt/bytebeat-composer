@@ -43,9 +43,8 @@ class Bytebeat {
 		this.inputElem = null;
 		this.errorElem = null;
 
-		document.addEventListener("DOMContentLoaded", function () {
-			this.animationFrame = this.animationFrame.bind(this);
-
+		this.animationFrame = this.animationFrame.bind(this);
+		document.addEventListener("DOMContentLoaded", function onDomLoad() {
 			this.initLibrary();
 			this.initCodeInput();
 			this.initControls();
@@ -74,11 +73,11 @@ class Bytebeat {
 	}
 	applySampleRate(rate) {
 		this.setSampleRate(rate);
-		document.getElementById("samplerate-change").value = rate;
+		document.getElementById("control-samplerate").value = rate;
 	}
 	applyMode(mode) {
 		this.mode = mode;
-		document.getElementById("mode-change").value = mode;
+		document.getElementById("control-mode").value = mode;
 	}
 	changeScale(amount) {
 		if (amount) {
