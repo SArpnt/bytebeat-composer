@@ -5,63 +5,64 @@ function $toggle(el) {
 		el.style.display = "none";
 }
 
-function Bytebeat() {
-	this.audioCtx = null;
-	this.audioGain = null;
-	this.audioRecorder = null;
-	this.recChunks = [];
-	this.bufferSize = 0;
+class Bytebeat {
+	constructor() {
+		this.audioCtx = null;
+		this.audioGain = null;
+		this.audioRecorder = null;
+		this.recChunks = [];
+		this.bufferSize = 0;
 
-	this.audioSample = 0;
-	this.lastFlooredTime = -1;
-	this.byteSample = 0;
-	this.lastValue = NaN;
-	this.lastByteValue = NaN;
-	this.lastFuncValue = null;
-	this.func = () => 0;
+		this.audioSample = 0;
+		this.lastFlooredTime = -1;
+		this.byteSample = 0;
+		this.lastValue = NaN;
+		this.lastByteValue = NaN;
+		this.lastFuncValue = null;
+		this.func = () => 0;
 
-	this.nextErrType = null;
-	this.nextErr = null;
-	this.errorPriority = -Infinity;
+		this.nextErrType = null;
+		this.nextErr = null;
+		this.errorPriority = -Infinity;
 
-	this.canvasCtx = null;
-	this.drawScale = 5;
-	this.drawBuffer = [];
-	this.drawImageData = null;
+		this.canvasCtx = null;
+		this.drawScale = 5;
+		this.drawBuffer = [];
+		this.drawImageData = null;
 
-	this.isPlaying = false;
-	this.isRecording = false;
+		this.isPlaying = false;
+		this.isRecording = false;
 
-	this.mode = "Bytebeat";
-	this.sampleRate = 8000;
-	this.sampleRateDivisor = 1;
-	this.playSpeed = 1;
-	this.sampleRatio = 1;
+		this.mode = "Bytebeat";
+		this.sampleRate = 8000;
+		this.sampleRateDivisor = 1;
+		this.playSpeed = 1;
+		this.sampleRatio = 1;
 
-	this.canvasElem = null;
-	this.contFixedElem = null;
-	this.contScrollElem = null;
-	this.inputElem = null;
-	this.errorElem = null;
+		this.canvasElem = null;
+		this.contFixedElem = null;
+		this.contScrollElem = null;
+		this.inputElem = null;
+		this.errorElem = null;
 
-	document.addEventListener("DOMContentLoaded", function () {
-		this.animationFrame = this.animationFrame.bind(this);
+		document.addEventListener("DOMContentLoaded", function () {
+			this.animationFrame = this.animationFrame.bind(this);
 
-		this.contFixedElem = $q(".container-fixed");
-		this.contScrollElem = $q(".container-scroll");
+			this.contFixedElem = $q(".container-fixed");
+			this.contScrollElem = $q(".container-scroll");
 
-		this.initLibrary();
-		this.initCodeInput();
-		this.initControls();
-		this.initCanvas();
-		this.refreshCalc();
-		this.initAudioContext();
+			this.initLibrary();
+			this.initCodeInput();
+			this.initControls();
+			this.initCanvas();
+			this.refreshCalc();
+			this.initAudioContext();
 
-		this.handleWindowResize(true);
-		document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
-	}.bind(this));
-}
-Bytebeat.prototype = {
+			this.handleWindowResize(true);
+			document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
+		}.bind(this));
+	}
+
 	get saveData() {
 		let a = document.createElement("a");
 		document.body.appendChild(a);
@@ -75,15 +76,15 @@ Bytebeat.prototype = {
 		};
 		Object.defineProperty(this, "saveData", { value: fn });
 		return fn;
-	},
+	}
 	applySampleRate(rate) {
 		this.setSampleRate(rate);
 		$id("samplerate-change").value = rate;
-	},
+	}
 	applyMode(mode) {
 		this.mode = mode;
 		$id("mode-change").value = mode;
-	},
+	}
 	changeScale(amount) {
 		if (amount) {
 			this.drawScale = Math.max(this.drawScale + amount, 0);
@@ -93,14 +94,14 @@ Bytebeat.prototype = {
 			else
 				this.controlScaleDown.removeAttribute("disabled");
 		}
-	},
+	}
 	changeVolume(el) {
 		let fraction = parseInt(el.value) / parseInt(el.max);
 		this.audioGain.gain.value = fraction * fraction;
-	},
+	}
 	clearCanvas() {
 		this.canvasCtx.fillRect(0, 0, this.canvasElem.width, this.canvasElem.height);
-	},
+	}
 	drawGraphics(endTime) {
 		let bufferLen = this.drawBuffer.length;
 		if (!bufferLen)
@@ -200,7 +201,7 @@ Bytebeat.prototype = {
 
 		// clear buffer except last sample
 		this.drawBuffer = [{ t: endTime, value: this.drawBuffer[bufferLen - 1].value }];
-	},
+	}
 	updateSampleRatio() {
 		if (this.audioCtx) {
 			let flooredTimeOffset = this.lastFlooredTime - Math.floor(this.sampleRatio * this.audioSample);
@@ -208,7 +209,7 @@ Bytebeat.prototype = {
 			this.lastFlooredTime = Math.floor(this.sampleRatio * this.audioSample) - flooredTimeOffset;
 			return this.sampleRatio;
 		}
-	},
+	}
 	initAudioContext() {
 		this.audioCtx = new (window.AudioContext || window.webkitAudioContext ||
 			window.mozAudioContext || window.oAudioContext || window.msAudioContext)();
@@ -291,7 +292,7 @@ Bytebeat.prototype = {
 			this.saveData(new Blob(this.recChunks, { type }), file);
 		}.bind(this);
 		audioGain.connect(mediaDest);
-	},
+	}
 	hideErrorMessage() {
 		if (this.errorElem) {
 			this.errorElem.innerText = "";
@@ -300,7 +301,7 @@ Bytebeat.prototype = {
 			this.nextErrType = null;
 			this.errorPriority = -Infinity;
 		}
-	},
+	}
 	showErrorMessage(errType, err, priority = 0) {
 		if (this.errorElem && priority > this.errorPriority) {
 			this.errorElem.dataset.errType = errType;
@@ -310,7 +311,7 @@ Bytebeat.prototype = {
 			this.nextErrType = null;
 			this.errorPriority = priority;
 		}
-	},
+	}
 	initCodeInput() {
 		this.errorElem = $id("error");
 		this.inputElem = $id("input-code");
@@ -340,21 +341,21 @@ Bytebeat.prototype = {
 			}
 			this.loadCode(pData, false);
 		}
-	},
+	}
 	initCanvas() {
 		this.timeCursor = $id("canvas-timecursor");
 		this.canvasElem = $id("canvas-main");
 		this.canvasCtx = this.canvasElem.getContext("2d", { alpha: false });
-	},
+	}
 	initControls() {
 		this.canvasTogglePlay = $id("canvas-toggleplay");
 		this.controlScaleUp = $id("control-scaleup");
 		this.controlScaleDown = $id("control-scaledown");
 		this.controlCounter = $id("control-counter-value");
 		this.controlVolume = $id("control-volume");
-	},
+	}
 	initLibrary() {
-		$Q(".button-toggle").forEach(el => (el.onclick = () => $toggle(el.nextElementSibling)));
+		$Q(".toggle").forEach(el => (el.onclick = () => $toggle(el.nextElementSibling)));
 		let libraryEl = $q(".container-scroll");
 		libraryEl.onclick = function loadLibrary(e) {
 			let el = e.target;
@@ -376,7 +377,7 @@ Bytebeat.prototype = {
 			if (el.tagName === "CODE")
 				el.title = "Click to play this code";
 		};
-	},
+	}
 	loadCode({ code, sampleRate, mode }, start = true) {
 		this.inputElem.value = code;
 		this.applySampleRate(+sampleRate || 8000);
@@ -386,7 +387,7 @@ Bytebeat.prototype = {
 			this.resetTime();
 			this.togglePlay(true);
 		}
-	},
+	}
 	rec() {
 		if (this.audioCtx && !this.isRecording) {
 			this.audioRecorder.start();
@@ -395,7 +396,7 @@ Bytebeat.prototype = {
 			if (!this.isPlaying)
 				this.togglePlay(true);
 		}
-	},
+	}
 	refreshCalc() {
 		let oldFunc = this.func;
 		let codeText = this.inputElem.value;
@@ -420,7 +421,7 @@ Bytebeat.prototype = {
 		this.hideErrorMessage();
 
 		// delete single letter variables to prevent persistent variable errors (covers a good enough range)
-		for (i = 0; i < 26; i++)
+		for (let i = 0; i < 26; i++)
 			delete window[String.fromCharCode(65 + i)], window[String.fromCharCode(97 + i)];
 
 		// generate url
@@ -433,14 +434,14 @@ Bytebeat.prototype = {
 		pData = JSON.stringify(pData);
 
 		window.location.hash = "#v3b64" + btoa(pako.deflateRaw(pData, { to: "string" }));
-	},
+	}
 	resetTime() {
 		this.setByteSample(0);
 		this.clearCanvas();
 		this.timeCursor.style.cssText = "display: none;";
 		if (!this.isPlaying)
 			this.canvasTogglePlay.classList.add("canvas-toggleplay-show");
-	},
+	}
 	setByteSample(value, jump = true) {
 		this.controlCounter.placeholder = value;
 		this.byteSample = value;
@@ -453,19 +454,19 @@ Bytebeat.prototype = {
 			this.lastByteValue = NaN;
 			this.lastFuncValue = undefined;
 		}
-	},
+	}
 	setPlaySpeed(speed) {
 		this.playSpeed = speed;
 		this.updateSampleRatio();
-	},
+	}
 	setSampleRate(rate) {
 		this.sampleRate = rate;
 		this.updateSampleRatio();
-	},
+	}
 	setSampleRateDivisor(div) {
 		this.sampleRateDivisor = div;
 		this.updateSampleRatio();
-	},
+	}
 	handleWindowResize(force = false) {
 		let newWidth;
 		if (document.body.clientWidth >= 768 + 4)
@@ -476,7 +477,7 @@ Bytebeat.prototype = {
 			this.canvasElem.width = newWidth;
 			$q(".content").style.maxWidth = (newWidth + 4) + "px";
 		}
-	},
+	}
 	togglePlay(isPlay) {
 		this.canvasTogglePlay.classList.toggle("canvas-toggleplay-stop", isPlay);
 		if (isPlay) {
@@ -492,7 +493,7 @@ Bytebeat.prototype = {
 			}
 		}
 		this.isPlaying = isPlay;
-	},
+	}
 	animationFrame() {
 		this.drawGraphics(this.byteSample);
 		if (this.nextErr)
