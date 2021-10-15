@@ -331,7 +331,7 @@ class Bytebeat {
 				console.error("Couldn't load data from url:", err);
 				pData = null;
 			}
-			if (!pData === null)
+			if (pData !== null)
 				this.loadCode(pData, false);
 		} else if (window.location.hash) {
 			console.error("Unrecognized url data");
