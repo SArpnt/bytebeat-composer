@@ -204,20 +204,21 @@ class Bytebeat {
 			return this.sampleRatio;
 		}
 	}
+	messageHandler(e) {
+		console.info("worklet -> window:", e);
+		if (e.data.drawBuffer)
+			this.drawBuffer = e.data.drawBuffer;
+		if (e.data.byteSample)
+			this.byteSample = e.data.byteSample;
+	}
 	async initAudioContext() {
 		this.audioCtx = new AudioContext();
 		this.updateSampleRatio();
 
 		await this.audioCtx.audioWorklet.addModule("audioWorklet.js");
 		this.audioWorklet = new AudioWorkletNode(this.audioCtx, "bytebeat-processor");
+		this.audioWorklet.port.onmessage = this.messageHandler.bind(this);
 		this.audioWorklet.port.postMessage("test");
-		this.audioWorklet.port.onmessage = e => {
-			console.info("recieved from processor:", e.data);
-			if (e.data.drawBuffer)
-				this.drawBuffer = e.data.drawBuffer;
-			if (e.data.byteSample)
-				this.byteSample = e.data.byteSample;
-		};
 
 		const audioGain = this.audioGain = this.audioCtx.createGain();
 		this.changeVolume(this.controlVolume);
