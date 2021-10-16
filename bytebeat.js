@@ -46,18 +46,59 @@ class Bytebeat {
 
 		this.animationFrame = this.animationFrame.bind(this);
 		document.addEventListener("DOMContentLoaded", async function onDomLoad() {
+			const initAudio = this.initAudioContext();
 			this.initLibrary();
 			this.initCodeInput();
 			this.initControls();
 			this.initCanvas();
-			this.refreshCalc();
-			await this.initAudioContext();
 
 			this.handleWindowResize(true);
 			document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
+
+			await initAudio;
+			this.refreshCalc();
 		}.bind(this));
 	}
 
+	async initAudioContext() {
+		this.audioCtx = new AudioContext();
+		this.updateSampleRatio();
+
+		await this.audioCtx.audioWorklet.addModule("audioWorklet.js");
+		this.audioWorklet = new AudioWorkletNode(this.audioCtx, "bytebeat-processor");
+		this.audioWorklet.port.onmessage = this.messageHandler.bind(this);
+		this.audioWorklet.port.postMessage("test");
+
+		const audioGain = this.audioGain = this.audioCtx.createGain();
+		this.changeVolume(this.controlVolume);
+		this.audioWorklet.connect(audioGain);
+
+		audioGain.connect(this.audioCtx.destination);
+
+		const mediaDest = this.audioCtx.createMediaStreamDestination();
+		const audioRecorder = this.audioRecorder = new MediaRecorder(mediaDest.stream);
+		audioRecorder.ondataavailable = e => this.recordChunks.push(e.data);
+		audioRecorder.onstop = (function saveRecording(e) {
+			let file, type;
+			const types = ["audio/webm", "audio/ogg"];
+			const files = ["track.webm", "track.ogg"];
+			while ((file = files.pop()) && !MediaRecorder.isTypeSupported(type = types.pop())) {
+				if (types.length === 0) {
+					console.error("Saving not supported in this browser!");
+					break;
+				}
+			}
+			this.saveData(new Blob(this.recordChunks, { type }), file);
+		}).bind(this);
+		audioGain.connect(mediaDest);
+	}
+	messageHandler(e) {
+		console.info("worklet -> window:", e);
+		if (e.data.drawBuffer)
+			this.drawBuffer = e.data.drawBuffer;
+		if (e.data.byteSample)
+			this.byteSample = e.data.byteSample;
+	}
 	get saveData() {
 		const a = document.createElement("a");
 		document.body.appendChild(a);
@@ -72,12 +113,172 @@ class Bytebeat {
 		Object.defineProperty(this, "saveData", { value: saveDataInternal });
 		return saveDataInternal;
 	}
+
+	initLibrary() {
+		for (let el of document.getElementsByClassName("toggle"))
+			el.onclick = () => $toggle(el.nextElementSibling);
+		const libraryElem = document.getElementById("library");
+		libraryElem.onclick = (function loadLibrary(e) {
+			const el = e.target;
+			if (el.tagName === "CODE")
+				this.loadCode(Object.assign({ code: el.innerText }, el.hasAttribute("data-songdata") ? JSON.parse(el.dataset.songdata) : {}));
+			else if (el.classList.contains("code-load")) {
+				const xhr = new XMLHttpRequest();
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4 && xhr.status === 200)
+						this.loadCode(Object.assign(JSON.parse(el.dataset.songdata), { code: xhr.responseText }));
+				}.bind(this);
+				xhr.open("GET", "library/" + el.dataset.codeFile, true);
+				xhr.setRequestHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+				xhr.send(null);
+			}
+		}).bind(this);
+		libraryElem.onmouseover = function (e) {
+			const el = e.target;
+			if (el.tagName === "CODE")
+				el.title = "Click to play this code";
+		};
+	}
+
+	initCodeInput() {
+		this.errorElem = document.getElementById("error");
+		this.inputElem = document.getElementById("input-code");
+		this.inputElem.addEventListener("input", this.refreshCalc.bind(this));
+		this.inputElem.addEventListener("keydown", e => {
+			if (e.code === 9 /* TAB */ && !e.shiftKey && !e.altKey && !e.ctrlKey) {
+				e.preventDefault();
+				let el = e.target;
+				let selectionStart = el.selectionStart;
+				el.value = `${el.value.slice(0, selectionStart)}\t${el.value.slice(el.selectionEnd)}`;
+				el.setSelectionRange(selectionStart + 1, selectionStart + 1);
+				this.refreshCalc();
+			}
+		});
+		if (window.location.hash.startsWith("#v3b64")) {
+			let pData;
+			try {
+				pData = JSON.parse(
+					pako.inflateRaw(
+						atob(decodeURIComponent(window.location.hash.substr(6))), { to: "string" }
+					)
+				);
+			} catch (err) {
+				console.error("Couldn't load data from url:", err);
+				pData = null;
+			}
+			if (pData !== null)
+				this.loadCode(pData, false, false);
+		} else if (window.location.hash) {
+			console.error("Unrecognized url data");
+		}
+	}
+
+	initControls() {
+		this.controlScaleUp = document.getElementById("control-scaleup");
+		this.controlScaleDown = document.getElementById("control-scaledown");
+		this.controlCounter = document.getElementById("control-counter-value");
+		this.controlVolume = document.getElementById("control-volume");
+
+		this.canvasTogglePlay = document.getElementById("canvas-toggleplay");
+	}
+	initCanvas() {
+		this.timeCursor = document.getElementById("canvas-timecursor");
+		this.canvasElem = document.getElementById("canvas-main");
+		this.canvasCtx = this.canvasElem.getContext("2d", { alpha: false });
+	}
+
+	refreshCalc() {
+		const oldFunc = this.func;
+		const codeText = this.inputElem.value;
+
+		// create shortened functions
+		const params = Object.getOwnPropertyNames(Math);
+		const values = params.map(k => Math[k]);
+		params.push("int");
+		values.push(Math.floor);
+
+		// test bytebeat
+		try {
+			this.nextErrType = "compile";
+			this.func = new Function(...params, "t", `return 0, ${codeText.trim() || "undefined"} \n;`).bind(window, ...values);
+			this.nextErrType = "runtime";
+			this.func(0);
+		} catch (err) {
+			this.func = oldFunc;
+			this.showErrorMessage(this.nextErrType, err, 1);
+			return;
+		}
+		this.hideErrorMessage();
+
+		// delete single letter variables to prevent persistent variable errors (covers a good enough range)
+		for (let i = 0; i < 26; i++)
+			delete window[String.fromCharCode(65 + i)], window[String.fromCharCode(97 + i)];
+
+		// generate url
+		let pData = { code: codeText };
+		if (this.sampleRate != 8000)
+			pData.sampleRate = this.sampleRate;
+		if (this.mode != "Bytebeat")
+			pData.mode = this.mode;
+
+		pData = JSON.stringify(pData);
+
+		window.location.hash = "#v3b64" + btoa(pako.deflateRaw(pData, { to: "string" }));
+	}
+	updateSampleRatio() {
+		if (this.audioCtx) {
+			let flooredTimeOffset = this.lastFlooredTime - Math.floor(this.sampleRatio * this.audioSample);
+			this.sampleRatio = this.sampleRate * this.playSpeed / this.audioCtx.sampleRate;
+			this.lastFlooredTime = Math.floor(this.sampleRatio * this.audioSample) - flooredTimeOffset;
+			return this.sampleRatio;
+		}
+	}
+	handleWindowResize(force = false) {
+		let newWidth;
+		if (document.body.clientWidth >= 768 + 4)
+			newWidth = 1024;
+		else
+			newWidth = 512;
+		if (newWidth != this.canvasElem.width || force) {
+			this.canvasElem.width = newWidth;
+			document.getElementById("content").style.maxWidth = (newWidth + 4) + "px";
+		}
+	}
+	animationFrame() {
+		this.drawGraphics(this.byteSample);
+		if (this.nextErr)
+			this.showErrorMessage(this.nextErrType, this.nextErr);
+
+		window.requestAnimationFrame(this.animationFrame);
+	}
+
+	loadCode({ code, sampleRate, mode }, calc = true, play = true) {
+		this.inputElem.value = code;
+		this.applySampleRate(+sampleRate || 8000);
+		this.applyMode(mode || "Bytebeat");
+		if (calc)
+			this.refreshCalc();
+		if (play) {
+			this.resetTime();
+			this.togglePlay(true);
+		}
+	}
 	applySampleRate(rate) {
 		this.setSampleRate(rate);
 		document.getElementById("control-samplerate").value = rate;
 	}
 	applyMode(mode) {
 		this.mode = document.getElementById("control-mode").value = mode;
+	}
+
+	rec() {
+		if (this.audioCtx && !this.isRecording) {
+			this.audioRecorder.start();
+			this.isRecording = true;
+			this.recordChunks = [];
+			if (!this.isPlaying)
+				this.togglePlay(true);
+		}
 	}
 	changeScale(amount) {
 		if (amount) {
@@ -93,6 +294,7 @@ class Bytebeat {
 		const fraction = parseInt(el.value) / parseInt(el.max);
 		this.audioGain.gain.value = fraction * fraction;
 	}
+
 	clearCanvas() {
 		this.canvasCtx.fillRect(0, 0, this.canvasElem.width, this.canvasElem.height);
 	}
@@ -196,55 +398,8 @@ class Bytebeat {
 		// clear buffer except last sample
 		this.drawBuffer = [{ t: endTime, value: this.drawBuffer[bufferLen - 1].value }];
 	}
-	updateSampleRatio() {
-		if (this.audioCtx) {
-			let flooredTimeOffset = this.lastFlooredTime - Math.floor(this.sampleRatio * this.audioSample);
-			this.sampleRatio = this.sampleRate * this.playSpeed / this.audioCtx.sampleRate;
-			this.lastFlooredTime = Math.floor(this.sampleRatio * this.audioSample) - flooredTimeOffset;
-			return this.sampleRatio;
-		}
-	}
-	messageHandler(e) {
-		console.info("worklet -> window:", e);
-		if (e.data.drawBuffer)
-			this.drawBuffer = e.data.drawBuffer;
-		if (e.data.byteSample)
-			this.byteSample = e.data.byteSample;
-	}
-	async initAudioContext() {
-		this.audioCtx = new AudioContext();
-		this.updateSampleRatio();
 
-		await this.audioCtx.audioWorklet.addModule("audioWorklet.js");
-		this.audioWorklet = new AudioWorkletNode(this.audioCtx, "bytebeat-processor");
-		this.audioWorklet.port.onmessage = this.messageHandler.bind(this);
-		this.audioWorklet.port.postMessage("test");
 
-		const audioGain = this.audioGain = this.audioCtx.createGain();
-		this.changeVolume(this.controlVolume);
-		this.audioWorklet.connect(audioGain);
-
-		audioGain.connect(this.audioCtx.destination);
-
-		const mediaDest = this.audioCtx.createMediaStreamDestination();
-		const audioRecorder = this.audioRecorder = new MediaRecorder(mediaDest.stream);
-		audioRecorder.ondataavailable = function (e) {
-			this.recordChunks.push(e.data);
-		}.bind(this);
-		audioRecorder.onstop = function (e) {
-			let file, type;
-			const types = ["audio/webm", "audio/ogg"];
-			const files = ["track.webm", "track.ogg"];
-			while ((file = files.pop()) && !MediaRecorder.isTypeSupported(type = types.pop())) {
-				if (types.length === 0) {
-					console.error("Saving not supported in this browser!");
-					break;
-				}
-			}
-			this.saveData(new Blob(this.recordChunks, { type }), file);
-		}.bind(this);
-		audioGain.connect(mediaDest);
-	}
 	hideErrorMessage() {
 		if (this.errorElem) {
 			this.errorElem.innerText = "";
@@ -264,132 +419,7 @@ class Bytebeat {
 			this.errorPriority = priority;
 		}
 	}
-	initCodeInput() {
-		this.errorElem = document.getElementById("error");
-		this.inputElem = document.getElementById("input-code");
-		this.inputElem.addEventListener("input", this.refreshCalc.bind(this));
-		this.inputElem.addEventListener("keydown", (function (e) {
-			if (e.keyCode === 9 /* TAB */ && !e.shiftKey && !e.altKey && !e.ctrlKey) {
-				e.preventDefault();
-				let el = e.target;
-				let selectionStart = el.selectionStart;
-				el.value = `${el.value.slice(0, selectionStart)}\t${el.value.slice(el.selectionEnd)}`;
-				el.setSelectionRange(selectionStart + 1, selectionStart + 1);
-				this.refreshCalc();
-			}
-		}).bind(this));
-		if (window.location.hash.startsWith("#v3b64")) {
-			let pData;
-			try {
-				pData = JSON.parse(
-					pako.inflateRaw(
-						atob(decodeURIComponent(window.location.hash.substr(6))), { to: "string" }
-					)
-				);
-			} catch (err) {
-				console.error("Couldn't load data from url:", err);
-				pData = null;
-			}
-			if (pData !== null)
-				this.loadCode(pData, false);
-		} else if (window.location.hash) {
-			console.error("Unrecognized url data");
-		}
-	}
-	initCanvas() {
-		this.timeCursor = document.getElementById("canvas-timecursor");
-		this.canvasElem = document.getElementById("canvas-main");
-		this.canvasCtx = this.canvasElem.getContext("2d", { alpha: false });
-	}
-	initControls() {
-		this.canvasTogglePlay = document.getElementById("canvas-toggleplay");
-		this.controlScaleUp = document.getElementById("control-scaleup");
-		this.controlScaleDown = document.getElementById("control-scaledown");
-		this.controlCounter = document.getElementById("control-counter-value");
-		this.controlVolume = document.getElementById("control-volume");
-	}
-	initLibrary() {
-		for (let el of document.getElementsByClassName("toggle"))
-			el.onclick = () => $toggle(el.nextElementSibling);
-		const libraryElem = document.getElementById("library");
-		libraryElem.onclick = function loadLibrary(e) {
-			const el = e.target;
-			if (el.tagName === "CODE")
-				this.loadCode(Object.assign({ code: el.innerText }, el.hasAttribute("data-songdata") ? JSON.parse(el.dataset.songdata) : {}));
-			else if (el.classList.contains("code-load")) {
-				const xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = function () {
-					if (xhr.readyState === 4 && xhr.status === 200)
-						this.loadCode(Object.assign(JSON.parse(el.dataset.songdata), { code: xhr.responseText }));
-				}.bind(this);
-				xhr.open("GET", "library/" + el.dataset.codeFile, true);
-				xhr.setRequestHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-				xhr.send(null);
-			}
-		}.bind(this);
-		libraryElem.onmouseover = function (e) {
-			const el = e.target;
-			if (el.tagName === "CODE")
-				el.title = "Click to play this code";
-		};
-	}
-	loadCode({ code, sampleRate, mode }, start = true) {
-		this.inputElem.value = code;
-		this.applySampleRate(+sampleRate || 8000);
-		this.applyMode(mode || "Bytebeat");
-		this.refreshCalc();
-		if (start) {
-			this.resetTime();
-			this.togglePlay(true);
-		}
-	}
-	rec() {
-		if (this.audioCtx && !this.isRecording) {
-			this.audioRecorder.start();
-			this.isRecording = true;
-			this.recordChunks = [];
-			if (!this.isPlaying)
-				this.togglePlay(true);
-		}
-	}
-	refreshCalc() {
-		const oldFunc = this.func;
-		const codeText = this.inputElem.value;
 
-		// create shortened functions
-		const params = Object.getOwnPropertyNames(Math);
-		const values = params.map(k => Math[k]);
-		params.push("int");
-		values.push(Math.floor);
-
-		// test bytebeat
-		try {
-			this.nextErrType = "compile";
-			this.func = new Function(...params, "t", `return 0, ${codeText.trim() || "undefined"} \n;`).bind(window, ...values);
-			this.nextErrType = "runtime";
-			this.func(0);
-		} catch (err) {
-			this.func = oldFunc;
-			this.showErrorMessage(this.nextErrType, err, 1);
-			return;
-		}
-		this.hideErrorMessage();
-
-		// delete single letter variables to prevent persistent variable errors (covers a good enough range)
-		for (let i = 0; i < 26; i++)
-			delete window[String.fromCharCode(65 + i)], window[String.fromCharCode(97 + i)];
-
-		// generate url
-		let pData = { code: codeText };
-		if (this.sampleRate != 8000)
-			pData.sampleRate = this.sampleRate;
-		if (this.mode != "Bytebeat")
-			pData.mode = this.mode;
-
-		pData = JSON.stringify(pData);
-
-		window.location.hash = "#v3b64" + btoa(pako.deflateRaw(pData, { to: "string" }));
-	}
 	resetTime() {
 		this.setByteSample(0);
 		this.clearCanvas();
@@ -422,17 +452,7 @@ class Bytebeat {
 		this.sampleRateDivisor = div;
 		this.updateSampleRatio();
 	}
-	handleWindowResize(force = false) {
-		let newWidth;
-		if (document.body.clientWidth >= 768 + 4)
-			newWidth = 1024;
-		else
-			newWidth = 512;
-		if (newWidth != this.canvasElem.width || force) {
-			this.canvasElem.width = newWidth;
-			document.getElementById("content").style.maxWidth = (newWidth + 4) + "px";
-		}
-	}
+
 	togglePlay(isPlay) {
 		this.canvasTogglePlay.classList.toggle("canvas-toggleplay-stop", isPlay);
 		if (isPlay) {
@@ -448,13 +468,6 @@ class Bytebeat {
 			}
 		}
 		this.isPlaying = isPlay;
-	}
-	animationFrame() {
-		this.drawGraphics(this.byteSample);
-		if (this.nextErr)
-			this.showErrorMessage(this.nextErrType, this.nextErr);
-
-		window.requestAnimationFrame(this.animationFrame);
 	}
 };
 
