@@ -5,7 +5,10 @@
 
 			this.func = null;
 
-			this.port.onmessage = this.messageHandler.bind(this);
+			this.port.addEventListener("message", this.messageHandler.bind(this));
+			this.port.start();
+
+			this.port.postMessage("message from worklet");
 		}
 
 		messageHandler(e) {

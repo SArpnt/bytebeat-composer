@@ -45,8 +45,8 @@ class Bytebeat {
 		this.errorElem = null;
 
 		this.animationFrame = this.animationFrame.bind(this);
-		document.addEventListener("DOMContentLoaded", async function onDomLoad() {
-			const initAudio = this.initAudioContext();
+		document.addEventListener("DOMContentLoaded", async () => {
+			const initAudioPromise = this.initAudioContext();
 			this.initLibrary();
 			this.initCodeInput();
 			this.initControls();
@@ -55,30 +55,24 @@ class Bytebeat {
 			this.handleWindowResize(true);
 			document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
 
-			await initAudio;
+			await initAudioPromise;
+			this.changeVolume(this.controlVolume);
 			this.refreshCalc();
-		}.bind(this));
+		});
 	}
 
 	async initAudioContext() {
 		this.audioCtx = new AudioContext();
-		this.updateSampleRatio();
 
-		await this.audioCtx.audioWorklet.addModule("audioWorklet.js");
-		this.audioWorklet = new AudioWorkletNode(this.audioCtx, "bytebeat-processor");
-		this.audioWorklet.port.onmessage = this.messageHandler.bind(this);
-		this.audioWorklet.port.postMessage("test");
+		const addModulePromise = this.audioCtx.audioWorklet.addModule("audioWorklet.js");
 
-		const audioGain = this.audioGain = this.audioCtx.createGain();
-		this.changeVolume(this.controlVolume);
-		this.audioWorklet.connect(audioGain);
-
-		audioGain.connect(this.audioCtx.destination);
+		this.audioGain = this.audioCtx.createGain();
+		this.audioGain.connect(this.audioCtx.destination);
 
 		const mediaDest = this.audioCtx.createMediaStreamDestination();
-		const audioRecorder = this.audioRecorder = new MediaRecorder(mediaDest.stream);
-		audioRecorder.ondataavailable = e => this.recordChunks.push(e.data);
-		audioRecorder.onstop = (function saveRecording(e) {
+		this.audioRecorder = new MediaRecorder(mediaDest.stream);
+		this.audioRecorder.ondataavailable = e => this.recordChunks.push(e.data);
+		this.audioRecorder.onstop = (function saveRecording(e) {
 			let file, type;
 			const types = ["audio/webm", "audio/ogg"];
 			const files = ["track.webm", "track.ogg"];
@@ -90,7 +84,15 @@ class Bytebeat {
 			}
 			this.saveData(new Blob(this.recordChunks, { type }), file);
 		}).bind(this);
-		audioGain.connect(mediaDest);
+		this.audioGain.connect(mediaDest);
+
+		await addModulePromise;
+		this.audioWorklet = new AudioWorkletNode(this.audioCtx, "bytebeat-processor");
+		this.audioWorklet.port.addEventListener("message", this.messageHandler.bind(this));
+		this.audioWorklet.port.start();
+		this.audioWorklet.connect(this.audioGain);
+
+		this.audioWorklet.port.postMessage("message from window");
 	}
 	messageHandler(e) {
 		console.info("worklet -> window:", e);
@@ -116,28 +118,28 @@ class Bytebeat {
 
 	initLibrary() {
 		for (let el of document.getElementsByClassName("toggle"))
-			el.onclick = () => $toggle(el.nextElementSibling);
+			el.addEventListener("click", () => $toggle(el.nextElementSibling));
 		const libraryElem = document.getElementById("library");
-		libraryElem.onclick = (function loadLibrary(e) {
+		libraryElem.addEventListener("click", e => {
 			const el = e.target;
 			if (el.tagName === "CODE")
 				this.loadCode(Object.assign({ code: el.innerText }, el.hasAttribute("data-songdata") ? JSON.parse(el.dataset.songdata) : {}));
 			else if (el.classList.contains("code-load")) {
 				const xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = function () {
+				xhr.onreadystatechange = () => {
 					if (xhr.readyState === 4 && xhr.status === 200)
 						this.loadCode(Object.assign(JSON.parse(el.dataset.songdata), { code: xhr.responseText }));
-				}.bind(this);
+				};
 				xhr.open("GET", "library/" + el.dataset.codeFile, true);
 				xhr.setRequestHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 				xhr.send(null);
 			}
-		}).bind(this);
-		libraryElem.onmouseover = function (e) {
+		});
+		libraryElem.addEventListener("mouseover", e => {
 			const el = e.target;
 			if (el.tagName === "CODE")
 				el.title = "Click to play this code";
-		};
+		});
 	}
 
 	initCodeInput() {
@@ -344,12 +346,12 @@ class Bytebeat {
 				for (let y = 0; y < height; y++)
 					imageData.data[((drawLenX * y + x) << 2) + 3] = 255;
 			// draw
-			const iterateOverLine = (function iterateOverLine(bufferElem, nextBufferElemTime, callback) {
+			const iterateOverLine = (bufferElem, nextBufferElemTime, callback) => {
 				const startX = fmod(Math.floor(getXpos(playingForward ? bufferElem.t : nextBufferElemTime + 1)) - imagePos, width);
 				const endX = fmod(Math.ceil(getXpos(playingForward ? nextBufferElemTime : bufferElem.t + 1)) - imagePos, width);
 				for (let xPos = startX; xPos != endX; xPos = fmod(xPos + 1, width))
 					callback(xPos);
-			}).bind(this);
+			};
 
 			for (let i = 0; i < bufferLen; i++) {
 				let bufferElem = this.drawBuffer[i];
