@@ -8,6 +8,7 @@ function $toggle(el) {
 class Bytebeat {
 	constructor() {
 		this.audioCtx = null;
+		this.audioWorklet = null;
 		this.audioGain = null;
 		this.audioRecorder = null;
 		this.recordChunks = [];
@@ -37,20 +38,20 @@ class Bytebeat {
 		this.sampleRate = 8000;
 		this.sampleRateDivisor = 1;
 		this.playSpeed = 1;
-		this.sampleRatio = 1;
+		this.sampleRatio = NaN;
 
 		this.canvasElem = null;
 		this.inputElem = null;
 		this.errorElem = null;
 
 		this.animationFrame = this.animationFrame.bind(this);
-		document.addEventListener("DOMContentLoaded", function onDomLoad() {
+		document.addEventListener("DOMContentLoaded", async function onDomLoad() {
 			this.initLibrary();
 			this.initCodeInput();
 			this.initControls();
 			this.initCanvas();
 			this.refreshCalc();
-			this.initAudioContext();
+			await this.initAudioContext();
 
 			this.handleWindowResize(true);
 			document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
@@ -203,68 +204,25 @@ class Bytebeat {
 			return this.sampleRatio;
 		}
 	}
-	initAudioContext() {
-		this.audioCtx = new (window.AudioContext || window.webkitAudioContext ||
-			window.mozAudioContext || window.oAudioContext || window.msAudioContext)();
-		if (!this.audioCtx.createGain)
-			this.audioCtx.createGain = this.audioCtx.createGainNode;
-		if (!this.audioCtx.createDelay)
-			this.audioCtx.createDelay = this.audioCtx.createDelayNode;
-		if (!this.audioCtx.createScriptProcessor)
-			this.audioCtx.createScriptProcessor = this.audioCtx.createJavaScriptNode;
+	async initAudioContext() {
+		this.audioCtx = new AudioContext();
 		this.updateSampleRatio();
-		const processor = this.audioCtx.createScriptProcessor(this.bufferSize, 1, 1);
-		processor.onaudioprocess = function audioProcess(e) {
-			const chData = e.outputBuffer.getChannelData(0);
-			const chDataLen = chData.length; // for performance
-			if (!chDataLen)
-				return;
-			if (!this.isPlaying) {
-				chData.fill(0);
-				return;
-			}
-			let time = this.sampleRatio * this.audioSample;
-			let byteSample = this.byteSample;
-			for (let i = 0; i < chDataLen; i++) {
-				time += this.sampleRatio;
-				const flooredTime = Math.floor(time / this.sampleRateDivisor) * this.sampleRateDivisor;
-				if (this.lastFlooredTime != flooredTime) {
-					const roundSample = Math.floor(byteSample / this.sampleRateDivisor) * this.sampleRateDivisor;
-					let funcValue;
-					try {
-						funcValue = this.func(roundSample);
-					} catch (err) {
-						this.nextErrType = "runtime";
-						this.nextErr = err;
-						this.lastByteValue = this.lastValue = funcValue = NaN;
-					}
-					if (funcValue != this.lastFuncValue) {
-						if (!isNaN(funcValue)) {
-							if (this.mode == "Bytebeat") {
-								this.lastByteValue = funcValue & 255;
-								this.lastValue = this.lastByteValue / 127.5 - 1;
-							} else if (this.mode == "Signed Bytebeat") {
-								this.lastByteValue = (funcValue + 128) & 255;
-								this.lastValue = this.lastByteValue / 127.5 - 1;
-							} else if (this.mode == "Floatbeat") {
-								this.lastValue = funcValue;
-								this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
-							}
-						}
-						this.drawBuffer.push({ t: roundSample, value: this.lastByteValue });
-					}
-					byteSample += flooredTime - this.lastFlooredTime;
-					this.lastFuncValue = funcValue;
-					this.lastFlooredTime = flooredTime;
-				}
-				chData[i] = this.lastValue;
-			}
-			this.audioSample += chDataLen;
-			this.setByteSample(byteSample, false);
-		}.bind(this);
+
+		await this.audioCtx.audioWorklet.addModule("audioWorklet.js");
+		this.audioWorklet = new AudioWorkletNode(this.audioCtx, "bytebeat-processor");
+		this.audioWorklet.port.postMessage("test");
+		this.audioWorklet.port.onmessage = e => {
+			console.info("recieved from processor:", e.data);
+			if (e.data.drawBuffer)
+				this.drawBuffer = e.data.drawBuffer;
+			if (e.data.byteSample)
+				this.byteSample = e.data.byteSample;
+		};
+
 		const audioGain = this.audioGain = this.audioCtx.createGain();
 		this.changeVolume(this.controlVolume);
-		processor.connect(audioGain);
+		this.audioWorklet.connect(audioGain);
+
 		audioGain.connect(this.audioCtx.destination);
 
 		const mediaDest = this.audioCtx.createMediaStreamDestination();
