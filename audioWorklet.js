@@ -19,14 +19,16 @@
 
 			this.drawBuffer = [];
 
+			// will use
+			this.func = null;
+
 			this.mode = "Bytebeat";
 			this.sampleRate = 8000;
 			this.sampleRateDivisor = 1;
 			this.playSpeed = 1;
 			this.sampleRatio = NaN;
 
-			// will use
-			this.func = null;
+			this.updateSampleRatio();
 
 			this.port.addEventListener("message", this.messageHandler.bind(this));
 			this.port.start();
@@ -36,8 +38,10 @@
 			console.info("window -> worklet:", e);
 			if (e.data.codeText !== undefined)
 				this.refreshCalc(e.data.codeText);
-			if (e.data.sampleRate !== undefined)
+			if (e.data.sampleRate !== undefined) {
 				this.sampleRate = e.data.sampleRate;
+				this.updateSampleRatio();
+			}
 			if (e.data.mode !== undefined)
 				this.mode = e.data.mode;
 			if (e.data.isPlaying !== undefined)
@@ -76,9 +80,9 @@
 			this.port.postMessage({ generateUrl: true, errorMessage: null });
 		}
 		updateSampleRatio() {
-			let flooredTimeOffset = this.lastFlooredTime - Math.floor(this.sampleRatio * this.audioSample);
-			this.sampleRatio = this.sampleRate * this.playSpeed / this.audioCtx.sampleRate;
-			this.lastFlooredTime = Math.floor(this.sampleRatio * this.audioSample) - flooredTimeOffset;
+			//let flooredTimeOffset = this.lastFlooredTime - Math.floor(this.sampleRatio * this.audioSample);
+			this.sampleRatio = this.sampleRate * this.playSpeed / sampleRate;
+			//this.lastFlooredTime = Math.floor(this.sampleRatio * this.audioSample) - flooredTimeOffset;
 			return this.sampleRatio;
 		}
 
@@ -129,7 +133,6 @@
 			}
 			this.audioSample += chDataLen;
 			this.byteSample = byteSample;
-			console.info(this.drawBuffer)
 			return true;
 		}
 	}

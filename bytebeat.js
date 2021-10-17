@@ -14,7 +14,7 @@ class Bytebeat {
 		this.recordChunks = [];
 		this.bufferSize = 0;
 
-		this.audioSample = 0;
+		this.audioSample = 0; // are these needed?
 		this.lastFlooredTime = -1;
 		this.byteSample = 0;
 
@@ -30,9 +30,8 @@ class Bytebeat {
 		this.isPlaying = false;
 		this.isRecording = false;
 
-		this.mode = "Bytebeat";
+		this.mode = "Bytebeat"; // are these needed?
 		this.sampleRate = 8000;
-		this.sampleRateDivisor = 1;
 		this.playSpeed = 1;
 
 		this.canvasElem = null;
