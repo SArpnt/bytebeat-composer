@@ -35,17 +35,18 @@
 		}
 
 		messageHandler(e) {
-			console.info("window -> worklet:", e);
-			if (e.data.codeText !== undefined)
-				this.refreshCalc(e.data.codeText);
-			if (e.data.sampleRate !== undefined) {
-				this.sampleRate = e.data.sampleRate;
+			const data = e.data;
+			console.info("window -> worklet:", data);
+			if (data.codeText !== undefined)
+				this.refreshCalc(data.codeText);
+			if (data.sampleRate !== undefined) {
+				this.sampleRate = data.sampleRate;
 				this.updateSampleRatio();
 			}
-			if (e.data.mode !== undefined)
-				this.mode = e.data.mode;
-			if (e.data.isPlaying !== undefined)
-				this.isPlaying = e.data.isPlaying;
+			if (data.mode !== undefined)
+				this.mode = data.mode;
+			if (data.isPlaying !== undefined)
+				this.isPlaying = data.isPlaying;
 		}
 
 		refreshCalc(codeText) {

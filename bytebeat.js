@@ -88,13 +88,14 @@ class Bytebeat {
 		this.audioWorklet.connect(this.audioGain);
 	}
 	messageHandler(e) {
-		console.info("worklet -> window:", e);
-		if (e.data.drawBuffer !== undefined)
-			this.drawBuffer = e.data.drawBuffer;
-		if (e.data.byteSample !== undefined)
-			this.byteSample = e.data.byteSample;
+		const data = e.data;
+		console.info("worklet -> window:", data);
+		if (data.drawBuffer !== undefined)
+			this.drawBuffer = data.drawBuffer;
+		if (data.byteSample !== undefined)
+			this.byteSample = data.byteSample;
 
-		if (e.data.generateUrl)
+		if (data.generateUrl)
 			this.generateUrl();
 	}
 	get saveData() {
