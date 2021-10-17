@@ -17,10 +17,6 @@ class Bytebeat {
 		this.audioSample = 0;
 		this.lastFlooredTime = -1;
 		this.byteSample = 0;
-		this.lastValue = NaN;
-		this.lastByteValue = NaN;
-		this.lastFuncValue = null;
-		this.func = () => 0;
 
 		this.nextErrType = null;
 		this.nextErr = null;
@@ -38,7 +34,6 @@ class Bytebeat {
 		this.sampleRate = 8000;
 		this.sampleRateDivisor = 1;
 		this.playSpeed = 1;
-		this.sampleRatio = NaN;
 
 		this.canvasElem = null;
 		this.inputElem = null;
@@ -48,7 +43,7 @@ class Bytebeat {
 		document.addEventListener("DOMContentLoaded", async () => {
 			const initAudioPromise = this.initAudioContext();
 			this.initLibrary();
-			this.initCodeInput();
+			let pData = this.initCodeInput();
 			this.initControls();
 			this.initCanvas();
 
@@ -57,7 +52,8 @@ class Bytebeat {
 
 			await initAudioPromise;
 			this.changeVolume(this.controlVolume);
-			this.refreshCalc();
+			if (pData !== null)
+				this.loadCode(pData, true, false);
 		});
 	}
 
@@ -91,15 +87,16 @@ class Bytebeat {
 		this.audioWorklet.port.addEventListener("message", this.messageHandler.bind(this));
 		this.audioWorklet.port.start();
 		this.audioWorklet.connect(this.audioGain);
-
-		this.audioWorklet.port.postMessage("message from window");
 	}
 	messageHandler(e) {
 		console.info("worklet -> window:", e);
-		if (e.data.drawBuffer)
+		if (e.data.drawBuffer !== undefined)
 			this.drawBuffer = e.data.drawBuffer;
-		if (e.data.byteSample)
+		if (e.data.byteSample !== undefined)
 			this.byteSample = e.data.byteSample;
+
+		if (e.data.generateUrl)
+			this.generateUrl();
 	}
 	get saveData() {
 		const a = document.createElement("a");
@@ -168,8 +165,7 @@ class Bytebeat {
 				console.error("Couldn't load data from url:", err);
 				pData = null;
 			}
-			if (pData !== null)
-				this.loadCode(pData, false, false);
+			return pData;
 		} else if (window.location.hash) {
 			console.error("Unrecognized url data");
 		}
@@ -190,33 +186,15 @@ class Bytebeat {
 	}
 
 	refreshCalc() {
-		const oldFunc = this.func;
 		const codeText = this.inputElem.value;
 
-		// create shortened functions
-		const params = Object.getOwnPropertyNames(Math);
-		const values = params.map(k => Math[k]);
-		params.push("int");
-		values.push(Math.floor);
+		this.audioWorklet.port.postMessage({
+			codeText: codeText.trim(),
+		});
+	}
+	generateUrl() {
+		const codeText = this.inputElem.value;
 
-		// test bytebeat
-		try {
-			this.nextErrType = "compile";
-			this.func = new Function(...params, "t", `return 0, ${codeText.trim() || "undefined"} \n;`).bind(window, ...values);
-			this.nextErrType = "runtime";
-			this.func(0);
-		} catch (err) {
-			this.func = oldFunc;
-			this.showErrorMessage(this.nextErrType, err, 1);
-			return;
-		}
-		this.hideErrorMessage();
-
-		// delete single letter variables to prevent persistent variable errors (covers a good enough range)
-		for (let i = 0; i < 26; i++)
-			delete window[String.fromCharCode(65 + i)], window[String.fromCharCode(97 + i)];
-
-		// generate url
 		let pData = { code: codeText };
 		if (this.sampleRate != 8000)
 			pData.sampleRate = this.sampleRate;
@@ -226,14 +204,6 @@ class Bytebeat {
 		pData = JSON.stringify(pData);
 
 		window.location.hash = "#v3b64" + btoa(pako.deflateRaw(pData, { to: "string" }));
-	}
-	updateSampleRatio() {
-		if (this.audioCtx) {
-			let flooredTimeOffset = this.lastFlooredTime - Math.floor(this.sampleRatio * this.audioSample);
-			this.sampleRatio = this.sampleRate * this.playSpeed / this.audioCtx.sampleRate;
-			this.lastFlooredTime = Math.floor(this.sampleRatio * this.audioSample) - flooredTimeOffset;
-			return this.sampleRatio;
-		}
 	}
 	handleWindowResize(force = false) {
 		let newWidth;
@@ -442,17 +412,16 @@ class Bytebeat {
 			this.lastFuncValue = undefined;
 		}
 	}
-	setPlaySpeed(speed) {
-		this.playSpeed = speed;
-		this.updateSampleRatio();
+	setPlaySpeed(playSpeed) {
+		this.playSpeed = playSpeed;
+		this.audioWorklet.port.postMessage({ playSpeed });
 	}
-	setSampleRate(rate) {
-		this.sampleRate = rate;
-		this.updateSampleRatio();
+	setSampleRate(sampleRate) {
+		this.sampleRate = sampleRate;
+		this.audioWorklet.port.postMessage({ sampleRate });
 	}
-	setSampleRateDivisor(div) {
-		this.sampleRateDivisor = div;
-		this.updateSampleRatio();
+	setSampleRateDivisor(sampleRateDivisor) {
+		this.audioWorklet.port.postMessage({ sampleRateDivisor });
 	}
 
 	togglePlay(isPlay) {
@@ -470,6 +439,7 @@ class Bytebeat {
 			}
 		}
 		this.isPlaying = isPlay;
+		this.audioWorklet.port.postMessage({ isPlaying: isPlay });
 	}
 };
 
