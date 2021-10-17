@@ -52,7 +52,8 @@ class Bytebeat {
 			await initAudioPromise;
 			this.changeVolume(this.controlVolume);
 			if (pData !== null)
-				this.loadCode(pData, true, false);
+				this.loadCode(pData, false, false);
+			this.refreshCalc();
 		});
 	}
 
@@ -91,7 +92,7 @@ class Bytebeat {
 		const data = e.data;
 		console.info("worklet -> window:", data);
 		if (data.drawBuffer !== undefined)
-			this.drawBuffer = data.drawBuffer;
+			this.drawBuffer = this.drawBuffer.concat(data.drawBuffer);
 		if (data.byteSample !== undefined)
 			this.byteSample = data.byteSample;
 
@@ -169,6 +170,7 @@ class Bytebeat {
 		} else if (window.location.hash) {
 			console.error("Unrecognized url data");
 		}
+		return null;
 	}
 
 	initControls() {

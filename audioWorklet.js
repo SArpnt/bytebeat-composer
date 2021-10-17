@@ -17,8 +17,6 @@
 			this.lastValue;
 			this.lastFuncValue;
 
-			this.drawBuffer = [];
-
 			// will use
 			this.func = null;
 
@@ -37,16 +35,34 @@
 		messageHandler(e) {
 			const data = e.data;
 			console.info("window -> worklet:", data);
+
+			let updateSampleRatio = false;
+			// set vars
+			for (let v of [
+				"mode",
+				"isPlaying",
+				"sampleRate",
+				"sampleRateDivisor",
+				"playSpeed",
+			])
+				if (data[v] !== undefined) {
+					this[v] = data[v];
+					if ([
+						"sampleRate",
+						"sampleRateDivisor",
+						"playSpeed",
+					].includes(v))
+						updateSampleRatio = true;
+				}
+
+			// run functions
+
+			// other
 			if (data.codeText !== undefined)
 				this.refreshCalc(data.codeText);
-			if (data.sampleRate !== undefined) {
-				this.sampleRate = data.sampleRate;
+
+			if (updateSampleRatio)
 				this.updateSampleRatio();
-			}
-			if (data.mode !== undefined)
-				this.mode = data.mode;
-			if (data.isPlaying !== undefined)
-				this.isPlaying = data.isPlaying;
 		}
 
 		refreshCalc(codeText) {
@@ -98,6 +114,7 @@
 			}
 			let time = this.sampleRatio * this.audioSample;
 			let byteSample = this.byteSample;
+			let drawBuffer = [];
 			for (let i = 0; i < chDataLen; i++) {
 				time += this.sampleRatio;
 				const flooredTime = Math.floor(time / this.sampleRateDivisor) * this.sampleRateDivisor;
@@ -124,7 +141,7 @@
 								this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
 							}
 						}
-						this.drawBuffer.push({ t: roundSample, value: this.lastByteValue });
+						drawBuffer.push({ t: roundSample, value: this.lastByteValue });
 					}
 					byteSample += flooredTime - this.lastFlooredTime;
 					this.lastFuncValue = funcValue;
@@ -134,6 +151,7 @@
 			}
 			this.audioSample += chDataLen;
 			this.byteSample = byteSample;
+			this.port.postMessage({ byteSample, drawBuffer })
 			return true;
 		}
 	}
