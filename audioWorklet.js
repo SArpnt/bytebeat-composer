@@ -9,8 +9,8 @@
 
 			this.sampleRatio = NaN;
 
-			this.lastByteValue = NaN;
-			this.lastValue = NaN;
+			this.lastByteValue = null;
+			this.lastValue = 0;
 			this.lastFuncValue = null;
 
 			this.isPlaying = false;
@@ -59,8 +59,8 @@
 			this.port.postMessage({ [clear ? "clearCanvas" : "clearDrawBuffer"]: true });
 			this.audioSample = 0;
 			this.lastFlooredTime = -1;
-			this.lastValue = NaN;
-			this.lastByteValue = NaN;
+			this.lastValue = 0;
+			this.lastByteValue = null;
 			this.lastFuncValue = null;
 		}
 		refreshCalc(codeText) {
@@ -129,10 +129,12 @@
 						funcValue = this.func(roundSample);
 					} catch (err) {
 						this.port.postMessage({ errorMessage: { type: "runtime", err } });
-						this.lastByteValue = this.lastValue = funcValue = NaN;
+						funcValue = NaN;
 					}
 					if (funcValue != this.lastFuncValue) {
-						if (!isNaN(funcValue)) {
+						if (isNaN(funcValue))
+							this.lastByteValue = NaN;
+						else {
 							if (this.mode == "Bytebeat") {
 								this.lastByteValue = funcValue & 255;
 								this.lastValue = this.lastByteValue / 127.5 - 1;
