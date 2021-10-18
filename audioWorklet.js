@@ -56,6 +56,15 @@
 				}
 
 			// run functions
+			for (let v of [
+				"setByteSample",
+			])
+				if (data[v] !== undefined) {
+					if (Array.isArray(data[v]))
+						this[v](...data[v]);
+					else
+						this[v]();
+				}
 
 			// other
 			if (data.codeText !== undefined)
@@ -65,6 +74,17 @@
 				this.updateSampleRatio();
 		}
 
+		setByteSample(value, jump = true) {
+			this.byteSample = value;
+			if (jump) {
+				this.port.postMessage({ clearCanvas: true });
+				this.audioSample = 0;
+				this.lastFlooredTime = -1;
+				this.lastValue = NaN;
+				this.lastByteValue = NaN;
+				this.lastFuncValue = undefined;
+			}
+		}
 		refreshCalc(codeText) {
 			// create shortened functions
 			const params = Object.getOwnPropertyNames(Math);
@@ -97,9 +117,13 @@
 			this.port.postMessage({ generateUrl: true, errorMessage: null });
 		}
 		updateSampleRatio() {
-			//let flooredTimeOffset = this.lastFlooredTime - Math.floor(this.sampleRatio * this.audioSample);
+			let flooredTimeOffset;
+			if (isNaN(this.sampleRatio))
+				flooredTimeOffset = 0;
+			else
+				flooredTimeOffset = this.lastFlooredTime - Math.floor(this.sampleRatio * this.audioSample);
 			this.sampleRatio = this.sampleRate * this.playSpeed / sampleRate;
-			//this.lastFlooredTime = Math.floor(this.sampleRatio * this.audioSample) - flooredTimeOffset;
+			this.lastFlooredTime = Math.floor(this.sampleRatio * this.audioSample) - flooredTimeOffset;
 			return this.sampleRatio;
 		}
 
@@ -151,7 +175,7 @@
 			}
 			this.audioSample += chDataLen;
 			this.byteSample = byteSample;
-			this.port.postMessage({ byteSample, drawBuffer })
+			this.port.postMessage({ byteSample, drawBuffer });
 			return true;
 		}
 	}

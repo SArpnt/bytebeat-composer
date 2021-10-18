@@ -14,10 +14,6 @@ class Bytebeat {
 		this.recordChunks = [];
 		this.bufferSize = 0;
 
-		this.audioSample = 0; // are these needed?
-		this.lastFlooredTime = -1;
-		this.byteSample = 0;
-
 		this.nextErrType = null;
 		this.nextErr = null;
 		this.errorPriority = -Infinity;
@@ -25,12 +21,13 @@ class Bytebeat {
 		this.canvasCtx = null;
 		this.drawScale = 5;
 		this.drawBuffer = [];
+		this.byteSample = 0;
 		this.drawImageData = null;
 
 		this.isPlaying = false;
 		this.isRecording = false;
 
-		this.mode = "Bytebeat"; // are these needed?
+		this.mode = "Bytebeat";
 		this.sampleRate = 8000;
 		this.playSpeed = 1;
 
@@ -90,11 +87,19 @@ class Bytebeat {
 	}
 	messageHandler(e) {
 		const data = e.data;
-		console.info("worklet -> window:", data);
+		if (data.drawBuffer === undefined)
+			console.info("worklet -> window:", data);
+		if (data.clearCanvas) {
+			this.drawBuffer = [];
+			this.drawImageData = null;
+		}
+
 		if (data.drawBuffer !== undefined)
 			this.drawBuffer = this.drawBuffer.concat(data.drawBuffer);
-		if (data.byteSample !== undefined)
+		if (data.byteSample !== undefined) {
+			this.setByteSample(data.byteSample, false, false);
 			this.byteSample = data.byteSample;
+		}
 
 		if (data.generateUrl)
 			this.generateUrl();
@@ -401,18 +406,11 @@ class Bytebeat {
 		if (!this.isPlaying)
 			this.canvasTogglePlay.classList.add("canvas-toggleplay-show");
 	}
-	setByteSample(value, jump = true) {
+	setByteSample(value, send = true, jump = true) {
 		this.controlCounter.placeholder = value;
 		this.byteSample = value;
-		if (jump) {
-			this.drawBuffer = [];
-			this.drawImageData = null;
-			this.audioSample = 0;
-			this.lastFlooredTime = -1;
-			this.lastValue = NaN;
-			this.lastByteValue = NaN;
-			this.lastFuncValue = undefined;
-		}
+		if (send)
+			this.audioWorklet.port.postMessage({ setByteSample: [value, jump] });
 	}
 	setPlaySpeed(playSpeed) {
 		this.playSpeed = playSpeed;
