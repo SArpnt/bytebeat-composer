@@ -3,28 +3,24 @@
 		constructor() {
 			super();
 
-			// need to check
-			this.audioSample = 0;
+			this.audioSample = 0; // TODO: is this needed? might be better to use currentTime
 			this.lastFlooredTime = -1;
 			this.byteSample = 0;
 
-			this.nextErrType = null;
-			this.nextErr = null;
+			this.sampleRatio = NaN;
+
+			this.lastByteValue = NaN;
+			this.lastValue = NaN;
+			this.lastFuncValue = null;
 
 			this.isPlaying = false;
 
-			this.lastByteValue;
-			this.lastValue;
-			this.lastFuncValue;
-
-			// will use
 			this.func = null;
-
 			this.mode = "Bytebeat";
 			this.sampleRate = 8000;
 			this.sampleRateDivisor = 1;
 			this.playSpeed = 1;
-			this.sampleRatio = NaN;
+
 
 			this.updateSampleRatio();
 
@@ -65,7 +61,7 @@
 			this.lastFlooredTime = -1;
 			this.lastValue = NaN;
 			this.lastByteValue = NaN;
-			this.lastFuncValue = undefined;
+			this.lastFuncValue = null;
 		}
 		refreshCalc(codeText) {
 			// create shortened functions
@@ -75,6 +71,8 @@
 			values.push(Math.floor);
 			params.push("window");
 			values.push(globalThis);
+
+			// TODO: block out vars currentFrame, currentTime, sampleRate, registerProcessor
 
 			// test bytebeat
 			{
@@ -87,7 +85,7 @@
 					this.func(0);
 				} catch (err) {
 					this.func = oldFunc;
-					this.port.postMessage({ errorMessage: { errType, err } });
+					this.port.postMessage({ errorMessage: { type: errType, err, priority: 1 } });
 					return;
 				}
 			}
@@ -130,8 +128,7 @@
 					try {
 						funcValue = this.func(roundSample);
 					} catch (err) {
-						this.nextErrType = "runtime";
-						this.nextErr = err;
+						this.port.postMessage({ errorMessage: { type: "runtime", err } });
 						this.lastByteValue = this.lastValue = funcValue = NaN;
 					}
 					if (funcValue != this.lastFuncValue) {

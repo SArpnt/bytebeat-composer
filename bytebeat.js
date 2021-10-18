@@ -16,6 +16,7 @@ class Bytebeat {
 
 		this.nextErrType = null;
 		this.nextErr = null;
+		this.nextErrPriority = undefined;
 		this.errorPriority = -Infinity;
 
 		this.canvasCtx = null;
@@ -88,17 +89,27 @@ class Bytebeat {
 	messageHandler(e) {
 		const data = e.data;
 		if (data.clearCanvas)
-			this.clearCanvas()
+			this.clearCanvas();
 		else if (data.clearDrawBuffer)
-			this.clearDrawBuffer()
+			this.clearDrawBuffer();
 
-		if (data.drawBuffer !== undefined)
-			this.drawBuffer = this.drawBuffer.concat(data.drawBuffer);
 		if (data.byteSample !== undefined)
 			this.setByteSample(data.byteSample, false);
+		if (data.drawBuffer !== undefined)
+			this.drawBuffer = this.drawBuffer.concat(data.drawBuffer);
 
 		if (data.generateUrl)
 			this.generateUrl();
+
+		if (data.errorMessage !== undefined) {
+			if (data.errorMessage === null)
+				this.hideErrorMessage();
+			else {
+				this.nextErrType = data.errorMessage.type;
+				this.nextErr = data.errorMessage.err;
+				this.nextErrPriority = data.errorMessage.priority;
+			}
+		}
 	}
 	get saveData() {
 		const a = document.createElement("a");
@@ -191,9 +202,7 @@ class Bytebeat {
 	refreshCalc() {
 		const codeText = this.inputElem.value;
 
-		this.audioWorklet.port.postMessage({
-			codeText: codeText.trim(),
-		});
+		this.audioWorklet.port.postMessage({ codeText: codeText.trim() });
 	}
 	generateUrl() {
 		const codeText = this.inputElem.value;
@@ -222,7 +231,7 @@ class Bytebeat {
 	animationFrame() {
 		this.drawGraphics(this.byteSample);
 		if (this.nextErr)
-			this.showErrorMessage(this.nextErrType, this.nextErr);
+			this.showErrorMessage(this.nextErrType, this.nextErr, this.nextErrPriority);
 
 		window.requestAnimationFrame(this.animationFrame);
 	}
@@ -243,7 +252,8 @@ class Bytebeat {
 		document.getElementById("control-samplerate").value = rate;
 	}
 	applyMode(mode) {
-		this.mode = document.getElementById("control-mode").value = mode;
+		document.getElementById("control-mode").value = mode;
+		this.setMode(mode);
 	}
 
 	rec() {
@@ -386,6 +396,7 @@ class Bytebeat {
 
 			this.nextErr = null;
 			this.nextErrType = null;
+			this.nextErrPriority = undefined;
 			this.errorPriority = -Infinity;
 		}
 	}
@@ -396,6 +407,7 @@ class Bytebeat {
 
 			this.nextErr = null;
 			this.nextErrType = null;
+			this.nextErrPriority = undefined;
 			this.errorPriority = priority;
 		}
 	}
@@ -412,9 +424,9 @@ class Bytebeat {
 		if (send)
 			this.audioWorklet.port.postMessage({ setByteSample: [value, clear] });
 	}
-	setPlaySpeed(playSpeed) {
-		this.playSpeed = playSpeed;
-		this.audioWorklet.port.postMessage({ playSpeed, updateSampleRatio: true });
+	setMode(mode) {
+		this.mode = mode;
+		this.audioWorklet.port.postMessage({ mode });
 	}
 	setSampleRate(sampleRate) {
 		this.sampleRate = sampleRate;
@@ -422,6 +434,10 @@ class Bytebeat {
 	}
 	setSampleRateDivisor(sampleRateDivisor) {
 		this.audioWorklet.port.postMessage({ sampleRateDivisor, updateSampleRatio: true });
+	}
+	setPlaySpeed(playSpeed) {
+		this.playSpeed = playSpeed;
+		this.audioWorklet.port.postMessage({ playSpeed, updateSampleRatio: true });
 	}
 
 	togglePlay(isPlay) {

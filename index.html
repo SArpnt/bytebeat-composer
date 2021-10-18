@@ -32,7 +32,7 @@
 					--><button id="control-scaleup" onclick="bytebeat.changeScale(1);">-</button>
 				</span>
 				<span class="control-group">
-					<select id="control-mode" onchange="bytebeat.mode = this.value;">
+					<select id="control-mode" onchange="bytebeat.setMode(this.value);">
 						<option value="Bytebeat" selected>Bytebeat</option>
 						<option value="Signed Bytebeat">Signed Bytebeat</option>
 						<option value="Floatbeat">Floatbeat</option>
