@@ -107,7 +107,7 @@
 			return this.sampleRatio;
 		}
 
-		process(inputs, outputs, parameters) {
+		process(inputs, outputs, parameters) { // TODO: stop this from blocking messages when lagging
 			const chData = outputs[0][0];
 			const chDataLen = chData.length; // for performance
 			if (!chDataLen)
