@@ -24,11 +24,11 @@
 
 			this.updateSampleRatio();
 
-			this.port.addEventListener("message", this.messageHandler.bind(this));
+			this.port.addEventListener("message", this.handleMessage.bind(this));
 			this.port.start();
 		}
 
-		messageHandler(e) {
+		handleMessage(e) {
 			const data = e.data;
 
 			// set vars

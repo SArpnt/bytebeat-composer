@@ -82,11 +82,11 @@ class Bytebeat {
 
 		await addModulePromise;
 		this.audioWorklet = new AudioWorkletNode(this.audioCtx, "bytebeat-processor");
-		this.audioWorklet.port.addEventListener("message", this.messageHandler.bind(this));
+		this.audioWorklet.port.addEventListener("message", this.handleMessage.bind(this));
 		this.audioWorklet.port.start();
 		this.audioWorklet.connect(this.audioGain);
 	}
-	messageHandler(e) {
+	handleMessage(e) {
 		const data = e.data;
 		if (data.clearCanvas)
 			this.clearCanvas();
