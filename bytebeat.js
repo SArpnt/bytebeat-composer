@@ -87,19 +87,15 @@ class Bytebeat {
 	}
 	messageHandler(e) {
 		const data = e.data;
-		if (data.drawBuffer === undefined)
-			console.info("worklet -> window:", data);
-		if (data.clearCanvas) {
-			this.drawBuffer = [];
-			this.drawImageData = null;
-		}
+		if (data.clearCanvas)
+			this.clearCanvas()
+		else if (data.clearDrawBuffer)
+			this.clearDrawBuffer()
 
 		if (data.drawBuffer !== undefined)
 			this.drawBuffer = this.drawBuffer.concat(data.drawBuffer);
-		if (data.byteSample !== undefined) {
-			this.setByteSample(data.byteSample, false, false);
-			this.byteSample = data.byteSample;
-		}
+		if (data.byteSample !== undefined)
+			this.setByteSample(data.byteSample, false);
 
 		if (data.generateUrl)
 			this.generateUrl();
@@ -276,6 +272,11 @@ class Bytebeat {
 
 	clearCanvas() {
 		this.canvasCtx.fillRect(0, 0, this.canvasElem.width, this.canvasElem.height);
+		this.clearDrawBuffer();
+	}
+	clearDrawBuffer() {
+		this.drawBuffer = [];
+		this.drawImageData = null;
 	}
 	drawGraphics(endTime) {
 		const bufferLen = this.drawBuffer.length;
@@ -400,28 +401,27 @@ class Bytebeat {
 	}
 
 	resetTime() {
-		this.setByteSample(0);
-		this.clearCanvas();
+		this.setByteSample(0, true, true);
 		this.timeCursor.style.cssText = "display: none;";
 		if (!this.isPlaying)
 			this.canvasTogglePlay.classList.add("canvas-toggleplay-show");
 	}
-	setByteSample(value, send = true, jump = true) {
+	setByteSample(value, send = true, clear = false) {
 		this.controlCounter.placeholder = value;
 		this.byteSample = value;
 		if (send)
-			this.audioWorklet.port.postMessage({ setByteSample: [value, jump] });
+			this.audioWorklet.port.postMessage({ setByteSample: [value, clear] });
 	}
 	setPlaySpeed(playSpeed) {
 		this.playSpeed = playSpeed;
-		this.audioWorklet.port.postMessage({ playSpeed });
+		this.audioWorklet.port.postMessage({ playSpeed, updateSampleRatio: true });
 	}
 	setSampleRate(sampleRate) {
 		this.sampleRate = sampleRate;
-		this.audioWorklet.port.postMessage({ sampleRate });
+		this.audioWorklet.port.postMessage({ sampleRate, updateSampleRatio: true });
 	}
 	setSampleRateDivisor(sampleRateDivisor) {
-		this.audioWorklet.port.postMessage({ sampleRateDivisor });
+		this.audioWorklet.port.postMessage({ sampleRateDivisor, updateSampleRatio: true });
 	}
 
 	togglePlay(isPlay) {

@@ -34,9 +34,7 @@
 
 		messageHandler(e) {
 			const data = e.data;
-			console.info("window -> worklet:", data);
 
-			let updateSampleRatio = false;
 			// set vars
 			for (let v of [
 				"mode",
@@ -45,45 +43,29 @@
 				"sampleRateDivisor",
 				"playSpeed",
 			])
-				if (data[v] !== undefined) {
+				if (data[v] !== undefined)
 					this[v] = data[v];
-					if ([
-						"sampleRate",
-						"sampleRateDivisor",
-						"playSpeed",
-					].includes(v))
-						updateSampleRatio = true;
-				}
 
 			// run functions
-			for (let v of [
-				"setByteSample",
-			])
-				if (data[v] !== undefined) {
-					if (Array.isArray(data[v]))
-						this[v](...data[v]);
-					else
-						this[v]();
-				}
+			if (data.setByteSample !== undefined)
+				this.setByteSample(...data.setByteSample);
 
 			// other
 			if (data.codeText !== undefined)
 				this.refreshCalc(data.codeText);
 
-			if (updateSampleRatio)
+			if (data.updateSampleRatio)
 				this.updateSampleRatio();
 		}
 
-		setByteSample(value, jump = true) {
+		setByteSample(value, clear = false) {
 			this.byteSample = value;
-			if (jump) {
-				this.port.postMessage({ clearCanvas: true });
-				this.audioSample = 0;
-				this.lastFlooredTime = -1;
-				this.lastValue = NaN;
-				this.lastByteValue = NaN;
-				this.lastFuncValue = undefined;
-			}
+			this.port.postMessage({ [clear ? "clearCanvas" : "clearDrawBuffer"]: true });
+			this.audioSample = 0;
+			this.lastFlooredTime = -1;
+			this.lastValue = NaN;
+			this.lastByteValue = NaN;
+			this.lastFuncValue = undefined;
 		}
 		refreshCalc(codeText) {
 			// create shortened functions
