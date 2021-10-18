@@ -72,7 +72,7 @@
 			params.push("window");
 			values.push(globalThis);
 
-			// TODO: block out vars currentFrame, currentTime, sampleRate, registerProcessor
+			// TODO: block out vars ["currentFrame", "currentTime", "registerProcessor", "sampleRate", "AudioWorkletGlobalScope", "AudioWorkletProcessor"]
 
 			// test bytebeat
 			{
