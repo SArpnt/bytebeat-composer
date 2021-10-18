@@ -436,8 +436,10 @@ class Bytebeat {
 		this.audioWorklet.port.postMessage({ sampleRateDivisor, updateSampleRatio: true });
 	}
 	setPlaySpeed(playSpeed) {
-		this.playSpeed = playSpeed;
-		this.audioWorklet.port.postMessage({ playSpeed, updateSampleRatio: true });
+		if (this.playSpeed != playSpeed) {
+			this.playSpeed = playSpeed;
+			this.audioWorklet.port.postMessage({ playSpeed, updateSampleRatio: true });
+		}
 	}
 
 	togglePlay(isPlay) {
