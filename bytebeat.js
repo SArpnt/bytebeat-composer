@@ -296,34 +296,61 @@ class Bytebeat {
 		const
 			width = this.canvasElem.width,
 			height = this.canvasElem.height;
-		const
-			startTime = this.drawBuffer[0].t,
-			lenTime = endTime - startTime;
 
 		const
 			fmod = (a, b) => ((a % b) + b) % b,
 			getXpos = t => t / (1 << this.drawScale),
+			getTimeFromXpos = x => x * (1 << this.drawScale),
 			playingForward = this.playSpeed > 0;
 
-		const
-			startXPos = fmod(getXpos(startTime), width), // in canvas bounds
-			endXPos = startXPos + getXpos(lenTime); // relative to startXPos, can be outside canvas bounds
+		let
+			startTime = this.drawBuffer[0].t,
+			lenTime = endTime - startTime,
+			startXPos = fmod(getXpos(startTime), width),
+			endXPos = startXPos + getXpos(lenTime);
 
 		{
-			const drawStartX = Math.floor(startXPos);
-			const drawEndX = Math.floor(endXPos);
-			const drawLenX = Math.abs(drawEndX - drawStartX) + 1;
+			let drawStartX = Math.floor(startXPos);
+			let drawEndX = Math.floor(endXPos);
+			let drawLenX = Math.abs(drawEndX - drawStartX) + 1;
+			let drawOverflow = false;
+			// clip draw area if too large
+			if (drawLenX > width) { // TODO: put this into a better section so the variables don't all have to be set again
+				startTime = getTimeFromXpos(getXpos(endTime) - width);
+				let sliceIndex = 0;
+				for (let i in this.drawBuffer) { // TODO: replace this with binary search
+					if ((this.drawBuffer[i + 1]?.t ?? endTime) <= startTime)
+						sliceIndex += 1;
+					else {
+						this.drawBuffer[i].t = startTime;
+						this.drawBuffer = this.drawBuffer.slice(sliceIndex);
+						break;
+					}
+				}
+				lenTime = endTime - startTime;
+				startXPos = fmod(getXpos(startTime), width);
+				endXPos = startXPos + getXpos(lenTime);
+				drawStartX = Math.ceil(startXPos); // this is a bit of a hack, variables won't have normal expected behavior
+				// i can only get away with this because the other vars aren't used
+				// the proper solution would be to somehow round up startTime by a pixel
+				drawEndX = Math.floor(endXPos);
+				drawLenX = Math.abs(drawEndX - drawStartX) + 1;
+				drawOverflow = true;
+			}
+
 			const imagePos = Math.min(drawStartX, drawEndX);
 			// create imageData
 			let imageData = this.canvasCtx.createImageData(drawLenX, height);
 			// create / add drawimageData
 			if (this.drawScale) { // full zoom can't have multiple samples on one pixel
 				if (this.drawImageData) {
-					let x = playingForward ? 0 : drawLenX - 1;
-					for (let y = 0; y < height; y++) {
-						imageData.data[(drawLenX * y + x) << 2] = this.drawImageData.data[y << 2];
-						imageData.data[((drawLenX * y + x) << 2) + 1] = this.drawImageData.data[(y << 2) + 1];
-						imageData.data[((drawLenX * y + x) << 2) + 2] = this.drawImageData.data[(y << 2) + 2];
+					if (!drawOverflow) {
+						let x = playingForward ? 0 : drawLenX - 1;
+						for (let y = 0; y < height; y++) {
+							imageData.data[(drawLenX * y + x) << 2] = this.drawImageData.data[y << 2];
+							imageData.data[((drawLenX * y + x) << 2) + 1] = this.drawImageData.data[(y << 2) + 1];
+							imageData.data[((drawLenX * y + x) << 2) + 2] = this.drawImageData.data[(y << 2) + 2];
+						}
 					}
 				} else
 					this.drawImageData = this.canvasCtx.createImageData(1, height);
