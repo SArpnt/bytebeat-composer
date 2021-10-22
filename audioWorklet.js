@@ -144,6 +144,8 @@
 							} else if (this.mode == "Floatbeat") {
 								this.lastValue = funcValue;
 								this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
+							} else {
+								this.lastByteValue = NaN;
 							}
 						}
 						drawBuffer.push({ t: roundSample, value: this.lastByteValue });
