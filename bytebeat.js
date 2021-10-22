@@ -45,7 +45,7 @@ class Bytebeat {
 			document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
 
 			await initAudioPromise;
-			this.changeVolume(this.controlVolume);
+			this.setVolume(this.controlVolume);
 			if (pData !== null)
 				this.loadCode(pData, false, false);
 			this.refreshCalc();
@@ -283,8 +283,8 @@ class Bytebeat {
 			this.toggleTimeCursor();
 		}
 	}
-	changeVolume(el) {
-		const fraction = parseInt(el.value) / parseInt(el.max);
+	setVolume({ value, max }) {
+		const fraction = parseInt(value) / parseInt(max);
 		this.audioGain.gain.value = fraction * fraction;
 	}
 

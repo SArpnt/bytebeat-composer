@@ -55,7 +55,7 @@
 					<span class="text"><label for="control-counter-value">t</label>=</span><input title="t (time)" name="control-counter-value" id="control-counter-value" type="number" placeholder="0" style="width: 8em;" onchange="bytebeat.setByteSample(+this.value); this.value = '';"></input>
 				</span>
 				<span class="control-group">
-					<label for="control-volume" class="text">Volume:</label><input title="Volume" name="control-volume" id="control-volume" type="range" min="0" max="100" value="35" oninput="bytebeat.changeVolume(this);">
+					<label for="control-volume" class="text">Volume:</label><input title="Volume" name="control-volume" id="control-volume" type="range" min="0" max="100" value="35" oninput="bytebeat.setVolume(this);">
 				</span>
 			</div>
 			<div id="error"></div>
