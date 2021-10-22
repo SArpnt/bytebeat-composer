@@ -155,6 +155,24 @@ body {
 	width: 100%;
 }
 
+.text-section {
+	margin: 0 0 8px 8px;
+	font-size: 12px;
+}
+
+figure.figure-list {
+	margin-inline: 0;
+}
+
+ul {
+	padding: 0 0 0 12px;
+	margin: 0;
+}
+
+#library li {
+	padding-bottom: .6em;
+}
+
 code {
 	color: #fc4;
 	word-wrap: break-word;
@@ -170,23 +188,13 @@ code {
 	cursor: pointer;
 }
 
-
-.toggle {
+summary {
 	cursor: pointer;
 	font-weight: bold;
 	margin: 5px 0;
 }
 
-li {
-	padding-bottom: 7px;
-}
-
-.paragraph {
-	margin: 0 0 8px 8px;
-	font-size: 12px;
-}
-
-.samplerate {
+.samplerate { /* TODO: change library class names to be less confusing */
 	font-size: 11px;
 	color: #47d738;
 	cursor: default;
@@ -202,15 +210,10 @@ li {
 	color: yellow;
 }
 
-ul {
-	padding: 0 0 0 12px;
-	margin: 0;
-}
-
 
 a, a:visited {
 	color: #88d2fb;
 }
-a:hover, .toggle:hover, code:hover {
+a:hover, summary:hover, code:hover {
 	color: #ed88fb !important;
 }

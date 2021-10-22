@@ -134,9 +134,7 @@ class Bytebeat {
 	}
 
 	initLibrary() {
-		for (let el of document.getElementsByClassName("toggle"))
-			el.addEventListener("click", () => el.nextElementSibling.classList.toggle('disabled'));
-
+		// TODO: all this stuff in playlist.js
 		const libraryElem = document.getElementById("library");
 		libraryElem.addEventListener("click", e => {
 			const el = e.target;
@@ -151,6 +149,7 @@ class Bytebeat {
 					});
 		});
 
+		// TODO: DEFINETLY this in playlist.js, this is horrible
 		libraryElem.addEventListener("mouseover", e => {
 			const el = e.target;
 			if (el.tagName === "CODE")

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,32 +15,32 @@
 </head>
 <body>
 	<div id="content">
-		<div class="container-fixed">
+		<main class="container-fixed">
 			<textarea id="input-code" spellcheck="false">(t*(1+(5&t>>10))*(3+(t>>17&1?(2^2&t>>14)/3:3&(t>>13)+1))>>(3&t>>9))&(t&4096?(t*(t^t%9)|t>>3)>>1:255)</textarea>
 			<div class="controls">
 				<span class="control-group buttons buttons-playback">
-					<button id="control-pause" onclick="bytebeat.togglePlay(false);">⏸</button><!--
-					--><button id="control-stop" onclick="bytebeat.togglePlay(false); bytebeat.resetTime();">⏹</button><!--
-					--><button id="control-start" onclick="bytebeat.resetTime();">⏮</button><!--
-					--><button id="control-fb" onclick="bytebeat.setPlaySpeed(-4); bytebeat.togglePlay(true);">⏪</button><!--
-					--><button id="control-reverse" onclick="bytebeat.setPlaySpeed(-1); bytebeat.togglePlay(true);">◀</button><!--
-					--><button id="control-play" onclick="bytebeat.setPlaySpeed(1); bytebeat.togglePlay(true);">▶</button><!--
-					--><button id="control-ff" onclick="bytebeat.setPlaySpeed(4); bytebeat.togglePlay(true);">⏩</button><!--
-					--><button onclick="bytebeat.rec()">⏺</button>
+					<button title="Pause" id="control-pause" onclick="bytebeat.togglePlay(false);">⏸</button><!--
+					--><button title="Stop" id="control-stop" onclick="bytebeat.togglePlay(false); bytebeat.resetTime();">⏹</button><!--
+					--><button title="Restart" id="control-restart" onclick="bytebeat.resetTime();">⏮</button><!--
+					--><button title="Fast reverse" id="control-fr" onclick="bytebeat.setPlaySpeed(-4); bytebeat.togglePlay(true);">⏪</button><!--
+					--><button title="Reverse" id="control-reverse" onclick="bytebeat.setPlaySpeed(-1); bytebeat.togglePlay(true);">◀</button><!--
+					--><button title="Play" id="control-play" onclick="bytebeat.setPlaySpeed(1); bytebeat.togglePlay(true);">▶</button><!--
+					--><button title="Fast Forward" id="control-ff" onclick="bytebeat.setPlaySpeed(4); bytebeat.togglePlay(true);">⏩</button><!--
+					--><button title="Record" onclick="bytebeat.rec()">⏺</button>
 				</span>
 				<span class="control-group buttons buttons-zoom">
-					<button id="control-scaledown" onclick="bytebeat.changeScale(-1);">+</button><!--
-					--><button id="control-scaleup" onclick="bytebeat.changeScale(1);">-</button>
+					<button title="Zoom in" id="control-scaledown" onclick="bytebeat.changeScale(-1);">+</button><!--
+					--><button title="Zoom out" id="control-scaleup" onclick="bytebeat.changeScale(1);">-</button>
 				</span>
 				<span class="control-group">
-					<select id="control-mode" onchange="bytebeat.setMode(this.value);">
+					<select title="Mode" id="control-mode" onchange="bytebeat.setMode(this.value);">
 						<option value="Bytebeat" selected>Bytebeat</option>
 						<option value="Signed Bytebeat">Signed Bytebeat</option>
 						<option value="Floatbeat">Floatbeat</option>
 					</select>
 				</span>
 				<span class="control-group">
-					<input id="control-samplerate" type="number" min="0" step="any" list="samplerates" value="8000" style="width: 6em;" onchange="bytebeat.setSampleRate(+this.value); bytebeat.refreshCalc();"><span class="text">Hz
+					<input title="Sample rate" name="control-samplerate" id="control-samplerate" type="number" min="0" step="any" list="samplerates" value="8000" style="width: 6em;" onchange="bytebeat.setSampleRate(+this.value); bytebeat.refreshCalc();"><span class="text"><label for="control-samplerate">Hz</label>
 					/ </span><input id="control-samplerate-divisor" type="number" min="1" step="1" value="1" style="width: 3em;" onchange="bytebeat.setSampleRateDivisor(+this.value); bytebeat.refreshCalc();">
 					<datalist id="samplerates">
 						<option value="8000">
@@ -52,10 +52,10 @@
 					</datalist>
 				</span>
 				<span class="control-group" id="control-counter">
-					<span class="text">t=</span><input id="control-counter-value" type="number" placeholder="0" style="width: 8em;" onchange="bytebeat.setByteSample(+this.value); this.value = '';"></input>
+					<span class="text"><label for="control-counter-value">t</label>=</span><input title="t (time)" name="control-counter-value" id="control-counter-value" type="number" placeholder="0" style="width: 8em;" onchange="bytebeat.setByteSample(+this.value); this.value = '';"></input>
 				</span>
 				<span class="control-group">
-					<span class="text">Volume:</span><input id="control-volume" type="range" min="0" max="100" value="35" oninput="bytebeat.changeVolume(this);">
+					<label for="control-volume" class="text">Volume:</label><input title="Volume" name="control-volume" id="control-volume" type="range" min="0" max="100" value="35" oninput="bytebeat.changeVolume(this);">
 				</span>
 			</div>
 			<div id="error"></div>
@@ -64,67 +64,91 @@
 				<div id="canvas-timecursor" class="disabled"></div>
 				<div id="canvas-toggleplay" class="canvas-toggleplay-show"></div>
 			</div>
-		</div>
-		<div class="container-scroll">
-			<div id="button-info" class="button-toggle toggle">Info</div>
-			<div id="info" class="paragraph disabled">
-				Bytebeat music (or one-liner music) was invented in September 2011.
-				They're generally a piece of rhythmic and somewhat melodic music with no score, no instruments, and no real oscillators.
-				It's simply a single-line formula that defines a waveform as a function of time, processed (usually) 8000 times per second, resulting in an audible waveform with a 256-step resolution from silence (0) to full amplitude (256).
-				If you put that formula into a program with a loop that increments time variable (t), you can generate the headerless unsigned 8 bit mono 8kHz audio stream on output, like in this application.
-				Since these directly output a waveform, they have great performance in compiled languages and can often be ran on even the weakest embedded devices.<br>
-				<a href="http://canonical.org/~kragen/bytebeat/" target="_blank">History of bytebeat</a><br>
-				<br>
-				Original blog posts and videos from Viznut:<br>
-				<a href="http://countercomplex.blogspot.com/2011/10/algorithmic-symphonies-from-one-line-of.html" target="_blank">Blog posts #1</a><br>
-				<a href="http://countercomplex.blogspot.com.au/search/label/algorithmic%20music" target="_blank">Blog posts #2</a><br>
-				<a href="https://www.youtube.com/watch?v=GtQdIYUtAHg" target="_blank">YouTube video #1</a><br>
-				<a href="https://www.youtube.com/watch?v=qlrs2Vorw2Y" target="_blank">YouTube video #2</a><br>
-				<a href="https://www.youtube.com/watch?v=tCRPUv8V22o" target="_blank">YouTube video #3</a><br>
-				<br>
-				Online JavaScript players:<br>
-				<a href="http://entropedia.co.uk/generative_music/" target="_blank">by Paul Hayes</a><br>
-				<a href="https://dollchan.net/bytebeat" target="_blank">by SthephanShi</a><br>
-				<a href="http://wurstcaptures.untergrund.net/music/" target="_blank">by Bemmu and Rarefluid</a><br>
-				<a href="https://greggman.com/downloads/examples/html5bytebeat/html5bytebeat.html" target="_blank">by Greggman</a><br>
-				<br>
-				This webpage has a collection of bytebeat music found by SthephanShi, I may add my own compositions here too.
-				<br>
-				<br>
-				This website is a fork of <a href="https://dollchan.net/bytebeat" target="_blank">bytebeat-composer</a> by <a href="https://github.com/SthephanShinkufag" target="_blank">SthephanShi</a>, which itself is a fork of <a href="http://entropedia.co.uk/generative_music/" target="_blank">8-bit Generative Composer</a> by <a href="http://twitter.com/paul_hayes/" target="_blank">@paul_hayes</a>.<br>
-				Forked by SArpnt.
-			</div>
-			<div id="button-library" class="toggle toggle-show">Library</div>
-			<div id="library" class="paragraph">
-				<div id="button-library-classic8khz" class="toggle">
-					[Classic 8kHz] - code with only one variable (t), no JavaScript functions, 8kHz sampling rate
+		</main>
+		<aside class="container-scroll">
+			<details>
+				<summary>Info</summary>
+				<article class="text-section">
+					<section>
+						<p>
+							Bytebeat music (or one-liner music) was invented in September 2011.
+							They're generally a piece of rhythmic and somewhat melodic music with no score, no instruments, and no real oscillators.
+							It's simply a single-line formula that defines a waveform as a function of time, processed (usually) 8000 times per second, resulting in an audible waveform with a 256-step resolution from silence (0) to full amplitude (256).
+							If you put that formula into a program with a loop that increments time variable (t), you can generate the headerless unsigned 8 bit mono 8kHz audio stream on output, like in this application.
+							Since these directly output a waveform, they have great performance in compiled languages and can often be ran on even the weakest embedded devices.
+						</p>
+					</section>
+					<section>
+						<p>
+							<a href="http://canonical.org/~kragen/bytebeat/" target="_blank">History of bytebeat</a>
+						</p>
+						<figure class="figure-list">
+							<figcaption>Original blog posts and videos from Viznut:</figcaption>
+							<ul>
+								<li><a href="http://countercomplex.blogspot.com/2011/10/algorithmic-symphonies-from-one-line-of.html" target="_blank">Blog posts #1</a></li>
+								<li><a href="http://countercomplex.blogspot.com.au/search/label/algorithmic%20music" target="_blank">Blog posts #2</a></li>
+								<li><a href="https://www.youtube.com/watch?v=GtQdIYUtAHg" target="_blank">YouTube video #1</a></li>
+								<li><a href="https://www.youtube.com/watch?v=qlrs2Vorw2Y" target="_blank">YouTube video #2</a></li>
+								<li><a href="https://www.youtube.com/watch?v=tCRPUv8V22o" target="_blank">YouTube video #3</a></li>
+							</ul>
+						</figure>
+						<figure class="figure-list">
+							<figcaption>Online JavaScript players:</figcaption>
+							<ul>
+								<li><a href="http://entropedia.co.uk/generative_music/" target="_blank">by Paul Hayes</a></li>
+								<li><a href="https://dollchan.net/bytebeat" target="_blank">by SthephanShi</a></li>
+								<li><a href="http://wurstcaptures.untergrund.net/music/" target="_blank">by Bemmu and Rarefluid</a></li>
+								<li><a href="https://greggman.com/downloads/examples/html5bytebeat/html5bytebeat.html" target="_blank">by Greggman</a></li>
+							</ul>
+						</figure>
+					</section>
+					<section>
+						<p>
+							This webpage has a collection of bytebeat music found by SthephanShi, I may add my own compositions here too.
+						</p>
+						<p>
+							This website is a fork of <a href="https://dollchan.net/bytebeat" target="_blank">bytebeat-composer</a> by <a href="https://github.com/SthephanShinkufag" target="_blank">SthephanShi</a>, which itself is a fork of <a href="http://entropedia.co.uk/generative_music/" target="_blank">8-bit Generative Composer</a> by <a href="http://twitter.com/paul_hayes/" target="_blank">@paul_hayes</a>.<br>
+							Forked by SArpnt.
+						</p>
+					</section>
+				</article>
+			</details>
+			<details open>
+				<summary>Library</summary>
+				<div id="library" class="text-section">
+					<!-- TODO: generate these automatically with templates, and create template for individual songs -->
+					<details>
+						<summary>[Classic 8kHz] - code with only one variable (t), no JavaScript functions, 8kHz sampling rate</summary>
+						<div id="library-classic8khz" class="text-section"></div>
+					</details>
+					<details>
+						<summary>[JS 8kHz] - JavaScript code, 8kHz sampling rate</summary>
+						<div id="library-js8khz" class="text-section"></div>
+					</details>
+					<details>
+						<summary>[High rate 1k] - more than 8kHz, compressed size less than 1kB</summary>
+						<div id="library-highrate1k" class="text-section"></div>
+					</details>
+					<details>
+						<summary>[Big code] - code with size more than 1kB</summary>
+						<div id="library-bigcode" class="text-section"></div>
+					</details>
+					<details>
+						<summary>[SthephanShi] - code SthephanShi discovered</summary>
+						<div id="library-sthephanshi" class="text-section"></div>
+					</details>
+					<details>
+						<summary>[SArpnt] - code SArpnt created</summary>
+						<div id="library-sarpnt" class="text-section"></div>
+					</details>
 				</div>
-				<div id="library-classic8khz" class="paragraph disabled"></div>
-				<div id="button-library-js8khz" class="toggle">
-					[JS 8kHz] - JavaScript code, 8kHz sampling rate
-				</div>
-				<div id="library-js8khz" class="paragraph disabled"></div>
-				<div id="button-library-highrate1k" class="toggle">
-					[High rate 1k] - more than 8kHz, compressed size less than 1kB
-				</div>
-				<div id="library-highrate1k" class="paragraph disabled"></div>
-				<div id="button-library-bigcode" class="toggle">
-					[Big code] - code with size more than 1kB
-				</div>
-				<div id="library-bigcode" class="paragraph disabled"></div>
-				<div id="button-library-sthephanshi" class="toggle">
-					[SthephanShi] - code SthephanShi discovered
-				</div>
-				<div id="library-sthephanshi" class="paragraph disabled"></div>
-				<div id="button-library-sarpnt" class="toggle">
-					[SArpnt] - code SArpnt created
-				</div>
-				<div id="library-sarpnt" class="paragraph disabled"></div>
-			</div>
-			<a class="link" href="https://dollchan.net/btb/" title="Dollchan Bytebeat discussion threads" target="_blank">&gt;&gt; Dollchan Discussion threads</a><br>
-			<a class="link" href="https://github.com/SArpnt/bytebeat-composer" title="Github repo" target="_blank">&gt;&gt; Github</a><br>
-			<a class="link" href="/" title="Home">&lt;--</a>
-		</div>
+			</details>
+			<footer>
+				<a class="link" href="https://dollchan.net/btb/" title="Dollchan Bytebeat discussion threads" target="_blank">&gt;&gt; Dollchan Discussion threads</a><br>
+				<a class="link" href="https://github.com/SArpnt/bytebeat-composer" title="Github repo" target="_blank">&gt;&gt; Github</a><br>
+				<a class="link" href="/" title="Home">&lt;--</a>
+			</footer>
+		</aside>
 	</div>
 </body>
 </html>
