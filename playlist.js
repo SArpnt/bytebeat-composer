@@ -120,12 +120,18 @@
 		document.getElementById(`library-${id}`).append(playlistElem);
 	}
 
-	document.addEventListener("DOMContentLoaded", function fetchPlaylistsFile() {
-		fetch("playlists.json", { cache: "no-cache" })
-			.then(response => response.json())
-			.then(obj => {
-				for (let p in obj.playlists)
-					addPlaylist(obj, p);
-			});
-	});
+
+	function addAllPlaylists(obj) {
+		for (let p in obj.playlists)
+			addPlaylist(obj, p);
+	}
+
+	fetch("playlists.json", { cache: "no-cache" })
+		.then(response => response.json())
+		.then(obj => {
+			if (["interactive", "loaded", "complete"].includes(document.readyState))
+				addAllPlaylists(obj);
+			else
+				document.addEventListener("DOMContentLoaded", () => addAllPlaylists(obj));
+		});
 }());
