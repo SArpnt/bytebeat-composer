@@ -32,7 +32,7 @@ class Bytebeat {
 		this.animationFrame = this.animationFrame.bind(this);
 
 		const initAudioPromise = this.initAudioContext();
-		document.addEventListener("DOMContentLoaded", async () => {
+		const onDomLoaded = async () => {
 			this.initLibrary();
 			let pData = this.initCodeInput();
 			this.initControls();
@@ -46,7 +46,11 @@ class Bytebeat {
 			if (pData !== null)
 				this.loadCode(pData, false, false);
 			this.refreshCalc();
-		});
+		};
+		if (["interactive", "loaded", "complete"].includes(document.readyState))
+			onDomLoaded();
+		else
+			document.addEventListener("DOMContentLoaded", onDomLoaded);
 	}
 
 	async initAudioContext() {
