@@ -1,10 +1,3 @@
-function $toggle(el) {
-	if (el.style.display)
-		el.style.removeProperty("display");
-	else
-		el.style.display = "none";
-}
-
 class Bytebeat {
 	constructor() {
 		this.audioCtx = null;
@@ -128,7 +121,7 @@ class Bytebeat {
 
 	initLibrary() {
 		for (let el of document.getElementsByClassName("toggle"))
-			el.addEventListener("click", () => $toggle(el.nextElementSibling));
+			el.addEventListener("click", () => el.nextElementSibling.classList.toggle('disabled'));
 		const libraryElem = document.getElementById("library");
 		libraryElem.addEventListener("click", e => {
 			const el = e.target;
@@ -273,6 +266,7 @@ class Bytebeat {
 				this.controlScaleDown.setAttribute("disabled", true);
 			else
 				this.controlScaleDown.removeAttribute("disabled");
+			this.toggleTimeCursor();
 		}
 	}
 	changeVolume(el) {
@@ -404,13 +398,12 @@ class Bytebeat {
 		}
 
 		// cursor
-		if (this.sampleRate >> this.drawScale < 3950) {
+		if (this.timeCursorVisible()) {
 			if (playingForward)
-				this.timeCursor.style.cssText = `display: block; left: ${fmod(Math.ceil(getXpos(endTime)), width) / width * 100}%;`;
+				this.timeCursor.style.left = `${fmod(Math.ceil(getXpos(endTime)), width) / width * 100}%`;
 			else
-				this.timeCursor.style.cssText = `display: block; right: ${(1 - (fmod(Math.ceil(getXpos(endTime)), width) + 1) / width) * 100}%;`;
-		} else
-			this.timeCursor.style.cssText = `display: none;`;
+				this.timeCursor.style.right = `${(1 - (fmod(Math.ceil(getXpos(endTime)), width) + 1) / width) * 100}%`;
+		}
 
 		// clear buffer except last sample
 		this.drawBuffer = [{ t: endTime, value: this.drawBuffer[bufferLen - 1].value }];
@@ -441,7 +434,8 @@ class Bytebeat {
 
 	resetTime() {
 		this.setByteSample(0, true, true);
-		this.timeCursor.style.cssText = "display: none;";
+		this.timeCursor.cssText = "";
+		this.timeCursor.classList.add('disabled');
 		if (!this.isPlaying)
 			this.canvasTogglePlay.classList.add("canvas-toggleplay-show");
 	}
@@ -458,6 +452,7 @@ class Bytebeat {
 	setSampleRate(sampleRate) {
 		this.sampleRate = sampleRate;
 		this.audioWorklet.port.postMessage({ sampleRate, updateSampleRatio: true });
+		this.toggleTimeCursor();
 	}
 	setSampleRateDivisor(sampleRateDivisor) {
 		this.audioWorklet.port.postMessage({ sampleRateDivisor, updateSampleRatio: true });
@@ -469,6 +464,12 @@ class Bytebeat {
 		}
 	}
 
+	toggleTimeCursor() {
+		this.timeCursor.classList.toggle('disabled', !this.timeCursorVisible());
+	}
+	timeCursorVisible() {
+		return this.sampleRate >> this.drawScale < 3950;
+	}
 	togglePlay(isPlay) {
 		this.canvasTogglePlay.classList.toggle("canvas-toggleplay-stop", isPlay);
 		if (isPlay) {

@@ -1,6 +1,15 @@
 /**
+ * common
+ */
+
+.disabled {
+	display: none;
+}
+
+/**
  * main page
  */
+
 html {
 	background-color: #000;
 	color: #fff;
@@ -90,12 +99,6 @@ body {
 	box-sizing: border-box;
 	border: 2px solid #fc4;
 }
-#canvas-container:hover > #canvas-toggleplay::after {
-	display: block;
-}
-#canvas-container:hover > #canvas-toggleplay.canvas-toggleplay-show::after {
-	background-color: rgba(0, 180, 255, 0.5);
-}
 
 #canvas-main {
 	width: 100%;
@@ -103,7 +106,6 @@ body {
 }
 
 #canvas-timecursor {
-	display: none;
 	position: absolute;
 	top: 0;
 	bottom: 0;
@@ -122,6 +124,9 @@ body {
 	border-radius: 16px;
 	line-height: 0;
 	transform: translate(-50%, -50%);
+}
+#canvas-container:hover > #canvas-toggleplay::after {
+	display: block;
 }
 #canvas-toggleplay.canvas-toggleplay-show::after {
 	display: block;

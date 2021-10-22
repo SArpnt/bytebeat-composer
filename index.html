@@ -60,13 +60,13 @@
 			<div id="error"></div>
 			<div id="canvas-container" onclick="bytebeat.setPlaySpeed(1); bytebeat.togglePlay(!bytebeat.isPlaying)">
 				<canvas id="canvas-main" width="1024" height="256"></canvas>
-				<div id="canvas-timecursor"></div>
+				<div id="canvas-timecursor" class="disabled"></div>
 				<div id="canvas-toggleplay" class="canvas-toggleplay-show"></div>
 			</div>
 		</div>
 		<div class="container-scroll">
 			<div id="button-info" class="button-toggle toggle">Info</div>
-			<div id="info" class="paragraph" style="display: none;">
+			<div id="info" class="paragraph disabled">
 				Bytebeat music (or one-liner music) was invented in September 2011.
 				They're generally a piece of rhythmic and somewhat melodic music with no score, no instruments, and no real oscillators.
 				It's simply a single-line formula that defines a waveform as a function of time, processed (usually) 8000 times per second, resulting in an audible waveform with a 256-step resolution from silence (0) to full amplitude (256).
@@ -98,27 +98,27 @@
 				<div id="button-library-classic8khz" class="toggle">
 					[Classic 8kHz] - code with only one variable (t), no JavaScript functions, 8kHz sampling rate
 				</div>
-				<div id="library-classic8khz" class="paragraph" style="display: none;"></div>
+				<div id="library-classic8khz" class="paragraph disabled"></div>
 				<div id="button-library-js8khz" class="toggle">
 					[JS 8kHz] - JavaScript code, 8kHz sampling rate
 				</div>
-				<div id="library-js8khz" class="paragraph" style="display: none;"></div>
+				<div id="library-js8khz" class="paragraph disabled"></div>
 				<div id="button-library-highrate1k" class="toggle">
 					[High rate 1k] - more than 8kHz, compressed size less than 1kB
 				</div>
-				<div id="library-highrate1k" class="paragraph" style="display: none;"></div>
+				<div id="library-highrate1k" class="paragraph disabled"></div>
 				<div id="button-library-bigcode" class="toggle">
 					[Big code] - code with size more than 1kB
 				</div>
-				<div id="library-bigcode" class="paragraph" style="display: none;"></div>
+				<div id="library-bigcode" class="paragraph disabled"></div>
 				<div id="button-library-sthephanshi" class="toggle">
 					[SthephanShi] - code SthephanShi discovered
 				</div>
-				<div id="library-sthephanshi" class="paragraph" style="display: none;"></div>
+				<div id="library-sthephanshi" class="paragraph disabled"></div>
 				<div id="button-library-sarpnt" class="toggle">
 					[SArpnt] - code SArpnt created
 				</div>
-				<div id="library-sarpnt" class="paragraph" style="display: none;"></div>
+				<div id="library-sarpnt" class="paragraph disabled"></div>
 			</div>
 			<a class="link" href="https://dollchan.net/btb/" title="Dollchan Bytebeat discussion threads" target="_blank">&gt;&gt; Dollchan Discussion threads</a><br>
 			<a class="link" href="https://github.com/SArpnt/bytebeat-composer" title="Github repo" target="_blank">&gt;&gt; Github</a><br>
