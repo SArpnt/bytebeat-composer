@@ -59,7 +59,7 @@ class Bytebeat {
 		const mediaDest = this.audioCtx.createMediaStreamDestination();
 		this.audioRecorder = new MediaRecorder(mediaDest.stream);
 		this.audioRecorder.ondataavailable = e => this.recordChunks.push(e.data);
-		this.audioRecorder.onstop = (function saveRecording(e) {
+		this.audioRecorder.onstop = e => {
 			let file, type;
 			const types = ["audio/webm", "audio/ogg"];
 			const files = ["track.webm", "track.ogg"];
@@ -70,7 +70,7 @@ class Bytebeat {
 				}
 			}
 			this.saveData(new Blob(this.recordChunks, { type }), file);
-		}).bind(this);
+		};
 		this.audioGain.connect(mediaDest);
 
 		await addModulePromise;
