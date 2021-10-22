@@ -30,8 +30,9 @@ class Bytebeat {
 		this.errorElem = null;
 
 		this.animationFrame = this.animationFrame.bind(this);
+
+		const initAudioPromise = this.initAudioContext();
 		document.addEventListener("DOMContentLoaded", async () => {
-			const initAudioPromise = this.initAudioContext();
 			this.initLibrary();
 			let pData = this.initCodeInput();
 			this.initControls();
@@ -112,7 +113,7 @@ class Bytebeat {
 	}
 	get saveData() {
 		const a = document.createElement("a");
-		document.body.appendChild(a);
+		document.documentElement.appendChild(a);
 		a.style.display = "none";
 		const saveDataInternal = function saveDataInternal(blob, fileName) {
 			url = URL.createObjectURL(blob);
@@ -132,6 +133,7 @@ class Bytebeat {
 		const libraryElem = document.getElementById("library");
 		libraryElem.addEventListener("click", e => {
 			const el = e.target;
+			// TODO: create individual click event with stored info after first click
 			if (el.tagName === "CODE")
 				this.loadCode(Object.assign({ code: el.innerText }, el.hasAttribute("data-songdata") ? JSON.parse(el.dataset.songdata) : {}));
 			else if (el.classList.contains("code-load"))
