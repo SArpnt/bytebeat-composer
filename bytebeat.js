@@ -29,10 +29,13 @@ class Bytebeat {
 		this.inputElem = null;
 		this.errorElem = null;
 
+		this.contentElem = null;
+
 		this.animationFrame = this.animationFrame.bind(this);
 
 		const initAudioPromise = this.initAudioContext();
 		const onDomLoaded = async () => {
+			this.contentElem = document.getElementById("content");
 			this.initLibrary();
 			let pData = this.initCodeInput();
 			this.initControls();
@@ -191,6 +194,8 @@ class Bytebeat {
 	initControls() {
 		this.controlScaleUp = document.getElementById("control-scaleup");
 		this.controlScaleDown = document.getElementById("control-scaledown");
+		this.controlMode = document.getElementById("control-mode");
+		this.controlSampleRate = document.getElementById("control-samplerate");
 		this.controlCounter = document.getElementById("control-counter-value");
 		this.controlVolume = document.getElementById("control-volume");
 
@@ -228,7 +233,7 @@ class Bytebeat {
 			newWidth = 512;
 		if (newWidth != this.canvasElem.width || force) {
 			this.canvasElem.width = newWidth;
-			document.getElementById("content").style.maxWidth = (newWidth + 4) + "px";
+			this.contentElem.style.maxWidth = (newWidth + 4) + "px";
 		}
 	}
 	animationFrame() {
@@ -252,11 +257,11 @@ class Bytebeat {
 	}
 	applySampleRate(rate) {
 		this.setSampleRate(rate);
-		document.getElementById("control-samplerate").value = rate;
+		this.controlSampleRate.value = rate;
 	}
 	applyMode(mode) {
-		document.getElementById("control-mode").value = mode;
 		this.setMode(mode);
+		this.controlMode.value = mode;
 	}
 
 	rec() {
