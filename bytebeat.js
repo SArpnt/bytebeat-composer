@@ -51,7 +51,13 @@ class Bytebeat {
 	async initAudioContext() {
 		this.audioCtx = new AudioContext();
 
-		const addModulePromise = this.audioCtx.audioWorklet.addModule("audioWorklet.js");
+		// fetch and Blob are done to prevent caching
+		const addModulePromise =
+			fetch("audioWorklet.js", { cache: "no-cache" })
+				.then(response => response.blob())
+				.then(async blob => {
+					await this.audioCtx.audioWorklet.addModule(URL.createObjectURL(blob));
+				});
 
 		this.audioGain = this.audioCtx.createGain();
 		this.audioGain.connect(this.audioCtx.destination);
@@ -122,22 +128,20 @@ class Bytebeat {
 	initLibrary() {
 		for (let el of document.getElementsByClassName("toggle"))
 			el.addEventListener("click", () => el.nextElementSibling.classList.toggle('disabled'));
+
 		const libraryElem = document.getElementById("library");
 		libraryElem.addEventListener("click", e => {
 			const el = e.target;
 			if (el.tagName === "CODE")
 				this.loadCode(Object.assign({ code: el.innerText }, el.hasAttribute("data-songdata") ? JSON.parse(el.dataset.songdata) : {}));
-			else if (el.classList.contains("code-load")) {
-				const xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = () => {
-					if (xhr.readyState === 4 && xhr.status === 200)
-						this.loadCode(Object.assign(JSON.parse(el.dataset.songdata), { code: xhr.responseText }));
-				};
-				xhr.open("GET", "library/" + el.dataset.codeFile, true);
-				xhr.setRequestHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-				xhr.send(null);
-			}
+			else if (el.classList.contains("code-load"))
+				fetch(`library/${el.dataset.codeFile}`, { cache: "no-cache" })
+					.then(response => response.text())
+					.then(code => {
+						this.loadCode(Object.assign(JSON.parse(el.dataset.songdata), { code }));
+					});
 		});
+
 		libraryElem.addEventListener("mouseover", e => {
 			const el = e.target;
 			if (el.tagName === "CODE")

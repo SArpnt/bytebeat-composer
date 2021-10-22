@@ -120,16 +120,12 @@
 		document.getElementById(`library-${id}`).append(playlistElem);
 	}
 
-	document.addEventListener("DOMContentLoaded", function () {
-		let xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function () {
-			if (xhr.readyState === 4 && xhr.status === 200) {
-				let obj = JSON.parse(xhr.responseText);
+	document.addEventListener("DOMContentLoaded", function fetchPlaylistsFile() {
+		fetch("playlists.json", { cache: "no-cache" })
+			.then(response => response.json())
+			.then(obj => {
 				for (let p in obj.playlists)
 					addPlaylist(obj, p);
-			}
-		};
-		xhr.open("GET", "playlists.json", true);
-		xhr.send(null);
+			});
 	});
 }());
