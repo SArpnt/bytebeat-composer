@@ -46,8 +46,7 @@ class Bytebeat {
 
 			await initAudioPromise;
 			this.setVolume(this.controlVolume);
-			if (pData !== null)
-				this.loadCode(pData, false, false);
+			this.loadCode(pData, false, false);
 			this.refreshCalc();
 		};
 		if (["interactive", "loaded", "complete"].includes(document.readyState))
@@ -243,10 +242,15 @@ class Bytebeat {
 		window.requestAnimationFrame(this.animationFrame);
 	}
 
-	loadCode({ code, sampleRate, mode }, calc = true, play = true) {
-		this.inputElem.value = code;
-		this.applySampleRate(+sampleRate || 8000);
-		this.applyMode(mode || "Bytebeat");
+	loadCode(pData, calc = true, play = true) {
+		if (pData == null)
+			this.toggleTimeCursor();
+		else {
+			let { code, sampleRate, mode } = pData;
+			this.inputElem.value = code;
+			this.applySampleRate(+sampleRate || 8000);
+			this.applyMode(mode || "Bytebeat");
+		}
 		if (calc)
 			this.refreshCalc();
 		if (play) {
@@ -413,10 +417,13 @@ class Bytebeat {
 
 		// cursor
 		if (this.timeCursorVisible()) {
-			if (playingForward)
+			if (playingForward) {
+				this.timeCursor.style.removeProperty("right");
 				this.timeCursor.style.left = `${fmod(Math.ceil(getXpos(endTime)), width) / width * 100}%`;
-			else
+			} else {
+				this.timeCursor.style.removeProperty("left");
 				this.timeCursor.style.right = `${(1 - (fmod(Math.ceil(getXpos(endTime)), width) + 1) / width) * 100}%`;
+			}
 		}
 
 		// clear buffer except last sample
