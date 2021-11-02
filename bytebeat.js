@@ -161,12 +161,46 @@ class Bytebeat {
 		this.inputElem = document.getElementById("input-code");
 		this.inputElem.addEventListener("input", this.refreshCalc.bind(this));
 		this.inputElem.addEventListener("keydown", e => {
-			if (e.code === 9 /* TAB */ && !e.shiftKey && !e.altKey && !e.ctrlKey) {
+			if (e.key === "Tab" && !e.altKey && !e.ctrlKey) {
 				e.preventDefault();
 				let el = e.target;
-				let selectionStart = el.selectionStart;
-				el.value = `${el.value.slice(0, selectionStart)}\t${el.value.slice(el.selectionEnd)}`;
-				el.setSelectionRange(selectionStart + 1, selectionStart + 1);
+				let
+					selectionStart = el.selectionStart,
+					selectionEnd = el.selectionEnd;
+				if (e.shiftKey) {
+					let lines = el.value.split("\n");
+					let getLine = char => {
+						let line = 0;
+						for (let c = 0; ; line++) {
+							c += lines[line].length;
+							if (c > char)
+								break;
+						}
+						return line;
+					};
+
+					let
+						startLine = getLine(selectionStart),
+						endLine = getLine(selectionEnd),
+						newSelectionStart = selectionStart,
+						newSelectionEnd = selectionEnd;
+					console.info(lines);
+					for (let i = startLine; i <= endLine; i++) {
+						console.info(i);
+						if (lines[i][0] == "\t") {
+							lines[i] = lines[i].slice(1);
+							if (i == startLine)
+								newSelectionStart--;
+							newSelectionEnd--;
+						}
+					}
+
+					el.value = lines.join("\n");
+					el.setSelectionRange(newSelectionStart, newSelectionEnd);
+				} else {
+					el.value = `${el.value.slice(0, selectionStart)}\t${el.value.slice(el.selectionEnd)}`;
+					el.setSelectionRange(selectionStart + 1, selectionStart + 1);
+				}
 				this.refreshCalc();
 			}
 		});
@@ -243,9 +277,7 @@ class Bytebeat {
 	}
 
 	loadCode(pData, calc = true, play = true) {
-		if (pData == null)
-			this.toggleTimeCursor();
-		else {
+		if (pData != null) {
 			let { code, sampleRate, mode } = pData;
 			this.inputElem.value = code;
 			this.applySampleRate(+sampleRate || 8000);
@@ -253,6 +285,7 @@ class Bytebeat {
 		}
 		if (calc)
 			this.refreshCalc();
+		this.toggleTimeCursor();
 		if (play) {
 			this.resetTime();
 			this.togglePlay(true);
