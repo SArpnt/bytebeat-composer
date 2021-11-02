@@ -31,6 +31,9 @@ class Bytebeat {
 
 		this.contentElem = null;
 
+		this.animationFrameId = null;
+
+
 		this.animationFrame = this.animationFrame.bind(this);
 
 		const initAudioPromise = this.initAudioContext();
@@ -110,11 +113,12 @@ class Bytebeat {
 		if (data.errorMessage !== undefined) {
 			if (data.errorMessage === null)
 				this.hideErrorMessage();
-			else {
+			else if (this.isPlaying) {
 				this.nextErrType = data.errorMessage.type;
 				this.nextErr = data.errorMessage.err;
 				this.nextErrPriority = data.errorMessage.priority;
-			}
+			} else
+				this.showErrorMessage(data.errorMessage.type, data.errorMessage.err, data.errorMessage.priority);
 		}
 	}
 	get saveData() {
@@ -162,6 +166,7 @@ class Bytebeat {
 		this.inputElem.addEventListener("input", this.refreshCalc.bind(this));
 		this.inputElem.addEventListener("keydown", e => {
 			if (e.key === "Tab" && !e.altKey && !e.ctrlKey) {
+				// TODO: undo/redo text
 				e.preventDefault();
 				let el = e.target;
 				let
@@ -273,7 +278,10 @@ class Bytebeat {
 		if (this.nextErr)
 			this.showErrorMessage(this.nextErrType, this.nextErr, this.nextErrPriority);
 
-		window.requestAnimationFrame(this.animationFrame);
+		if (this.isPlaying)
+			this.animationFrameId = window.requestAnimationFrame(this.animationFrame);
+		else
+			this.animationFrameId = null;
 	}
 
 	loadCode(pData, calc = true, play = true) {
@@ -333,6 +341,7 @@ class Bytebeat {
 		this.drawImageData = null;
 	}
 	drawGraphics(endTime) {
+		console.info(this.drawBuffer, new Error());
 		const bufferLen = this.drawBuffer.length;
 		if (!bufferLen)
 			return;
@@ -530,12 +539,14 @@ class Bytebeat {
 			this.canvasTogglePlay.classList.remove("canvas-toggleplay-show");
 			if (this.audioCtx?.resume)
 				this.audioCtx.resume();
-			window.requestAnimationFrame(this.animationFrame);
+			this.animationFrameId = window.requestAnimationFrame(this.animationFrame);
 		} else {
 			if (this.isRecording) {
 				this.audioRecorder.stop();
 				this.isRecording = false;
 			}
+			window.cancelAnimationFrame(this.animationFrameId);
+			this.animationFrameId = null;
 		}
 		this.isPlaying = isPlay;
 		this.audioWorklet.port.postMessage({ isPlaying: isPlay });
