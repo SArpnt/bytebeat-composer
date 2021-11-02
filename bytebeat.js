@@ -341,11 +341,6 @@ class Bytebeat {
 		this.drawImageData = null;
 	}
 	drawGraphics(endTime) {
-		console.info(this.drawBuffer, new Error());
-		const bufferLen = this.drawBuffer.length;
-		if (!bufferLen)
-			return;
-
 		const
 			width = this.canvasElem.width,
 			height = this.canvasElem.height;
@@ -355,6 +350,13 @@ class Bytebeat {
 			getXpos = t => t / (1 << this.drawScale),
 			getTimeFromXpos = x => x * (1 << this.drawScale),
 			playingForward = this.playSpeed > 0;
+
+		// quick buffer reduction for massive lag spikes (switching tab causes animationFrame to wait)
+		this.drawBuffer = this.drawBuffer.slice(-getTimeFromXpos(width));
+
+		const bufferLen = this.drawBuffer.length;
+		if (!bufferLen)
+			return;
 
 		let
 			startTime = this.drawBuffer[0].t,
