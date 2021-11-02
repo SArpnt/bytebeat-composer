@@ -168,7 +168,9 @@ class Bytebeat {
 					selectionStart = el.selectionStart,
 					selectionEnd = el.selectionEnd;
 				if (e.shiftKey) {
+					// remove indentation on all selected lines
 					let lines = el.value.split("\n");
+
 					let getLine = char => {
 						let line = 0;
 						for (let c = 0; ; line++) {
@@ -178,15 +180,12 @@ class Bytebeat {
 						}
 						return line;
 					};
-
 					let
 						startLine = getLine(selectionStart),
 						endLine = getLine(selectionEnd),
 						newSelectionStart = selectionStart,
 						newSelectionEnd = selectionEnd;
-					console.info(lines);
 					for (let i = startLine; i <= endLine; i++) {
-						console.info(i);
 						if (lines[i][0] == "\t") {
 							lines[i] = lines[i].slice(1);
 							if (i == startLine)
@@ -198,7 +197,8 @@ class Bytebeat {
 					el.value = lines.join("\n");
 					el.setSelectionRange(newSelectionStart, newSelectionEnd);
 				} else {
-					el.value = `${el.value.slice(0, selectionStart)}\t${el.value.slice(el.selectionEnd)}`;
+					// add tab character
+					el.value = `${el.value.slice(0, selectionStart)}\t${el.value.slice(selectionEnd)}`;
 					el.setSelectionRange(selectionStart + 1, selectionStart + 1);
 				}
 				this.refreshCalc();
