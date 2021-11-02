@@ -285,7 +285,6 @@ class Bytebeat {
 		}
 		if (calc)
 			this.refreshCalc();
-		this.toggleTimeCursor();
 		if (play) {
 			this.resetTime();
 			this.togglePlay(true);
@@ -488,8 +487,7 @@ class Bytebeat {
 
 	resetTime() {
 		this.setByteSample(0, true, true);
-		this.timeCursor.cssText = "";
-		this.timeCursor.classList.add('disabled');
+		this.timeCursor.cssText = ""; // TODO: remove this after "update cursor position"
 		if (!this.isPlaying)
 			this.canvasTogglePlay.classList.add("canvas-toggleplay-show");
 	}
@@ -498,6 +496,7 @@ class Bytebeat {
 		this.byteSample = value;
 		if (send)
 			this.audioWorklet.port.postMessage({ setByteSample: [value, clear] });
+		// TODO: update cursor position
 	}
 	setMode(mode) {
 		this.mode = mode;
