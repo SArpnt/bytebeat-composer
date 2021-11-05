@@ -3,6 +3,11 @@
 <html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="cache-control" content="max-age=0">
+	<meta http-equiv="cache-control" content="no-store, no-cache, must-revalidate">
+	<meta http-equiv="expires" content="0">
+	<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT">
+	<meta http-equiv="pragma" content="no-cache">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="JS algorhithmic music generator, created by SArpnt">
 	<title>Bytebeat composer</title>
@@ -15,6 +20,7 @@
 </head>
 <body>
 	<div id="content">
+<<<<<<< HEAD
 		<main class="container-fixed">
 			<textarea id="input-code" spellcheck="false">(t*(1+(5&t>>10))*(3+(t>>17&1?(2^2&t>>14)/3:3&(t>>13)+1))>>(3&t>>9))&(t&4096?(t*(t^t%9)|t>>3)>>1:255)</textarea>
 			<div class="controls">
@@ -60,10 +66,63 @@
 			</div>
 			<div id="error"></div>
 			<div id="canvas-container" onclick="bytebeat.setPlaySpeed(1); bytebeat.togglePlay(!bytebeat.isPlaying)">
+=======
+		<div id="container-fixed">
+			<textarea id="editor" spellcheck="false">t*(t&16384?6:5)*(4-(1&t>>8))>>(3&-t>>9)|t>>6</textarea>
+			<div class="controls">
+				<div id="control-counter-units" class="control-button" title="Time units" onclick="bytebeat.toggleCounterUnits();">t</div>
+				<input type="text" id="control-counter" value="0" title="Set time to jump along the timeline then press Enter" onclick="bytebeat.togglePlay(false);">
+				<div id="control-toggleplay" class="control-button control-play" title="Play" onclick="bytebeat.togglePlay(!bytebeat.isPlaying);">
+					<svg id="svg-control-play"><use xlink:href="#symbol-play"></use></svg>
+					<svg id="svg-control-pause"><use xlink:href="#symbol-pause"></use></svg>
+				</div>
+				<div id="control-stop" class="control-button" title="Stop and reset" onclick="bytebeat.stopPlay();">
+					<svg><use xlink:href="#symbol-stop"></use></svg>
+				</div>
+				<div id="control-reset" class="control-button" title="Reset time to 0" onclick="bytebeat.resetTime();">
+					<svg><use xlink:href="#symbol-reset"></use></svg>
+				</div>
+				<div id="control-rec" class="control-button" title="Record to file" onclick="bytebeat.rec();">
+					<svg><use xlink:href="#symbol-rec"></use></svg>
+				</div>
+				<div id="control-scaledown" class="control-button" title="Zoom in the scope" onclick="bytebeat.setScale(-1);">
+					<svg><use xlink:href="#symbol-scaledown"></use></svg>
+				</div>
+				<div id="control-scaleup" class="control-button" title="Zoom out the scope" onclick="bytebeat.setScale(1);">
+					<svg><use xlink:href="#symbol-scaleup"></use></svg>
+				</div>
+				<select id="control-drawmode" class="control-select" title="Drawing mode" onchange="bytebeat.setDrawMode();">
+					<option value="Points" selected>Points</option>
+					<option value="Waveform">Waveform</option>
+				</select>
+				<select id="control-mode" class="control-select" title="Sound mode" onchange="bytebeat.setMode(this.selectedOptions[0].value);">
+					<option value="Bytebeat" selected>Bytebeat</option>
+					<option value="Signed Bytebeat">Signed Bytebeat</option>
+					<option value="Floatbeat">Floatbeat</option>
+				</select>
+				<select id="control-samplerate" class="control-select" title="Sample rate" onchange="bytebeat.setSampleRate(+this.selectedOptions[0].value);">
+					<option value="8000" selected>8000Hz</option>
+					<option value="11025">11025Hz</option>
+					<option value="16000">16000Hz</option>
+					<option value="22050">22050Hz</option>
+					<option value="32000">32000Hz</option>
+					<option value="44100">44100Hz</option>
+				</select>
+				<input id="control-volume" type="range" min="0" max="100" value="35" title="Volume" oninput="bytebeat.setVolume(this);">
+				<div id="control-filler"></div>
+				<div id="control-expand" title="Expand code editor" onclick="bytebeat.expandEditor()">&#x26F6;</div>
+			</div>
+			<div id="error"></div>
+			<div id="canvas-container" onclick="bytebeat.togglePlay(!bytebeat.isPlaying)">
+>>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
 				<canvas id="canvas-main" width="1024" height="256"></canvas>
 				<div id="canvas-timecursor"></div>
-				<div id="canvas-toggleplay" class="canvas-toggleplay-show"></div>
+				<div id="canvas-toggleplay" class="canvas-initial canvas-play">
+					<svg id="svg-canvas-play"><use xlink:href="#symbol-play"></use></svg>
+					<svg id="svg-canvas-pause"><use xlink:href="#symbol-pause"></use></svg>
+				</div>
 			</div>
+<<<<<<< HEAD
 		</main>
 		<aside class="container-scroll">
 			<details>
@@ -148,6 +207,102 @@
 				<a class="link" href="https://github.com/SArpnt/bytebeat-composer" title="Github repo" target="_blank">&gt;&gt; Github</a><br>
 			</footer>
 		</aside>
+=======
+		</div>
+		<div id="container-scroll">
+			<div class="library-content">
+				<div class="library-header toggle">[Info] &mdash; about bytebeat</div>
+				<div id="info" class="library-container entry-top disabled">
+					Bytebeat music (or one-liner music) was invented in September 2011.
+					They're generally a piece of rhythmic and somewhat melodic music with no score, no instruments, and no real oscillators.
+					It's simply a single-line formula that defines a waveform as a function of time, processed (usually) 8000 times per second, resulting in an audible waveform with a 256-step resolution from silence (0) to full amplitude (256).
+					If you put that formula into a program with a loop that increments time variable (t), you can generate the headerless unsigned 8 bit mono 8kHz audio stream on output, like in this application.
+					Since these directly output a waveform, they have great performance in compiled languages and can often be ran on even the weakest embedded devices.<br>
+					<a href="http://canonical.org/~kragen/bytebeat/" target="_blank">History of bytebeat</a><br>
+					<br>
+					Original blog posts and videos from Viznut:<br>
+					<a href="http://countercomplex.blogspot.com/2011/10/algorithmic-symphonies-from-one-line-of.html" target="_blank">Blog posts #1</a><br>
+					<a href="http://countercomplex.blogspot.com.au/search/label/algorithmic%20music" target="_blank">Blog posts #2</a><br>
+					<a href="https://www.youtube.com/watch?v=GtQdIYUtAHg" target="_blank">YouTube video #1</a><br>
+					<a href="https://www.youtube.com/watch?v=qlrs2Vorw2Y" target="_blank">YouTube video #2</a><br>
+					<a href="https://www.youtube.com/watch?v=tCRPUv8V22o" target="_blank">YouTube video #3</a><br>
+					<br>
+					Online JavaScript players:<br>
+					<a href="http://entropedia.co.uk/generative_music/" target="_blank">by Paul Hayes</a><br>
+					<a href="http://wurstcaptures.untergrund.net/music/" target="_blank">by Bemmu and Rarefluid</a><br>
+					<a href="https://greggman.com/downloads/examples/html5bytebeat/html5bytebeat.html" target="_blank">by Greggman</a><br>
+					<br>
+					This website has a collection of bytebeat music I created and found on the internet.
+					<br>
+					<br>
+					This website is the fork of <a href="http://entropedia.co.uk/generative_music/" target="_blank">8-bit Generative Composer</a> by <a href="http://twitter.com/paul_hayes/" target="_blank">@paul_hayes</a>.<br>
+					Forked by SthephanShi aka Viraya.
+				</div>
+			</div>
+			<div class="library-content">
+				<div id="library-header-classic8khz" class="library-header toggle">
+					[Classic 8kHz] &mdash; code with only one variable (t), no JavaScript, 8kHz sampling rate
+				</div>
+				<div id="library-classic8khz" class="library-container disabled"></div>
+			</div>
+			<div class="library-content">
+				<div id="library-header-js8khz" class="library-header toggle">
+					[JS 8kHz] &mdash; JavaScript code, 8kHz sampling rate
+				</div>
+				<div id="library-js8khz" class="library-container disabled"></div>
+			</div>
+			<div class="library-content">
+				<div id="library-header-highrate1k" class="library-header toggle">
+					[High rate 1k] &mdash; more than 8kHz, compressed size less than 1kB
+				</div>
+				<div id="library-highrate1k" class="library-container disabled"></div>
+			</div>
+			<div class="library-content">
+				<div id="library-header-bigcode" class="library-header toggle">
+					[Big code] &mdash; code with size more than 1kB
+				</div>
+				<div id="library-bigcode" class="library-container disabled"></div>
+			</div>
+			<div class="library-content">
+				<div id="library-header-sthephanshi" class="library-header toggle">
+					[SthephanShi] &mdash; code I created
+				</div>
+				<div id="library-sthephanshi" class="library-container disabled"></div>
+			</div>
+			<a class="link" href="/btb/" title="Bytebeat discussion threads" target="_blank">&gt;&gt; Discussion threads</a><br>
+			<a class="link" href="https://github.com/SthephanShinkufag/bytebeat-composer" title="Github repo" target="_blank">&gt;&gt; Github</a>
+		</div>
+>>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
+	</div>
+
+	<!-- SVG BUTTONS -->
+	<div id="svg-icons" style="height: 0; width: 0; overflow: hidden;">
+		<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+			<symbol viewBox="0 0 32 32" id="symbol-play">
+				<path d="M23,14.3l-9-5.2c-1.3-0.8-3,0.2-3,1.7v10.4c0,1.5,1.7,2.5,3,1.7l9-5.2C24.3,17,24.3,15,23,14.3z"/>
+			</symbol>
+			<symbol viewBox="0 0 32 32" id="symbol-pause">
+				<path d="M12.5,23L12.5,23c-1.1,0-2-0.9-2-2V11c0-1.1,0.9-2,2-2h0c1.1,0,2,0.9,2,2v10C14.5,22.1,13.6,23,12.5,23z"/>
+				<path d="M19.5,23L19.5,23c-1.1,0-2-0.9-2-2V11c0-1.1,0.9-2,2-2h0c1.1,0,2,0.9,2,2v10C21.5,22.1,20.6,23,19.5,23z"/>
+			</symbol>
+			<symbol viewBox="0 0 32 32" id="symbol-stop">
+				<path d="M20.3,22.3h-8.5c-1.1,0-2-0.9-2-2v-8.5c0-1.1,0.9-2,2-2h8.5c1.1,0,2,0.9,2,2v8.5C22.3,21.4,21.4,22.3,20.3,22.3z"/>
+			</symbol>
+			<symbol viewBox="0 0 32 32" id="symbol-reset">
+				<path d="M11.8,22.3L11.8,22.3c-1.1,0-2-0.9-2-2v-8.5c0-1.1,0.9-2,2-2h0c1.1,0,2,0.9,2,2v8.5C13.8,21.4,12.9,22.3,11.8,22.3z"/>
+				<path d="M22.3,11.7v8.6c0,1.7-2,2.6-3.3,1.6l-5.3-4.3c-1-0.8-1-2.3,0-3.1l5.3-4.3C20.3,9.1,22.3,10,22.3,11.7z"/>
+			</symbol>
+			<symbol viewBox="0 0 32 32" id="symbol-rec">
+				<circle cx="16" cy="16" r="6.3"/>
+			</symbol>
+			<symbol viewBox="0 0 32 32" id="symbol-scaledown">
+				<path d="M16.5,24h-1c-1.1,0-2-0.9-2-2V10c0-1.1,0.9-2,2-2h1c1.1,0,2,0.9,2,2v12C18.5,23.1,17.6,24,16.5,24z"/>
+				<path d="M8,16.5v-1c0-1.1,0.9-2,2-2h12c1.1,0,2,0.9,2,2v1c0,1.1-0.9,2-2,2H10C8.9,18.5,8,17.6,8,16.5z"/>
+			</symbol>
+			<symbol viewBox="0 0 32 32" id="symbol-scaleup">
+				<path d="M8,16.5v-1c0-1.1,0.9-2,2-2h12c1.1,0,2,0.9,2,2v1c0,1.1-0.9,2-2,2H10C8.9,18.5,8,17.6,8,16.5z"/>
+			</symbol>
+		</svg>
 	</div>
 </body>
 </html>

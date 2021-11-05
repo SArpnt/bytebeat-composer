@@ -1,7 +1,7 @@
 (function () {
 	class BytebeatProcessor extends AudioWorkletProcessor {
 		constructor() {
-			super();
+			super(); // TODO: should there be any arguments?
 
 			this.audioSample = 0; // TODO: is this needed? might be better to use currentTime
 			this.lastFlooredTime = -1;
@@ -163,5 +163,5 @@
 		}
 	}
 
-	registerProcessor("bytebeat-processor", BytebeatProcessor);
+	registerProcessor("bytebeatProcessor", BytebeatProcessor);
 })();
