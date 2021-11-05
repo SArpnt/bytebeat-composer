@@ -19,11 +19,15 @@
 	<script async src="playlist.js"></script>
 </head>
 <body>
-	<div id="content">
-<<<<<<< HEAD
-		<main class="container-fixed">
-			<textarea id="input-code" spellcheck="false">(t*(1+(5&t>>10))*(3+(t>>17&1?(2^2&t>>14)/3:3&(t>>13)+1))>>(3&t>>9))&(t&4096?(t*(t^t%9)|t>>3)>>1:255)</textarea>
+	<main id="content">
+		<section class="container-fixed">
+			<textarea id="code-editor" spellcheck="false">(t*(1+(5&t>>10))*(3+(t>>17&1?(2^2&t>>14)/3:3&(t>>13)+1))>>(3&t>>9))&(t&4096?(t*(t^t%9)|t>>3)>>1:255)</textarea>
 			<div class="controls">
+<<<<<<< HEAD
+				<span class="control-group" id="control-time">
+					<button title="Time unit" id="control-time-unit" onclick="alert('TODO');bytebeat.toggleCounterUnits();"><label for="control-time-value">t</label></button>
+					<input title="Time value" name="control-time-value" id="control-time-value" type="number" placeholder="0" style="width: 8em;" onchange="bytebeat.setByteSample(bytebeat.convertUnit(+this.value)); this.value = '';"></input>
+				</span>
 				<span class="control-group buttons buttons-playback">
 					<button title="Pause" id="control-pause" onclick="bytebeat.togglePlay(false);">⏸</button><!--
 					--><button title="Stop" id="control-stop" onclick="bytebeat.togglePlay(false); bytebeat.resetTime();">⏹</button><!--
@@ -38,40 +42,7 @@
 					<button title="Zoom in" id="control-scaledown" onclick="bytebeat.changeScale(-1);">+</button><!--
 					--><button title="Zoom out" id="control-scaleup" onclick="bytebeat.changeScale(1);">-</button>
 				</span>
-				<span class="control-group">
-					<select title="Mode" id="control-mode" onchange="bytebeat.setMode(this.value);">
-						<option value="Bytebeat" selected>Bytebeat</option>
-						<option value="Signed Bytebeat">Signed Bytebeat</option>
-						<option value="Floatbeat">Floatbeat</option>
-					</select>
-				</span>
-				<span class="control-group">
-					<input title="Sample rate" name="control-samplerate" id="control-samplerate" type="number" min="0" step="any" list="samplerates" value="8000" style="width: 6em;" onchange="bytebeat.setSampleRate(+this.value); bytebeat.refreshCalc();"><span class="text"><label for="control-samplerate">Hz</label>
-					/ </span><input id="control-samplerate-divisor" type="number" min="1" step="1" value="1" style="width: 3em;" onchange="bytebeat.setSampleRateDivisor(+this.value); bytebeat.refreshCalc();">
-					<datalist id="samplerates">
-						<option value="8000">
-						<option value="11025">
-						<option value="16000">
-						<option value="22050">
-						<option value="32000">
-						<option value="44100">
-					</datalist>
-				</span>
-				<span class="control-group" id="control-counter">
-					<span class="text"><label for="control-counter-value">t</label>=</span><input title="t (time)" name="control-counter-value" id="control-counter-value" type="number" placeholder="0" style="width: 8em;" onchange="bytebeat.setByteSample(+this.value); this.value = '';"></input>
-				</span>
-				<span class="control-group">
-					<label for="control-volume" class="text">Volume:</label><input title="Volume" name="control-volume" id="control-volume" type="range" min="0" max="100" value="35" oninput="bytebeat.setVolume(this);">
-				</span>
-			</div>
-			<div id="error"></div>
-			<div id="canvas-container" onclick="bytebeat.setPlaySpeed(1); bytebeat.togglePlay(!bytebeat.isPlaying)">
 =======
-		<div id="container-fixed">
-			<textarea id="editor" spellcheck="false">t*(t&16384?6:5)*(4-(1&t>>8))>>(3&-t>>9)|t>>6</textarea>
-			<div class="controls">
-				<div id="control-counter-units" class="control-button" title="Time units" onclick="bytebeat.toggleCounterUnits();">t</div>
-				<input type="text" id="control-counter" value="0" title="Set time to jump along the timeline then press Enter" onclick="bytebeat.togglePlay(false);">
 				<div id="control-toggleplay" class="control-button control-play" title="Play" onclick="bytebeat.togglePlay(!bytebeat.isPlaying);">
 					<svg id="svg-control-play"><use xlink:href="#symbol-play"></use></svg>
 					<svg id="svg-control-pause"><use xlink:href="#symbol-pause"></use></svg>
@@ -95,26 +66,33 @@
 					<option value="Points" selected>Points</option>
 					<option value="Waveform">Waveform</option>
 				</select>
-				<select id="control-mode" class="control-select" title="Sound mode" onchange="bytebeat.setMode(this.selectedOptions[0].value);">
-					<option value="Bytebeat" selected>Bytebeat</option>
-					<option value="Signed Bytebeat">Signed Bytebeat</option>
-					<option value="Floatbeat">Floatbeat</option>
-				</select>
-				<select id="control-samplerate" class="control-select" title="Sample rate" onchange="bytebeat.setSampleRate(+this.selectedOptions[0].value);">
-					<option value="8000" selected>8000Hz</option>
-					<option value="11025">11025Hz</option>
-					<option value="16000">16000Hz</option>
-					<option value="22050">22050Hz</option>
-					<option value="32000">32000Hz</option>
-					<option value="44100">44100Hz</option>
-				</select>
-				<input id="control-volume" type="range" min="0" max="100" value="35" title="Volume" oninput="bytebeat.setVolume(this);">
-				<div id="control-filler"></div>
-				<div id="control-expand" title="Expand code editor" onclick="bytebeat.expandEditor()">&#x26F6;</div>
+>>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
+				<span class="control-group">
+					<select title="Mode" id="control-mode" onchange="bytebeat.setMode(this.value);">
+						<option value="Bytebeat" selected>Bytebeat</option>
+						<option value="Signed Bytebeat">Signed Bytebeat</option>
+						<option value="Floatbeat">Floatbeat</option>
+					</select>
+				</span>
+				<span class="control-group">
+					<input title="Sample rate" name="control-samplerate" id="control-samplerate" type="number" min="0" step="any" list="samplerates" value="8000" style="width: 6em;" onchange="bytebeat.setSampleRate(+this.value); bytebeat.refreshCalc();"><span class="text"><label for="control-samplerate">Hz</label>
+					/ </span><input id="control-samplerate-divisor" type="number" min="1" step="1" value="1" style="width: 3em;" onchange="bytebeat.setSampleRateDivisor(+this.value); bytebeat.refreshCalc();">
+					<datalist id="samplerates">
+						<option value="8000">
+						<option value="11025">
+						<option value="16000">
+						<option value="22050">
+						<option value="32000">
+						<option value="44100">
+						<option value="48000">
+					</datalist>
+				</span>
+				<span class="control-group">
+					<label for="control-volume" class="text">Volume:</label><input title="Volume" name="control-volume" id="control-volume" type="range" min="0" max="100" value="35" oninput="bytebeat.setVolume(this);">
+				</span>
 			</div>
 			<div id="error"></div>
-			<div id="canvas-container" onclick="bytebeat.togglePlay(!bytebeat.isPlaying)">
->>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
+			<div id="canvas-container" onclick="bytebeat.setPlaySpeed(1); bytebeat.togglePlay(!bytebeat.isPlaying)">
 				<canvas id="canvas-main" width="1024" height="256"></canvas>
 				<div id="canvas-timecursor"></div>
 				<div id="canvas-toggleplay" class="canvas-initial canvas-play">
@@ -122,9 +100,9 @@
 					<svg id="svg-canvas-pause"><use xlink:href="#symbol-pause"></use></svg>
 				</div>
 			</div>
+		</section>
+		<section class="container-scroll"></section>
 <<<<<<< HEAD
-		</main>
-		<aside class="container-scroll">
 			<details>
 				<summary>Info</summary>
 				<article class="text-section">
@@ -202,14 +180,7 @@
 					</details>
 				</div>
 			</details>
-			<footer>
-				<a class="link" href="https://dollchan.net/btb/" title="Dollchan Bytebeat discussion threads" target="_blank">&gt;&gt; Dollchan Discussion threads</a><br>
-				<a class="link" href="https://github.com/SArpnt/bytebeat-composer" title="Github repo" target="_blank">&gt;&gt; Github</a><br>
-			</footer>
-		</aside>
 =======
-		</div>
-		<div id="container-scroll">
 			<div class="library-content">
 				<div class="library-header toggle">[Info] &mdash; about bytebeat</div>
 				<div id="info" class="library-container entry-top disabled">
@@ -269,10 +240,12 @@
 				</div>
 				<div id="library-sthephanshi" class="library-container disabled"></div>
 			</div>
-			<a class="link" href="/btb/" title="Bytebeat discussion threads" target="_blank">&gt;&gt; Discussion threads</a><br>
-			<a class="link" href="https://github.com/SthephanShinkufag/bytebeat-composer" title="Github repo" target="_blank">&gt;&gt; Github</a>
-		</div>
 >>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
+			<footer>
+				<a class="link" href="https://dollchan.net/btb/" title="Dollchan Bytebeat discussion threads" target="_blank">&gt;&gt; Dollchan Discussion threads</a><br>
+				<a class="link" href="https://github.com/SArpnt/bytebeat-composer" title="Github repo" target="_blank">&gt;&gt; Github</a><br>
+			</footer>
+		</section>
 	</div>
 
 	<!-- SVG BUTTONS -->
@@ -303,6 +276,6 @@
 				<path d="M8,16.5v-1c0-1.1,0.9-2,2-2h12c1.1,0,2,0.9,2,2v1c0,1.1-0.9,2-2,2H10C8.9,18.5,8,17.6,8,16.5z"/>
 			</symbol>
 		</svg>
-	</div>
+	</main>
 </body>
 </html>

@@ -40,21 +40,20 @@ body {
 	max-height: 100%;
 }
 
-<<<<<<< HEAD
 /**
- * code input
+ * code editor
  */
-#input-code {
+#code-editor {
 	height: 200px;
 	padding: 0 5px;
 	box-sizing: border-box;
-	overflow-y: auto;
 	resize: vertical;
 	border: 2px solid white;
 	color: #fff;
 	background: #000;
 	font: 14px/14px Monospace;
-	word-wrap: break-word;
+	word-break: break-all;
+	white-space: break-spaces;
 	outline: none;
 }
 
@@ -99,6 +98,8 @@ body {
 
 	box-sizing: border-box;
 	border: 2px solid #fc4;
+}
+<<<<<<< HEAD
 =======
 /* ==[ Containers ] ======================================================================================= */
 
@@ -106,41 +107,10 @@ body {
 	height: 100%;
 }
 
-.container-expanded + #container-scroll {
+.container-expanded + .container-scroll {
 	display: none;
 }
-
-#container-fixed {
-	display: flex;
-	flex-direction: column;
-	max-height: 100vh;
-}
-
-#container-scroll {
-	max-width: 1028px;
-	width: 100%;
-	margin-top: 4px;
-	overflow-y: auto;
-}
-
-#content {
-	display: flex;
-	flex-flow: column;
-	align-items: center;
-	height: 100vh;
-}
-
-/* ==[ Canvas ] =========================================================================================== */
-
-#canvas-container {
-	display: flex;
-	position: relative;
-	cursor: pointer;
-	box-sizing: border-box;
-	border: 2px solid #bf8e31;
-	overflow: hidden;
 >>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
-}
 
 #canvas-main {
 	width: 100%;
@@ -287,6 +257,7 @@ summary {
 
 a, a:visited {
 	color: #88d2fb;
+}
 =======
 
 #canvas-toggleplay > svg {
@@ -299,21 +270,6 @@ a, a:visited {
 
 .container-expanded > #editor {
 	flex: auto;
-}
-
-#editor {
-	height: 200px;
-	padding: 0 5px;
-	border: 2px solid white;
-	box-sizing: border-box;
-	color: #fff;
-	background-color: #000;
-	font: 14px/14px Monospace;
-	white-space: pre-wrap;
-	word-wrap: break-word;
-	word-break: break-all;
-	outline: none;
-	resize: vertical;
 }
 
 #error {
@@ -448,7 +404,7 @@ code {
 	fill: currentColor;
 }
 
-#control-counter {
+#control-time-value {
 	width: 80px;
 	height: 32px;
 	margin: 1px 2px 1px 0;
@@ -462,7 +418,7 @@ code {
 	box-shadow: inset 0px 0px 12px rgba(202, 202, 202, 0.5);
 }
 
-#control-counter-units {
+#control-time-unit {
 	margin-right: 0;
 	text-align: center;
 	font: bold 13px tahoma;
@@ -538,13 +494,7 @@ code {
 	background-color: #d3d8df;
 	cursor: pointer;
 }
-
-.controls {
-	display: flex;
-	flex-wrap: wrap;
-	margin: 2px 0;
 >>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
-}
 a:hover, summary:hover, code:hover {
 	color: #ed88fb !important;
 }

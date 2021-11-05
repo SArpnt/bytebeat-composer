@@ -84,7 +84,8 @@ class Bytebeat {
 		this.canvasElem = null;
 		this.canvasTogglePlay = null;
 		this.containerFixed = null;
-		this.controlCounter = null;
+		this.controlTimeUnits = null;
+		this.controlTimeValue = null;
 		this.controlMode = null;
 		this.controlSampleRate = null;
 		this.controlScaleDown = null;
@@ -306,7 +307,7 @@ class Bytebeat {
 
 	initCodeInput() {
 		this.errorElem = document.getElementById("error");
-		this.inputElem = document.getElementById("input-code");
+		this.inputElem = document.getElementById("code-editor");
 		this.inputElem.addEventListener("input", this.refreshCalc.bind(this));
 		this.inputElem.addEventListener("keydown", e => {
 			if (e.key === "Tab" && !e.altKey && !e.ctrlKey) {
@@ -375,8 +376,8 @@ class Bytebeat {
 		this.canvasCtx = this.canvasElem.getContext('2d');
 		this.canvasTogglePlay = document.getElementById('canvas-toggleplay');
 		this.containerFixed = document.getElementById('container-fixed');
-		this.controlCounter = document.getElementById('control-counter');
-		this.controlCounterUnits = document.getElementById('control-counter-units');
+		this.controlTimeValue = document.getElementById('control-time-value');
+		this.controlTimeUnits = document.getElementById('control-time-units');
 		this.controlDrawMode = document.getElementById('control-drawmode');
 		this.controlMode = document.getElementById('control-mode');
 		this.controlSampleRate = document.getElementById('control-samplerate');
@@ -384,13 +385,13 @@ class Bytebeat {
 		this.controlTogglePlay = document.getElementById('control-toggleplay');
 		this.controlVolume = document.getElementById('control-volume');
 		this.timeCursor = document.getElementById('canvas-timecursor');
-		this.controlCounter.oninput = this.controlCounter.onkeydown = e => {
-			if(e.keyCode === 13 /* ENTER */) {
-				this.controlCounter.blur();
+		this.controlTimeValue.oninput = this.controlTimeValue.onkeydown = e => {
+			if(e.key === "Enter") {
+				this.controlTimeValue.blur();
 				this.togglePlay(true);
 				return;
 			}
-			const { value } = this.controlCounter;
+			const { value } = this.controlTimeValue;
 			const byteSample = this.settings.isSeconds ? Math.round(value * this.sampleRate) : value;
 			this.setByteSample(byteSample);
 			this.sendData({ byteSample });
@@ -444,11 +445,14 @@ class Bytebeat {
 	}
 
 	initControls() {
+		this.controlTimeUnit = document.getElementById("control-time-unit");
+		this.controlTimeValue = document.getElementById("control-time-value");
+
 		this.controlScaleUp = document.getElementById("control-scaleup");
 		this.controlScaleDown = document.getElementById("control-scaledown");
+
 		this.controlMode = document.getElementById("control-mode");
 		this.controlSampleRate = document.getElementById("control-samplerate");
-		this.controlCounter = document.getElementById("control-counter-value");
 		this.controlVolume = document.getElementById("control-volume");
 
 		this.canvasTogglePlay = document.getElementById("canvas-toggleplay");
@@ -791,7 +795,7 @@ class Bytebeat {
 			this.canvasTogglePlay.classList.add("canvas-toggleplay-show");
 	}
 	setByteSample(value, send = true, clear = false) {
-		this.controlCounter.placeholder = value;
+		this.controlTimeValue.placeholder = value;
 		this.byteSample = value;
 		if (send)
 			this.audioWorklet.port.postMessage({ setByteSample: [value, clear] });
@@ -863,11 +867,11 @@ class Bytebeat {
 		}
 	}
 	setCounterUnits() {
-		this.controlCounterUnits.textContent = this.settings.isSeconds ? 'sec' : 't';
+		this.controlTimeUnit.textContent = this.settings.isSeconds ? 'sec' : 't';
 		this.setCounterValue(this.byteSample);
 	}
 	setCounterValue(value) {
-		this.controlCounter.value = this.settings.isSeconds ? (value / this.sampleRate).toFixed(2) : value;
+		this.controlTimeValue.value = this.settings.isSeconds ? (value / this.sampleRate).toFixed(2) : value;
 	}
 	setDrawMode() {
 		this.settings.drawMode = this.controlDrawMode.value;
