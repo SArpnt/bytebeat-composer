@@ -1,3 +1,5 @@
+"use strict";
+
 // this is currently unused because https://www.html5rocks.com/en/tutorials/speed/script-loading/
 // currently this one function is just spliced into both scripts once
 // this is just here for reference because of that

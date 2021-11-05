@@ -1,3 +1,5 @@
+"use strict";
+
 class Bytebeat {
 	constructor() {
 		this.audioCtx = null;
