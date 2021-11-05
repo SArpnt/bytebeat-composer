@@ -829,7 +829,7 @@ class Bytebeat {
 		return this.sampleRate >> this.drawScale < 3950;
 	}
 	togglePlay(isPlay) {
-		this.canvasTogglePlay.classList.toggle("canvas-toggleplay-stop", isPlay);
+		this.canvasTogglePlay.classList.toggle("canvas-toggleplay-pause", isPlay);
 		if (isPlay) {
 			// Play
 			this.canvasTogglePlay.classList.remove("canvas-toggleplay-show");

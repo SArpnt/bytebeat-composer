@@ -99,18 +99,6 @@ body {
 	box-sizing: border-box;
 	border: 2px solid #fc4;
 }
-<<<<<<< HEAD
-=======
-/* ==[ Containers ] ======================================================================================= */
-
-.container-expanded {
-	height: 100%;
-}
-
-.container-expanded + .container-scroll {
-	display: none;
-}
->>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
 
 #canvas-main {
 	width: 100%;
@@ -121,66 +109,39 @@ body {
 	position: absolute;
 	top: 0;
 	bottom: 0;
-<<<<<<< HEAD
 	width: 2px;
 	background: red;
-=======
-	border-left: 2px solid #7a9dc4;
-	box-shadow: 0 0 8px #6ab2ff, 0 0 16px #fff;
-	left: 0;
->>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
-}
-
-<<<<<<< HEAD
-#canvas-toggleplay::after {
-	content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAWCAQAAACMYb/JAAAArklEQVR4AYXSr05CYRjA4cPGxjRosTijdvNJzmD1CrwAvQWugASNwGg0MoErOIVCPCMx0hmBMaAA4mPX8/2rT/i+9/1lPu0M3MtCN1OAvS+NEFkDmHqoJwcAbHzUkb9n7C5FqLynCAzdpAhLrynCRc9VnEDpKUWYpUmZIlt5nBQeY889amvGPj33HBvdt45WbAELeWyNP/qu/8dwBrDyVp9UBRi5DYXZdTLxEs77F5bCVAHlDJ1UAAAAAElFTkSuQmCC");
-=======
-/* ==[ Canvas play/pause button ] ========================================================================= */
-
-#canvas-container:hover > #canvas-toggleplay {
-	display: block;
-	background-image: linear-gradient(to bottom, #92aeec, #181f33) !important;
-}
-
-.canvas-initial {
-	display: block !important;
-	background-image: linear-gradient(to bottom, #67789d, #181f33);
-}
-
-.canvas-pause > #svg-canvas-play, .canvas-play > #svg-canvas-pause {
-	display: none;
 }
 
 #canvas-toggleplay {
->>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
 	display: none;
 	position: absolute;
 	top: 50%;
 	left: 50%;
-<<<<<<< HEAD
-	padding: 1.2em 2em;
-	background-color: rgba(0, 180, 255, 0.5);
-=======
-	padding: 1px 8px;
-	color: #f0f0f0;
->>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
+	padding: .8em 1.5em;
+	background-color: rgba(0, 180, 255, 0.4);
 	border-radius: 16px;
 	line-height: 0;
 	transform: translate(-50%, -50%);
 }
+#canvas-container:hover > #canvas-toggleplay {
+	display: block;
+	background-color: rgba(0, 180, 255, 0.5);
+}
+#canvas-toggleplay.canvas-toggleplay-show {
+	display: block;
+}
+#canvas-toggleplay > svg {
+	width: 46px;
+	height: 46px;
+	fill: currentColor;
+}
+#canvas-toggleplay.canvas-toggleplay-pause > #svg-canvas-toggleplay-play,
+#canvas-toggleplay.canvas-toggleplay-play > #svg-canvas-toggleplay-pause {
+	display: none;
+}
+
 <<<<<<< HEAD
-#canvas-container:hover > #canvas-toggleplay::after {
-	display: block;
-}
-#canvas-toggleplay.canvas-toggleplay-show::after {
-	display: block;
-	background-color: rgba(0, 180, 255, 0.4);
-}
-#canvas-toggleplay.canvas-toggleplay-stop::after {
-	content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAWAQMAAAAcpuUBAAAABlBMVEUAAAD///+l2Z/dAAAAAXRSTlMAQObYZgAAABBJREFUCNdjgAE7O6pgGAAAhGMIudWId/YAAAAASUVORK5CYII=");
-}
-
-
 /**
  * status message
  */
@@ -259,23 +220,6 @@ a, a:visited {
 	color: #88d2fb;
 }
 =======
-
-#canvas-toggleplay > svg {
-	width: 46px;
-	height: 46px;
-	fill: currentColor;
-}
-
-/* ==[ Editor ] =========================================================================================== */
-
-.container-expanded > #editor {
-	flex: auto;
-}
-
-#error {
-	color: #f92672;
-}
-
 /* ==[ Library ] ========================================================================================== */
 
 code {
