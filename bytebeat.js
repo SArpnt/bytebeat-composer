@@ -396,7 +396,7 @@ class Bytebeat {
 			const { value } = this.controlTimeValue;
 			const byteSample = this.settings.isSeconds ? Math.round(value * this.sampleRate) : value;
 			this.setByteSample(byteSample);
-			this.sendData({ byteSample });
+			this.audioWorkletNode.port.postMessage({ byteSample });
 		};
 	}
 	initEditor() {
@@ -571,7 +571,7 @@ class Bytebeat {
 			data.isPlaying = isPlay;
 			data.resetTime = true;
 		}
-		this.sendData(data);
+		this.audioWorkletNode.port.postMessage(data);
 	}
 >>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
 	applySampleRate(rate) {
@@ -770,6 +770,8 @@ class Bytebeat {
 			this.nextErrType = null;
 			this.nextErrPriority = undefined;
 			this.errorPriority = priority;
+		}
+	}
 =======
 	receiveData(data) {
 		const { byteSample } = data;
@@ -785,9 +787,9 @@ class Bytebeat {
 		}
 		if(data.updateLocation === true) {
 			this.updateLocation();
->>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
 		}
 	}
+>>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
 
 	resetTime() {
 <<<<<<< HEAD
@@ -849,13 +851,10 @@ class Bytebeat {
 	}
 };
 =======
-		this.sendData({ resetTime: true });
+		this.audioWorkletNode.port.postMessage({ resetTime: true });
 	}
 	saveSettings() {
 		localStorage.settings = JSON.stringify(this.settings);
-	}
-	sendData(data) {
-		this.audioWorkletNode.port.postMessage(data);
 	}
 	setByteSample(value) {
 		this.byteSample = +value || 0;
@@ -880,18 +879,18 @@ class Bytebeat {
 		this.saveSettings();
 	}
 	setFunction() {
-		this.sendData({ setFunction: this.editorElem.value });
+		this.audioWorkletNode.port.postMessage({ setFunction: this.editorElem.value });
 	}
 	setMode(mode) {
 		this.mode = mode;
 		this.updateLocation();
-		this.sendData({ mode });
+		this.audioWorkletNode.port.postMessage({ mode });
 	}
 	setSampleRate(sampleRate, isSendData = true) {
 		this.sampleRate = sampleRate;
 		this.toggleTimeCursor();
 		if(isSendData) {
-			this.sendData({ sampleRatio: this.sampleRate / this.audioCtx.sampleRate });
+			this.audioWorkletNode.port.postMessage({ sampleRatio: this.sampleRate / this.audioCtx.sampleRate });
 		}
 	}
 	setScale(amount) {
@@ -911,7 +910,7 @@ class Bytebeat {
 	}
 	stopPlay() {
 		this.togglePlay(false, false);
-		this.sendData({ isPlaying: false, resetTime: true });
+		this.audioWorkletNode.port.postMessage({ isPlaying: false, resetTime: true });
 	}
 	toggleCounterUnits() {
 		this.settings.isSeconds = !this.settings.isSeconds;
@@ -936,7 +935,7 @@ class Bytebeat {
 		}
 		this.isPlaying = isPlaying;
 		if(isSendData) {
-			this.sendData({ isPlaying });
+			this.audioWorkletNode.port.postMessage({ isPlaying });
 		}
 	}
 	toggleTimeCursor() {

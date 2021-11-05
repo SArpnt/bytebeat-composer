@@ -118,7 +118,7 @@ body {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	padding: .8em 1.5em;
+	padding: .6em 1.4em;
 	background-color: rgba(0, 180, 255, 0.4);
 	border-radius: 16px;
 	line-height: 0;
@@ -141,7 +141,6 @@ body {
 	display: none;
 }
 
-<<<<<<< HEAD
 /**
  * status message
  */
@@ -174,6 +173,7 @@ ul {
 	margin: 0;
 }
 
+<<<<<<< HEAD
 #library li {
 	padding-bottom: .6em;
 }
@@ -338,7 +338,7 @@ code {
 	background-image: linear-gradient(to bottom, #738cc1, #28314a)
 }
 
-.control-button:not([disabled]):active, .control-select:active  {
+.control-button:not([disabled]):active, .control-select:active {
 	background-image: linear-gradient(to bottom, #505f84, #1c1e26);
 }
 
@@ -346,47 +346,6 @@ code {
 	width: 32px;
 	height: 32px;
 	fill: currentColor;
-}
-
-#control-time-value {
-	width: 80px;
-	height: 32px;
-	margin: 1px 2px 1px 0;
-	padding: 0 8px;
-	color: #e3e3e3;
-	background: linear-gradient(to top, #3a445e, #181c26);
-	border: none;
-	border-radius: 0 4px 4px 0;
-	font-weight: bold;
-	outline: none;
-	box-shadow: inset 0px 0px 12px rgba(202, 202, 202, 0.5);
-}
-
-#control-time-unit {
-	margin-right: 0;
-	text-align: center;
-	font: bold 13px tahoma;
-	line-height: 30px;
-	border-top-right-radius: 0;
-	border-bottom-right-radius: 0;
-	user-select: none;
-}
-
-#control-expand {
-	align-self: center;
-	margin-right: 4px;
-	font-size: 1.2em;
-	font-weight: bold;
-	line-height: 0;
-	cursor: pointer;
-}
-
-#control-expand:hover {
-	color: #a0ceff;
-}
-
-#control-filler {
-	flex: auto;
 }
 
 .control-pause > #svg-control-play, .control-play > #svg-control-pause {
