@@ -144,6 +144,9 @@ body {
 /**
  * status message
  */
+#error {
+	word-break: break-all;
+}
 #error[data-err-type="compile"] {
 	color: #f92672;
 }
@@ -183,7 +186,7 @@ code {
 	white-space: break-spaces;
 	cursor: pointer;
 }
-.library-code-length .library-code-samplerate {
+.library-code-info {
 	color: grey;
 	cursor: default;
 }

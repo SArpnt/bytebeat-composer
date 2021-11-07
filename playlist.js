@@ -83,9 +83,9 @@
 		}
 
 		if (entry.sampleRate)
-			entryElem.innerHTML += ` <span class="samplerate">${entry.sampleRate.substring(0, entry.sampleRate.length - 3)}kHz</span>`;
+			entryElem.innerHTML += ` <span class="library-code-info">${entry.sampleRate.substring(0, entry.sampleRate.length - 3)}kHz</span>`;
 		if (entry.mode)
-			entryElem.innerHTML += ` <span class="samplerate">${entry.mode}</span>`;
+			entryElem.innerHTML += ` <span class="library-code-info">${entry.mode}</span>`;
 
 		if (entry.starred) {
 			let starElem = document.createElement("span");
@@ -167,11 +167,11 @@
 			entry += `(<a href="${ url }" target="_blank">source</a>)`;
 		}
 		if(sampleRate) {
-			entry += ` <span class="code-samplerate">${
+			entry += ` <span class="library-code-info">${
 				sampleRate.substring(0, sampleRate.length - 3) }kHz</span>`;
 		}
 		if(mode) {
-			entry += ` <span class="code-samplerate">${ mode }</span>`;
+			entry += ` <span class="library-code-info">${ mode }</span>`;
 		}
 		let starClass = '';
 		if(starred) {
@@ -190,7 +190,7 @@
 		}
 		if(code) {
 			entry += `<code data-songdata='${ songData }'>${
-				escapeHTML(code) }</code> <span class="code-length">${ code.length }c</span>`;
+				escapeHTML(code) }</code> <span class="library-code-info">${ code.length }c</span>`;
 		}
 		if(children) {
 			let childrenStr = '';

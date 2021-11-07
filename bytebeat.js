@@ -16,6 +16,7 @@ class Bytebeat {
 		this.errorPriority = -Infinity;
 
 		this.canvasCtx = null;
+		this.drawMode = "Points";
 		this.drawScale = 5;
 		this.drawBuffer = [];
 		this.byteSample = 0;
@@ -24,7 +25,7 @@ class Bytebeat {
 		this.isPlaying = false;
 		this.isRecording = false;
 
-		this.mode = "Bytebeat";
+		this.playbackMode = "Bytebeat";
 		this.sampleRate = 8000;
 		this.playSpeed = 1;
 
@@ -88,7 +89,7 @@ class Bytebeat {
 		this.containerFixed = null;
 		this.controlTimeUnits = null;
 		this.controlTimeValue = null;
-		this.controlMode = null;
+		this.controlPlaybackMode = null;
 		this.controlSampleRate = null;
 		this.controlScaleDown = null;
 		this.controlTogglePlay = null;
@@ -101,7 +102,7 @@ class Bytebeat {
 		this.isPlaying = false;
 		this.isRecording = false;
 		this.mod = (a, b) => ((a % b) + b) % b;
-		this.mode = 'Bytebeat';
+		this.playbackMode = 'Bytebeat';
 		this.recordChunks = [];
 		this.sampleRate = 8000;
 		this.settings = { drawMode: 'Points', drawScale: 5, isSeconds: false };
@@ -168,7 +169,7 @@ class Bytebeat {
 		for(let i = 0; i < bufferLen; ++i) {
 			const { t, value: curY } = buffer[i];
 			const curX = this.mod(Math.floor(this.getX(t)) - startX, width);
-			if(isWaveform && curY !== prevY) {
+			if(isWaveform && curY !== prevY && !isNaN(curY)) {
 				for(let y = prevY, dy = prevY < curY ? 1 : -1; y !== curY; y += dy) {
 					this.drawPoint(imageData, drawWidth, curX, y, 255);
 				}
@@ -380,8 +381,8 @@ class Bytebeat {
 		this.containerFixed = document.getElementById('container-fixed');
 		this.controlTimeValue = document.getElementById('control-time-value');
 		this.controlTimeUnits = document.getElementById('control-time-units');
-		this.controlDrawMode = document.getElementById('control-drawmode');
-		this.controlMode = document.getElementById('control-mode');
+		this.controlDrawMode = document.getElementById('control-draw-mode');
+		this.controlPlaybackMode = document.getElementById('control-playback-mode');
 		this.controlSampleRate = document.getElementById('control-samplerate');
 		this.controlScaleDown = document.getElementById('control-scaledown');
 		this.controlTogglePlay = document.getElementById('control-toggleplay');
@@ -453,7 +454,7 @@ class Bytebeat {
 		this.controlScaleUp = document.getElementById("control-scaleup");
 		this.controlScaleDown = document.getElementById("control-scaledown");
 
-		this.controlMode = document.getElementById("control-mode");
+		this.controlPlaybackMode = document.getElementById("control-playback-mode");
 		this.controlSampleRate = document.getElementById("control-samplerate");
 		this.controlVolume = document.getElementById("control-volume");
 
@@ -477,8 +478,8 @@ class Bytebeat {
 		let pData = { code: codeText };
 		if (this.sampleRate != 8000)
 			pData.sampleRate = this.sampleRate;
-		if (this.mode != "Bytebeat")
-			pData.mode = this.mode;
+		if (this.playbackMode != "Bytebeat")
+			pData.mode = this.playbackMode;
 
 		pData = JSON.stringify(pData);
 
@@ -508,10 +509,10 @@ class Bytebeat {
 
 	loadCode(pData, calc = true, play = true) {
 		if (pData != null) {
-			let { code, sampleRate, mode } = pData;
+			let { code, sampleRate, mode: playbackMode } = pData;
 			this.inputElem.value = code;
 			this.applySampleRate(+sampleRate || 8000);
-			this.applyMode(mode || "Bytebeat");
+			this.applyPlaybackMode(playbackMode || "Bytebeat");
 		}
 		if (calc)
 			this.refreshCalc();
@@ -560,12 +561,12 @@ class Bytebeat {
 		this.setCounterUnits();
 		this.controlDrawMode.value = this.settings.drawMode;
 	}
-	loadCode({ code, sampleRate, mode }, isPlay = true) {
-		this.mode = this.controlMode.value = mode = mode || 'Bytebeat';
+	loadCode({ code, sampleRate, mode: playbackMode }, isPlay = true) {
+		this.playbackMode = this.controlPlaybackMode.value = playbackMode = playbackMode || 'Bytebeat';
 		this.editorElem.value = code;
 		this.setSampleRate(this.controlSampleRate.value = +sampleRate || 8000, false);
 		const sampleRatio = this.sampleRate / this.audioCtx.sampleRate;
-		const data = { mode, sampleRatio, setFunction: code };
+		const data = { playbackMode, sampleRatio, setFunction: code };
 		if(isPlay) {
 			this.togglePlay(true, false);
 			data.isPlaying = isPlay;
@@ -578,9 +579,9 @@ class Bytebeat {
 		this.setSampleRate(rate);
 		this.controlSampleRate.value = rate;
 	}
-	applyMode(mode) {
-		this.setMode(mode);
-		this.controlMode.value = mode;
+	applyPlaybackMode(playbackMode) {
+		this.setPlaybackMode(playbackMode);
+		this.controlPlaybackMode.value = playbackMode;
 	}
 
 	rec() {
@@ -805,9 +806,9 @@ class Bytebeat {
 			this.audioWorklet.port.postMessage({ setByteSample: [value, clear] });
 		// TODO: update cursor position
 	}
-	setMode(mode) {
-		this.mode = mode;
-		this.audioWorklet.port.postMessage({ mode });
+	setPlaybackMode(playbackMode) {
+		this.playbackMode = playbackMode;
+		this.audioWorklet.port.postMessage({ playbackMode });
 	}
 	setSampleRate(sampleRate) {
 		this.sampleRate = sampleRate;
@@ -881,10 +882,10 @@ class Bytebeat {
 	setFunction() {
 		this.audioWorkletNode.port.postMessage({ setFunction: this.editorElem.value });
 	}
-	setMode(mode) {
-		this.mode = mode;
+	setPlaybackMode(playbackMode) {
+		this.playbackMode = playbackMode;
 		this.updateLocation();
-		this.audioWorkletNode.port.postMessage({ mode });
+		this.audioWorkletNode.port.postMessage({ playbackMode });
 	}
 	setSampleRate(sampleRate, isSendData = true) {
 		this.sampleRate = sampleRate;
@@ -946,12 +947,12 @@ class Bytebeat {
 		if(this.sampleRate !== 8000) {
 			pData.sampleRate = this.sampleRate;
 		}
-		if(this.mode !== 'Bytebeat') {
-			pData.mode = this.mode;
+		if(this.playbackMode !== 'Bytebeat') {
+			pData.mode = this.playbackMode;
 		}
 		window.location.hash = '#v3b64' + btoa(pako.deflateRaw(JSON.stringify(pData), { to: 'string' }));
 	}
-}();
+};
 >>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
 
 const bytebeat = new Bytebeat();

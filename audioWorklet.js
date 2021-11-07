@@ -18,7 +18,7 @@
 			this.isPlaying = false;
 
 			this.func = null;
-			this.mode = "Bytebeat";
+			this.playbackMode = "Bytebeat";
 			this.sampleRate = 8000;
 			this.sampleRateDivisor = 1;
 			this.playSpeed = 1;
@@ -35,7 +35,7 @@
 
 			// set vars
 			for (let v of [
-				"mode",
+				"playbackMode",
 				"isPlaying",
 				"sampleRate",
 				"sampleRateDivisor",
@@ -137,13 +137,13 @@
 						if (isNaN(funcValue))
 							this.lastByteValue = NaN;
 						else {
-							if (this.mode == "Bytebeat") {
+							if (this.playbackMode == "Bytebeat") {
 								this.lastByteValue = funcValue & 255;
 								this.lastValue = this.lastByteValue / 127.5 - 1;
-							} else if (this.mode == "Signed Bytebeat") {
+							} else if (this.playbackMode == "Signed Bytebeat") {
 								this.lastByteValue = (funcValue + 128) & 255;
 								this.lastValue = this.lastByteValue / 127.5 - 1;
-							} else if (this.mode == "Floatbeat") {
+							} else if (this.playbackMode == "Floatbeat") {
 								this.lastValue = funcValue;
 								this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
 							} else {
