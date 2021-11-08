@@ -8,7 +8,6 @@ class Bytebeat {
 		this.audioRecorder = null;
 <<<<<<< HEAD
 		this.recordChunks = [];
-		this.bufferSize = 0;
 
 		this.nextErrType = null;
 		this.nextErr = null;
@@ -16,21 +15,23 @@ class Bytebeat {
 		this.errorPriority = -Infinity;
 
 		this.canvasCtx = null;
+		//this.drawSettings = { mode: "Points", scale: 5 };
 		this.drawMode = "Points";
 		this.drawScale = 5;
 		this.drawBuffer = [];
-		this.byteSample = 0;
 		this.drawImageData = null;
+		this.byteSample = 0;
 
 		this.isPlaying = false;
 		this.isRecording = false;
 
+		//this.songData = { sampleRate: 8000, mode: "Bytebeat" };
 		this.playbackMode = "Bytebeat";
 		this.sampleRate = 8000;
 		this.playSpeed = 1;
 
 		this.canvasElem = null;
-		this.inputElem = null;
+		this.codeEditorElem = null;
 		this.errorElem = null;
 
 		this.contentElem = null;
@@ -44,7 +45,7 @@ class Bytebeat {
 		const onDomLoaded = async () => {
 			this.contentElem = document.getElementById("content");
 			this.initLibrary();
-			let pData = this.initCodeInput();
+			let pData = this.initCodeEditor();
 			this.initControls();
 			this.initCanvas();
 
@@ -61,6 +62,54 @@ class Bytebeat {
 		else
 			document.addEventListener("DOMContentLoaded", onDomLoaded);
 	}
+=======
+		this.recordChunks = [];
+
+
+		this.canvasCtx = null;
+		this.settings = { drawMode: 'Points', drawScale: 5, isSeconds: false };
+		this.drawBuffer = [];
+		this.drawEndBuffer = [];
+		this.byteSample = 0;
+
+		this.isPlaying = false;
+		this.isRecording = false;
+
+		this.playbackMode = 'Bytebeat';
+		this.sampleRate = 8000;
+
+		this.canvasElem = null;
+		this.editorElem = null;
+		this.errorElem = null;
+		
+		this.canvasTogglePlay = null;
+		this.containerFixed = null;
+		this.controlTimeUnits = null;
+		this.controlTimeValue = null;
+		this.controlPlaybackMode = null;
+		this.controlSampleRate = null;
+		this.controlScaleDown = null;
+		this.controlTogglePlay = null;
+		this.controlVolume = null;
+		
+		
+		
+		
+		this.getX = t => t / (1 << this.settings.drawScale);
+
+		this.mod = (a, b) => ((a % b) + b) % b;
+
+
+		this.timeCursor = null;
+		document.addEventListener('DOMContentLoaded', async () => {
+			this.initControls();
+			this.initSettings();
+			await this.initAudioContext();
+			this.initLibraryEvents();
+			this.initEditor();
+		});
+	}
+>>>>>>>
 
 	async initAudioContext() {
 		this.audioCtx = new AudioContext();
@@ -73,150 +122,16 @@ class Bytebeat {
 					await this.audioCtx.audioWorklet.addModule(URL.createObjectURL(blob));
 				});
 
-		this.audioGain = this.audioCtx.createGain();
+		this.audioGain = new GainNode(this.audioCtx, options);
 		this.audioGain.connect(this.audioCtx.destination);
 
+<<<<<<<
 		const mediaDest = this.audioCtx.createMediaStreamDestination();
 		this.audioRecorder = new MediaRecorder(mediaDest.stream);
 		this.audioRecorder.ondataavailable = e => this.recordChunks.push(e.data);
 		this.audioRecorder.onstop = e => {
 =======
-		this.audioWorkletNode = null;
-		this.byteSample = 0;
-		this.canvasCtx = null;
-		this.canvasElem = null;
-		this.canvasTogglePlay = null;
-		this.containerFixed = null;
-		this.controlTimeUnits = null;
-		this.controlTimeValue = null;
-		this.controlPlaybackMode = null;
-		this.controlSampleRate = null;
-		this.controlScaleDown = null;
-		this.controlTogglePlay = null;
-		this.controlVolume = null;
-		this.drawBuffer = [];
-		this.drawEndBuffer = [];
-		this.editorElem = null;
-		this.errorElem = null;
-		this.getX = t => t / (1 << this.settings.drawScale);
-		this.isPlaying = false;
-		this.isRecording = false;
-		this.mod = (a, b) => ((a % b) + b) % b;
-		this.playbackMode = 'Bytebeat';
-		this.recordChunks = [];
-		this.sampleRate = 8000;
-		this.settings = { drawMode: 'Points', drawScale: 5, isSeconds: false };
-		this.timeCursor = null;
-		document.addEventListener('DOMContentLoaded', async () => {
-			this.initControls();
-			this.initSettings();
-			await this.initAudioContext();
-			this.initLibraryEvents();
-			this.initEditor();
-		});
-	}
-	get saveData() {
-		const a = document.body.appendChild(document.createElement('a'));
-		a.style.display = 'none';
-		const saveData = function(blob, fileName) {
-			const url = URL.createObjectURL(blob);
-			a.href = url;
-			a.download = fileName;
-			a.click();
-			setTimeout(() => window.URL.revokeObjectURL(url));
-		};
-		Object.defineProperty(this, 'saveData', { value: saveData });
-		return saveData;
-	}
-	get timeCursorEnabled() {
-		return this.sampleRate >> this.settings.drawScale < 3950;
-	}
-	animationFrame() {
-		this.drawGraphics(this.byteSample);
-		if(this.isPlaying) {
-			window.requestAnimationFrame(() => this.animationFrame());
-		}
-	}
-	clearCanvas() {
-		this.canvasCtx.clearRect(0, 0, this.canvasElem.width, this.canvasElem.height);
-	}
-	drawGraphics(endTime) {
-		if(!isFinite(endTime)) {
-			this.resetTime();
-			return;
-		}
-		const buffer = this.drawBuffer;
-		const bufferLen = buffer.length;
-		if(!bufferLen) {
-			return;
-		}
-		const { width, height } = this.canvasElem;
-		const startTime = buffer[0].t;
-		let startX = this.mod(this.getX(startTime), width);
-		const endX = Math.floor(startX + this.getX(endTime - startTime));
-		startX = Math.floor(startX);
-		const drawWidth = Math.min(Math.abs(endX - startX) + 1, 1024);
-		// Restoring the last points of a previous segment
-		const imageData = this.canvasCtx.createImageData(drawWidth, height);
-		if(this.settings.drawScale) {
-			for(let y = 0; y < height; ++y) {
-				this.drawPoint(imageData, drawWidth, 0, y, this.drawEndBuffer[y]);
-			}
-		}
-		// Drawing on a segment
-		const isWaveform = this.settings.drawMode === 'Waveform';
-		let prevY = buffer[0].value;
-		for(let i = 0; i < bufferLen; ++i) {
-			const { t, value: curY } = buffer[i];
-			const curX = this.mod(Math.floor(this.getX(t)) - startX, width);
-			if(isWaveform && curY !== prevY && !isNaN(curY)) {
-				for(let y = prevY, dy = prevY < curY ? 1 : -1; y !== curY; y += dy) {
-					this.drawPoint(imageData, drawWidth, curX, y, 255);
-				}
-				prevY = curY;
-			}
-			const nextElem = buffer[i + 1];
-			const nextX = this.mod(Math.ceil(this.getX(nextElem ? nextElem.t : endTime)) - startX, width);
-			for(let x = curX; x !== nextX; x = this.mod(x + 1, width)) {
-				this.drawPoint(imageData, drawWidth, x, curY, 255);
-			}
-		}
-		// Saving the last points of a segment
-		if(this.settings.drawScale) {
-			for(let y = 0; y < height; ++y) {
-				this.drawEndBuffer[y] = imageData.data[(drawWidth * (255 - y) + drawWidth - 1) << 2];
-			}
-		}
-		// Placing a segment on the canvas
-		this.canvasCtx.putImageData(imageData, startX, 0);
-		if(endX > width) {
-			this.canvasCtx.putImageData(imageData, startX - width, 0);
-		}
-		// Move the cursor to the end of the segment
-		if(this.timeCursorEnabled) {
-			this.timeCursor.style.left = endX / width * 100 + '%';
-		}
-		// Clear buffer
-		this.drawBuffer = [{ t: endTime, value: buffer[bufferLen - 1].value }];
-	}
-	drawPoint(imageData, width, x, y, value) {
-		let idx = (width * (255 - y) + x) << 2;
-		imageData.data[idx++] = imageData.data[idx++] = imageData.data[idx++] = imageData.data[idx] = value;
-	}
-	expandEditor() {
-		this.containerFixed.classList.toggle('container-expanded');
-	}
-	async initAudioContext() {
-		this.audioCtx = new (window.AudioContext || window.webkitAudioContext || window.mozAudioContext)();
-		await this.audioCtx.audioWorklet.addModule('audioProcessor.js');
-		if(!this.audioCtx.createGain) {
-			this.audioCtx.createGain = this.audioCtx.createGainNode;
-		}
-		this.audioGain = this.audioCtx.createGain();
 		this.setVolume(this.controlVolume);
-		this.audioWorkletNode = new AudioWorkletNode(this.audioCtx, 'audioProcessor');
-		this.audioWorkletNode.port.onmessage = ({ data }) => this.receiveData(data);
-		this.audioWorkletNode.connect(this.audioGain);
 		this.audioGain.connect(this.audioCtx.destination);
 		const mediaDest = this.audioCtx.createMediaStreamDestination();
 		const audioRecorder = this.audioRecorder = new MediaRecorder(mediaDest.stream);
@@ -235,7 +150,6 @@ class Bytebeat {
 			this.saveData(new Blob(this.recordChunks, { type }), file);
 		};
 		this.audioGain.connect(mediaDest);
-<<<<<<< HEAD
 
 		await addModulePromise;
 		this.audioWorklet = new AudioWorkletNode(this.audioCtx, "bytebeatProcessor");
@@ -243,6 +157,7 @@ class Bytebeat {
 		this.audioWorklet.port.start();
 		this.audioWorklet.connect(this.audioGain);
 	}
+<<<<<<< HEAD
 	handleMessage(e) {
 		const data = e.data;
 		if (data.clearCanvas)
@@ -307,12 +222,15 @@ class Bytebeat {
 				el.title = "Click to play this code";
 		});
 	}
-
-	initCodeInput() {
+=======
+// TODO: get functions
+>>>>>>>
+<<<<<<< HEAD
+	initCodeEditor() {
 		this.errorElem = document.getElementById("error");
-		this.inputElem = document.getElementById("code-editor");
-		this.inputElem.addEventListener("input", this.refreshCalc.bind(this));
-		this.inputElem.addEventListener("keydown", e => {
+		this.codeEditorElem = document.getElementById("code-editor");
+		this.codeEditorElem.addEventListener("input", this.refreshCalc.bind(this));
+		this.codeEditorElem.addEventListener("keydown", e => {
 			if (e.key === "Tab" && !e.altKey && !e.ctrlKey) {
 				// TODO: undo/redo text
 				e.preventDefault();
@@ -372,34 +290,10 @@ class Bytebeat {
 			return pData;
 		} else if (window.location.hash) {
 			console.error("Unrecognized url data");
+		}
+		return null;
+	}
 =======
-	}
-	initControls() {
-		this.canvasElem = document.getElementById('canvas-main');
-		this.canvasCtx = this.canvasElem.getContext('2d');
-		this.canvasTogglePlay = document.getElementById('canvas-toggleplay');
-		this.containerFixed = document.getElementById('container-fixed');
-		this.controlTimeValue = document.getElementById('control-time-value');
-		this.controlTimeUnits = document.getElementById('control-time-units');
-		this.controlDrawMode = document.getElementById('control-draw-mode');
-		this.controlPlaybackMode = document.getElementById('control-playback-mode');
-		this.controlSampleRate = document.getElementById('control-samplerate');
-		this.controlScaleDown = document.getElementById('control-scaledown');
-		this.controlTogglePlay = document.getElementById('control-toggleplay');
-		this.controlVolume = document.getElementById('control-volume');
-		this.timeCursor = document.getElementById('canvas-timecursor');
-		this.controlTimeValue.oninput = this.controlTimeValue.onkeydown = e => {
-			if(e.key === "Enter") {
-				this.controlTimeValue.blur();
-				this.togglePlay(true);
-				return;
-			}
-			const { value } = this.controlTimeValue;
-			const byteSample = this.settings.isSeconds ? Math.round(value * this.sampleRate) : value;
-			this.setByteSample(byteSample);
-			this.audioWorkletNode.port.postMessage({ byteSample });
-		};
-	}
 	initEditor() {
 		this.errorElem = document.getElementById('error');
 		this.editorElem = document.getElementById('editor');
@@ -442,11 +336,12 @@ class Bytebeat {
 		}
 		if(pData !== null) {
 			this.loadCode(pData, false);
->>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
 		}
 		return null;
 	}
+>>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
 
+<<<<<<<
 	initControls() {
 		this.controlTimeUnit = document.getElementById("control-time-unit");
 		this.controlTimeValue = document.getElementById("control-time-value");
@@ -460,6 +355,34 @@ class Bytebeat {
 
 		this.canvasTogglePlay = document.getElementById("canvas-toggleplay");
 	}
+=======
+	initControls() {
+		this.canvasElem = document.getElementById('canvas-main');
+		this.canvasCtx = this.canvasElem.getContext('2d');
+		this.canvasTogglePlay = document.getElementById('canvas-toggleplay');
+		this.containerFixed = document.getElementById('container-fixed');
+		this.controlTimeValue = document.getElementById('control-time-value');
+		this.controlTimeUnits = document.getElementById('control-time-units');
+		this.controlDrawMode = document.getElementById('control-draw-mode');
+		this.controlPlaybackMode = document.getElementById('control-playback-mode');
+		this.controlSampleRate = document.getElementById('control-samplerate');
+		this.controlScaleDown = document.getElementById('control-scaledown');
+		this.controlTogglePlay = document.getElementById('control-toggleplay');
+		this.controlVolume = document.getElementById('control-volume');
+		this.timeCursor = document.getElementById('canvas-timecursor');
+		this.controlTimeValue.oninput = this.controlTimeValue.onkeydown = e => {
+			if (e.key === "Enter") {
+				this.controlTimeValue.blur();
+				this.togglePlay(true);
+				return;
+			}
+			const { value } = this.controlTimeValue;
+			const byteSample = this.settings.isSeconds ? Math.round(value * this.sampleRate) : value;
+			this.setByteSample(byteSample);
+			this.audioWorkletNode.port.postMessage({ byteSample });
+		};
+	}
+>>>>>>>
 <<<<<<< HEAD
 	initCanvas() {
 		this.timeCursor = document.getElementById("canvas-timecursor");
@@ -468,12 +391,12 @@ class Bytebeat {
 	}
 
 	refreshCalc() {
-		const codeText = this.inputElem.value;
+		const codeText = this.codeEditorElem.value;
 
 		this.audioWorklet.port.postMessage({ codeText: codeText.trim() });
 	}
 	generateUrl() {
-		const codeText = this.inputElem.value;
+		const codeText = this.codeEditorElem.value;
 
 		let pData = { code: codeText };
 		if (this.sampleRate != 8000)
@@ -487,13 +410,13 @@ class Bytebeat {
 	}
 	handleWindowResize(force = false) {
 		let newWidth;
-		if (document.body.clientWidth >= 768 + 4)
+		if (window.innerWidth >= 768 + 4)
 			newWidth = 1024;
 		else
 			newWidth = 512;
 		if (newWidth != this.canvasElem.width || force) {
 			this.canvasElem.width = newWidth;
-			this.contentElem.style.maxWidth = (newWidth + 4) + "px";
+			this.contentElem.style.maxWidth = (newWidth + 4) + "px"; // TODO: see if it's possible to get rid of this at some point
 		}
 	}
 	animationFrame() {
@@ -510,7 +433,7 @@ class Bytebeat {
 	loadCode(pData, calc = true, play = true) {
 		if (pData != null) {
 			let { code, sampleRate, mode: playbackMode } = pData;
-			this.inputElem.value = code;
+			this.codeEditorElem.value = code;
 			this.applySampleRate(+sampleRate || 8000);
 			this.applyPlaybackMode(playbackMode || "Bytebeat");
 		}
@@ -789,6 +712,98 @@ class Bytebeat {
 		if(data.updateLocation === true) {
 			this.updateLocation();
 		}
+	}
+
+	get saveData() {
+		const a = document.body.appendChild(document.createElement('a'));
+		a.style.display = 'none';
+		const saveData = function(blob, fileName) {
+			const url = URL.createObjectURL(blob);
+			a.href = url;
+			a.download = fileName;
+			a.click();
+			setTimeout(() => window.URL.revokeObjectURL(url));
+		};
+		Object.defineProperty(this, 'saveData', { value: saveData });
+		return saveData;
+	}
+	get timeCursorEnabled() {
+		return this.sampleRate >> this.settings.drawScale < 3950;
+	}
+	animationFrame() {
+		this.drawGraphics(this.byteSample);
+		if(this.isPlaying) {
+			window.requestAnimationFrame(() => this.animationFrame());
+		}
+	}
+	clearCanvas() {
+		this.canvasCtx.clearRect(0, 0, this.canvasElem.width, this.canvasElem.height);
+	}
+	drawGraphics(endTime) {
+		if(!isFinite(endTime)) {
+			this.resetTime();
+			return;
+		}
+		const buffer = this.drawBuffer;
+		const bufferLen = buffer.length;
+		if(!bufferLen) {
+			return;
+		}
+		const { width, height } = this.canvasElem;
+		const startTime = buffer[0].t;
+		let startX = this.mod(this.getX(startTime), width);
+		const endX = Math.floor(startX + this.getX(endTime - startTime));
+		startX = Math.floor(startX);
+		const drawWidth = Math.min(Math.abs(endX - startX) + 1, 1024);
+		// Restoring the last points of a previous segment
+		const imageData = this.canvasCtx.createImageData(drawWidth, height);
+		if(this.settings.drawScale) {
+			for(let y = 0; y < height; ++y) {
+				this.drawPoint(imageData, drawWidth, 0, y, this.drawEndBuffer[y]);
+			}
+		}
+		// Drawing on a segment
+		const isWaveform = this.settings.drawMode === 'Waveform';
+		let prevY = buffer[0].value;
+		for(let i = 0; i < bufferLen; ++i) {
+			const { t, value: curY } = buffer[i];
+			const curX = this.mod(Math.floor(this.getX(t)) - startX, width);
+			if(isWaveform && curY !== prevY && !isNaN(curY)) {
+				for(let y = prevY, dy = prevY < curY ? 1 : -1; y !== curY; y += dy) {
+					this.drawPoint(imageData, drawWidth, curX, y, 255);
+				}
+				prevY = curY;
+			}
+			const nextElem = buffer[i + 1];
+			const nextX = this.mod(Math.ceil(this.getX(nextElem ? nextElem.t : endTime)) - startX, width);
+			for(let x = curX; x !== nextX; x = this.mod(x + 1, width)) {
+				this.drawPoint(imageData, drawWidth, x, curY, 255);
+			}
+		}
+		// Saving the last points of a segment
+		if(this.settings.drawScale) {
+			for(let y = 0; y < height; ++y) {
+				this.drawEndBuffer[y] = imageData.data[(drawWidth * (255 - y) + drawWidth - 1) << 2];
+			}
+		}
+		// Placing a segment on the canvas
+		this.canvasCtx.putImageData(imageData, startX, 0);
+		if(endX > width) {
+			this.canvasCtx.putImageData(imageData, startX - width, 0);
+		}
+		// Move the cursor to the end of the segment
+		if(this.timeCursorEnabled) {
+			this.timeCursor.style.left = endX / width * 100 + '%';
+		}
+		// Clear buffer
+		this.drawBuffer = [{ t: endTime, value: buffer[bufferLen - 1].value }];
+	}
+	drawPoint(imageData, width, x, y, value) {
+		let idx = (width * (255 - y) + x) << 2;
+		imageData.data[idx++] = imageData.data[idx++] = imageData.data[idx++] = imageData.data[idx] = value;
+	}
+	expandEditor() {
+		this.containerFixed.classList.toggle('container-expanded');
 	}
 >>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
 
