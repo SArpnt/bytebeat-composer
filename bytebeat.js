@@ -157,7 +157,6 @@ class Bytebeat {
 		this.audioWorklet.port.start();
 		this.audioWorklet.connect(this.audioGain);
 	}
-<<<<<<< HEAD
 	handleMessage(e) {
 		const data = e.data;
 		if (data.clearCanvas)
@@ -184,10 +183,11 @@ class Bytebeat {
 				this.showErrorMessage(data.errorMessage.type, data.errorMessage.err, data.errorMessage.priority);
 		}
 	}
+<<<<<<< HEAD
 	get saveData() {
 		const a = document.createElement("a");
-		document.documentElement.appendChild(a);
-		a.style.display = "none";
+		document.documentElement.appendChild(a); // TODO: is this needed?
+		a.style.display = "none"; // TODO: maybe put a in head instead of setting style
 		const saveDataInternal = function saveDataInternal(blob, fileName) {
 			url = URL.createObjectURL(blob);
 			a.href = url;
@@ -198,7 +198,23 @@ class Bytebeat {
 		Object.defineProperty(this, "saveData", { value: saveDataInternal });
 		return saveDataInternal;
 	}
+=======
+	get saveData() {
+		const a = document.body.appendChild(document.createElement('a'));
+		a.style.display = 'none';
+		const saveData = function(blob, fileName) {
+			const url = URL.createObjectURL(blob);
+			a.href = url;
+			a.download = fileName;
+			a.click();
+			setTimeout(() => window.URL.revokeObjectURL(url));
+		};
+		Object.defineProperty(this, 'saveData', { value: saveData });
+		return saveData;
+	}
+>>>>>>>
 
+<<<<<<<
 	initLibrary() {
 		// TODO: all this stuff in playlist.js
 		const libraryElem = document.getElementById("library");
@@ -214,7 +230,7 @@ class Bytebeat {
 						this.loadCode(Object.assign(JSON.parse(el.dataset.songdata), { code }));
 					});
 		});
-
+	
 		// TODO: DEFINETLY this in playlist.js, this is horrible
 		libraryElem.addEventListener("mouseover", e => {
 			const el = e.target;
@@ -223,7 +239,35 @@ class Bytebeat {
 		});
 	}
 =======
-// TODO: get functions
+	initLibraryEvents() {
+		document.body.querySelectorAll('.library-header').forEach(el =>
+			(el.onclick = () => el.nextElementSibling.classList.toggle('disabled')));
+		const libraryElem = document.getElementById('container-scroll');
+		libraryElem.onclick = e => {
+			const el = e.target;
+			if(el.tagName === 'CODE') {
+				this.loadCode(Object.assign({ code: el.innerText },
+					el.hasAttribute('data-songdata') ? JSON.parse(el.dataset.songdata) : {}));
+			} else if(el.classList.contains('code-load')) {
+				const xhr = new XMLHttpRequest();
+				xhr.onreadystatechange = () => {
+					if(xhr.readyState === 4 && xhr.status === 200) {
+						this.loadCode(Object.assign(JSON.parse(el.dataset.songdata),
+							{ code: xhr.responseText }));
+					}
+				};
+				xhr.open('GET', 'library/' + el.dataset.codeFile, true);
+				xhr.setRequestHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+				xhr.send(null);
+			}
+		};
+		libraryElem.onmouseover = function(e) {
+			const el = e.target;
+			if(el.tagName === 'CODE') {
+				el.title = 'Click to play this code';
+			}
+		};
+	}
 >>>>>>>
 <<<<<<< HEAD
 	initCodeEditor() {
@@ -340,7 +384,6 @@ class Bytebeat {
 		return null;
 	}
 >>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
-
 <<<<<<<
 	initControls() {
 		this.controlTimeUnit = document.getElementById("control-time-unit");
@@ -354,6 +397,11 @@ class Bytebeat {
 		this.controlVolume = document.getElementById("control-volume");
 
 		this.canvasTogglePlay = document.getElementById("canvas-toggleplay");
+	}
+	initCanvas() {
+		this.timeCursor = document.getElementById("canvas-timecursor");
+		this.canvasElem = document.getElementById("canvas-main");
+		this.canvasCtx = this.canvasElem.getContext("2d", { alpha: false });
 	}
 =======
 	initControls() {
@@ -384,12 +432,6 @@ class Bytebeat {
 	}
 >>>>>>>
 <<<<<<< HEAD
-	initCanvas() {
-		this.timeCursor = document.getElementById("canvas-timecursor");
-		this.canvasElem = document.getElementById("canvas-main");
-		this.canvasCtx = this.canvasElem.getContext("2d", { alpha: false });
-	}
-
 	refreshCalc() {
 		const codeText = this.codeEditorElem.value;
 
@@ -445,35 +487,6 @@ class Bytebeat {
 		}
 	}
 =======
-	initLibraryEvents() {
-		document.body.querySelectorAll('.library-header').forEach(el =>
-			(el.onclick = () => el.nextElementSibling.classList.toggle('disabled')));
-		const libraryElem = document.getElementById('container-scroll');
-		libraryElem.onclick = e => {
-			const el = e.target;
-			if(el.tagName === 'CODE') {
-				this.loadCode(Object.assign({ code: el.innerText },
-					el.hasAttribute('data-songdata') ? JSON.parse(el.dataset.songdata) : {}));
-			} else if(el.classList.contains('code-load')) {
-				const xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = () => {
-					if(xhr.readyState === 4 && xhr.status === 200) {
-						this.loadCode(Object.assign(JSON.parse(el.dataset.songdata),
-							{ code: xhr.responseText }));
-					}
-				};
-				xhr.open('GET', 'library/' + el.dataset.codeFile, true);
-				xhr.setRequestHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-				xhr.send(null);
-			}
-		};
-		libraryElem.onmouseover = function(e) {
-			const el = e.target;
-			if(el.tagName === 'CODE') {
-				el.title = 'Click to play this code';
-			}
-		};
-	}
 	initSettings() {
 		try {
 			this.settings = JSON.parse(localStorage.settings);
@@ -586,8 +599,8 @@ class Bytebeat {
 				lenTime = endTime - startTime;
 				startXPos = fmod(getXpos(startTime), width);
 				endXPos = startXPos + getXpos(lenTime);
-				drawStartX = Math.ceil(startXPos); // this is a bit of a hack, variables won't have normal expected behavior
-				// i can only get away with this because the other vars aren't used
+				drawStartX = Math.ceil(startXPos); // this is a bit of a hack, since this doesn't relate to the other variables properly
+				// i can only get away with this because the other vars like startTime and such aren't used
 				// the proper solution would be to somehow round up startTime by a pixel
 				drawEndX = Math.floor(endXPos);
 				drawLenX = Math.abs(drawEndX - drawStartX) + 1;
@@ -697,39 +710,6 @@ class Bytebeat {
 		}
 	}
 =======
-	receiveData(data) {
-		const { byteSample } = data;
-		if(byteSample !== undefined) {
-			this.setCounterValue(byteSample);
-			this.setByteSample(byteSample);
-		}
-		if(data.drawBuffer !== undefined) {
-			this.drawBuffer = this.drawBuffer.concat(data.drawBuffer);
-		}
-		if(data.error !== undefined) {
-			this.errorElem.innerText = data.error;
-		}
-		if(data.updateLocation === true) {
-			this.updateLocation();
-		}
-	}
-
-	get saveData() {
-		const a = document.body.appendChild(document.createElement('a'));
-		a.style.display = 'none';
-		const saveData = function(blob, fileName) {
-			const url = URL.createObjectURL(blob);
-			a.href = url;
-			a.download = fileName;
-			a.click();
-			setTimeout(() => window.URL.revokeObjectURL(url));
-		};
-		Object.defineProperty(this, 'saveData', { value: saveData });
-		return saveData;
-	}
-	get timeCursorEnabled() {
-		return this.sampleRate >> this.settings.drawScale < 3950;
-	}
 	animationFrame() {
 		this.drawGraphics(this.byteSample);
 		if(this.isPlaying) {
@@ -808,12 +788,12 @@ class Bytebeat {
 >>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
 
 	resetTime() {
-<<<<<<< HEAD
 		this.setByteSample(0, true, true);
 		this.timeCursor.cssText = ""; // TODO: remove this after "update cursor position"
 		if (!this.isPlaying)
 			this.canvasTogglePlay.classList.add("canvas-toggleplay-show");
 	}
+<<<<<<< HEAD
 	setByteSample(value, send = true, clear = false) {
 		this.controlTimeValue.placeholder = value;
 		this.byteSample = value;
@@ -839,39 +819,7 @@ class Bytebeat {
 			this.audioWorklet.port.postMessage({ playSpeed, updateSampleRatio: true });
 		}
 	}
-
-	toggleTimeCursor() {
-		this.timeCursor.classList.toggle('disabled', !this.timeCursorVisible());
-	}
-	timeCursorVisible() {
-		return this.sampleRate >> this.drawScale < 3950;
-	}
-	togglePlay(isPlay) {
-		this.canvasTogglePlay.classList.toggle("canvas-toggleplay-pause", isPlay);
-		if (isPlay) {
-			// Play
-			this.canvasTogglePlay.classList.remove("canvas-toggleplay-show");
-			if (this.audioCtx?.resume)
-				this.audioCtx.resume();
-			this.animationFrameId = window.requestAnimationFrame(this.animationFrame);
-		} else {
-			if (this.isRecording) {
-				this.audioRecorder.stop();
-				this.isRecording = false;
-			}
-			window.cancelAnimationFrame(this.animationFrameId);
-			this.animationFrameId = null;
-		}
-		this.isPlaying = isPlay;
-		this.audioWorklet.port.postMessage({ isPlaying: isPlay });
-	}
-};
 =======
-		this.audioWorkletNode.port.postMessage({ resetTime: true });
-	}
-	saveSettings() {
-		localStorage.settings = JSON.stringify(this.settings);
-	}
 	setByteSample(value) {
 		this.byteSample = +value || 0;
 		if(value === 0) {
@@ -883,6 +831,55 @@ class Bytebeat {
 			}
 		}
 	}
+	setPlaybackMode(playbackMode) {
+		this.playbackMode = playbackMode;
+		this.updateLocation();
+		this.audioWorkletNode.port.postMessage({ playbackMode });
+	}
+	setSampleRate(sampleRate, isSendData = true) {
+		this.sampleRate = sampleRate;
+		this.toggleTimeCursor();
+		if(isSendData) {
+			this.audioWorkletNode.port.postMessage({ sampleRatio: this.sampleRate / this.audioCtx.sampleRate });
+		}
+	}
+>>>>>>>
+<<<<<<<
+toggleTimeCursor() {
+	this.timeCursor.classList.toggle('disabled', !this.timeCursorVisible());
+}
+timeCursorVisible() {
+	return this.sampleRate >> this.drawScale < 3950;
+}
+togglePlay(isPlay) {
+	this.canvasTogglePlay.classList.toggle("canvas-toggleplay-pause", isPlay);
+	if (isPlay) {
+		// Play
+		this.canvasTogglePlay.classList.remove("canvas-toggleplay-show");
+		if (this.audioCtx?.resume)
+			this.audioCtx.resume();
+		this.animationFrameId = window.requestAnimationFrame(this.animationFrame);
+	} else {
+		if (this.isRecording) {
+			this.audioRecorder.stop();
+			this.isRecording = false;
+		}
+		window.cancelAnimationFrame(this.animationFrameId);
+		this.animationFrameId = null;
+	}
+	this.isPlaying = isPlay;
+	this.audioWorklet.port.postMessage({ isPlaying: isPlay });
+}
+=======
+toggleTimeCursor() {
+	this.timeCursor.classList.toggle('disabled', !this.timeCursorEnabled);
+}
+get timeCursorEnabled() {
+	return this.sampleRate >> this.settings.drawScale < 3950;
+}
+>>>>>>>
+<<<<<<<
+=======
 	setCounterUnits() {
 		this.controlTimeUnit.textContent = this.settings.isSeconds ? 'sec' : 't';
 		this.setCounterValue(this.byteSample);
@@ -897,18 +894,7 @@ class Bytebeat {
 	setFunction() {
 		this.audioWorkletNode.port.postMessage({ setFunction: this.editorElem.value });
 	}
-	setPlaybackMode(playbackMode) {
-		this.playbackMode = playbackMode;
-		this.updateLocation();
-		this.audioWorkletNode.port.postMessage({ playbackMode });
-	}
-	setSampleRate(sampleRate, isSendData = true) {
-		this.sampleRate = sampleRate;
-		this.toggleTimeCursor();
-		if(isSendData) {
-			this.audioWorkletNode.port.postMessage({ sampleRatio: this.sampleRate / this.audioCtx.sampleRate });
-		}
-	}
+
 	setScale(amount) {
 		this.settings.drawScale = Math.max(this.settings.drawScale + amount, 0);
 		this.saveSettings();
@@ -954,9 +940,6 @@ class Bytebeat {
 			this.audioWorkletNode.port.postMessage({ isPlaying });
 		}
 	}
-	toggleTimeCursor() {
-		this.timeCursor.classList.toggle('disabled', !this.timeCursorEnabled);
-	}
 	updateLocation() {
 		const pData = { code: this.editorElem.value };
 		if(this.sampleRate !== 8000) {
@@ -967,7 +950,13 @@ class Bytebeat {
 		}
 		window.location.hash = '#v3b64' + btoa(pako.deflateRaw(JSON.stringify(pData), { to: 'string' }));
 	}
-};
+>>>>>>>
+<<<<<<<
+=======
+	saveSettings() {
+		localStorage.settings = JSON.stringify(this.settings);
+	}
 >>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
+};
 
 const bytebeat = new Bytebeat();
