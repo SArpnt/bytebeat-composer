@@ -49,8 +49,8 @@
 				this.setByteSample(...data.setByteSample);
 
 			// other
-			if (data.codeText !== undefined)
-				this.refreshCalc(data.codeText);
+			if (data.code !== undefined)
+				this.refreshCode(data.code); // code is already trimmed
 
 			if (data.updateSampleRatio)
 				this.updateSampleRatio();
@@ -65,7 +65,7 @@
 			this.lastByteValue = null;
 			this.lastFuncValue = null;
 		}
-		refreshCalc(codeText) {
+		refreshCode(code) { // code is already trimmed
 			// create shortened functions
 			const params = Object.getOwnPropertyNames(Math);
 			const values = params.map(k => Math[k]);
@@ -82,7 +82,7 @@
 				let errType;
 				try {
 					errType = "compile";
-					this.func = new Function(...params, "t", `return 0, ${codeText.trim() || "undefined"}\n;`).bind(globalThis, ...values);
+					this.func = new Function(...params, "t", `return 0, ${code || "undefined"}\n;`).bind(globalThis, ...values);
 					errType = "runtime";
 					this.func(0);
 				} catch (err) {

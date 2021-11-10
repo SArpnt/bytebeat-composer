@@ -38,6 +38,17 @@ class Bytebeat {
 
 		this.animationFrameId = null;
 
+		this.controlTimeUnit = null;
+		this.controlTimeValue = null;
+		this.controlScaleUp = null;
+		this.controlScaleDown = null;
+		this.controlPlaybackMode = null;
+		this.controlSampleRate = null;
+		this.controlVolume = null;
+		this.canvasTogglePlay = null;
+
+		// TODO: sort again and find missing variables, group variables with objects
+
 
 		this.animationFrame = this.animationFrame.bind(this);
 
@@ -53,9 +64,9 @@ class Bytebeat {
 			document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
 
 			await initAudioPromise;
-			this.setVolume(this.controlVolume);
+			this.setVolume();
 			this.loadCode(pData, false, false);
-			this.refreshCalc();
+			this.refreshCode();
 		};
 		if (["interactive", "loaded", "complete"].includes(document.readyState))
 			onDomLoaded();
@@ -125,19 +136,10 @@ class Bytebeat {
 		this.audioGain = new GainNode(this.audioCtx, options);
 		this.audioGain.connect(this.audioCtx.destination);
 
-<<<<<<<
 		const mediaDest = this.audioCtx.createMediaStreamDestination();
 		this.audioRecorder = new MediaRecorder(mediaDest.stream);
 		this.audioRecorder.ondataavailable = e => this.recordChunks.push(e.data);
 		this.audioRecorder.onstop = e => {
-=======
-		this.setVolume(this.controlVolume);
-		this.audioGain.connect(this.audioCtx.destination);
-		const mediaDest = this.audioCtx.createMediaStreamDestination();
-		const audioRecorder = this.audioRecorder = new MediaRecorder(mediaDest.stream);
-		audioRecorder.ondataavailable = e => this.recordChunks.push(e.data);
-		audioRecorder.onstop = e => {
->>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
 			let file, type;
 			const types = ["audio/webm", "audio/ogg"];
 			const files = ["track.webm", "track.ogg"];
@@ -183,7 +185,6 @@ class Bytebeat {
 				this.showErrorMessage(data.errorMessage.type, data.errorMessage.err, data.errorMessage.priority);
 		}
 	}
-<<<<<<< HEAD
 	get saveData() {
 		const a = document.createElement("a");
 		document.documentElement.appendChild(a); // TODO: is this needed?
@@ -198,21 +199,6 @@ class Bytebeat {
 		Object.defineProperty(this, "saveData", { value: saveDataInternal });
 		return saveDataInternal;
 	}
-=======
-	get saveData() {
-		const a = document.body.appendChild(document.createElement('a'));
-		a.style.display = 'none';
-		const saveData = function(blob, fileName) {
-			const url = URL.createObjectURL(blob);
-			a.href = url;
-			a.download = fileName;
-			a.click();
-			setTimeout(() => window.URL.revokeObjectURL(url));
-		};
-		Object.defineProperty(this, 'saveData', { value: saveData });
-		return saveData;
-	}
->>>>>>>
 
 <<<<<<<
 	initLibrary() {
@@ -273,7 +259,7 @@ class Bytebeat {
 	initCodeEditor() {
 		this.errorElem = document.getElementById("error");
 		this.codeEditorElem = document.getElementById("code-editor");
-		this.codeEditorElem.addEventListener("input", this.refreshCalc.bind(this));
+		this.codeEditorElem.addEventListener("input", this.refreshCode.bind(this));
 		this.codeEditorElem.addEventListener("keydown", e => {
 			if (e.key === "Tab" && !e.altKey && !e.ctrlKey) {
 				// TODO: undo/redo text
@@ -316,24 +302,26 @@ class Bytebeat {
 					el.value = `${el.value.slice(0, selectionStart)}\t${el.value.slice(selectionEnd)}`;
 					el.setSelectionRange(selectionStart + 1, selectionStart + 1);
 				}
-				this.refreshCalc();
+				this.refreshCode();
 			}
 		});
-		if (window.location.hash.startsWith("#v3b64")) {
-			let pData;
-			try {
-				pData = JSON.parse(
-					pako.inflateRaw(
-						atob(decodeURIComponent(window.location.hash.substr(6))), { to: "string" }
-					)
-				);
-			} catch (err) {
-				console.error("Couldn't load data from url:", err);
-				pData = null;
+		if (window.location.hash) {
+			if (window.location.hash.startsWith("#v3b64")) {
+				let pData;
+				try {
+					pData = JSON.parse(
+						pako.inflateRaw(
+							atob(decodeURIComponent(window.location.hash.substr(6))), { to: "string" }
+						)
+					);
+				} catch (err) {
+					console.error("Couldn't load data from url:", err);
+					pData = null;
+				}
+				return pData;
+			} else 
+				console.error("Unrecognized url data");
 			}
-			return pData;
-		} else if (window.location.hash) {
-			console.error("Unrecognized url data");
 		}
 		return null;
 	}
@@ -341,7 +329,7 @@ class Bytebeat {
 	initEditor() {
 		this.errorElem = document.getElementById('error');
 		this.editorElem = document.getElementById('editor');
-		this.editorElem.oninput = () => this.setFunction();
+		this.editorElem.oninput = () => this.refreshCode();
 		this.editorElem.onkeydown = e => {
 			if(e.keyCode === 9 /* TAB */ && !e.shiftKey && !e.altKey && !e.ctrlKey) {
 				e.preventDefault();
@@ -349,7 +337,7 @@ class Bytebeat {
 				const { value, selectionStart } = el;
 				el.value = value.slice(0, selectionStart) + '\t' + value.slice(el.selectionEnd);
 				el.setSelectionRange(selectionStart + 1, selectionStart + 1);
-				this.setFunction();
+				this.refreshCode();
 			}
 		};
 		/* global pako */
@@ -431,16 +419,12 @@ class Bytebeat {
 		};
 	}
 >>>>>>>
+refreshCode() {
+	this.audioWorklet.port.postMessage({ code: this.codeEditorElem.value.trim() });
+}
 <<<<<<< HEAD
-	refreshCalc() {
-		const codeText = this.codeEditorElem.value;
-
-		this.audioWorklet.port.postMessage({ codeText: codeText.trim() });
-	}
 	generateUrl() {
-		const codeText = this.codeEditorElem.value;
-
-		let pData = { code: codeText };
+		let pData = { code: this.codeEditorElem.value };
 		if (this.sampleRate != 8000)
 			pData.sampleRate = this.sampleRate;
 		if (this.playbackMode != "Bytebeat")
@@ -452,7 +436,7 @@ class Bytebeat {
 	}
 	handleWindowResize(force = false) {
 		let newWidth;
-		if (window.innerWidth >= 768 + 4)
+		if (window.innerWidth >= 768 + 4) // 768 is halfway between 512 and 1024
 			newWidth = 1024;
 		else
 			newWidth = 512;
@@ -472,15 +456,15 @@ class Bytebeat {
 			this.animationFrameId = null;
 	}
 
-	loadCode(pData, calc = true, play = true) {
+	loadCode(pData, refreshCode = true, play = true) {
 		if (pData != null) {
 			let { code, sampleRate, mode: playbackMode } = pData;
 			this.codeEditorElem.value = code;
 			this.applySampleRate(+sampleRate || 8000);
 			this.applyPlaybackMode(playbackMode || "Bytebeat");
 		}
-		if (calc)
-			this.refreshCalc();
+		if (refreshCode)
+			this.refreshCode();
 		if (play) {
 			this.resetTime();
 			this.togglePlay(true);
@@ -497,12 +481,29 @@ class Bytebeat {
 		this.setCounterUnits();
 		this.controlDrawMode.value = this.settings.drawMode;
 	}
+	updateLocation() {
+		const pData = { code: this.editorElem.value };
+		if(this.sampleRate !== 8000) {
+			pData.sampleRate = this.sampleRate;
+		}
+		if(this.playbackMode !== 'Bytebeat') {
+			pData.mode = this.playbackMode;
+		}
+		window.location.hash = '#v3b64' + btoa(pako.deflateRaw(JSON.stringify(pData), { to: 'string' }));
+	}
+	animationFrame() {
+		this.drawGraphics(this.byteSample);
+		if(this.isPlaying) {
+			window.requestAnimationFrame(() => this.animationFrame());
+		}
+	}
+
 	loadCode({ code, sampleRate, mode: playbackMode }, isPlay = true) {
 		this.playbackMode = this.controlPlaybackMode.value = playbackMode = playbackMode || 'Bytebeat';
 		this.editorElem.value = code;
 		this.setSampleRate(this.controlSampleRate.value = +sampleRate || 8000, false);
 		const sampleRatio = this.sampleRate / this.audioCtx.sampleRate;
-		const data = { playbackMode, sampleRatio, setFunction: code };
+		const data = { playbackMode, sampleRatio, code };
 		if(isPlay) {
 			this.togglePlay(true, false);
 			data.isPlaying = isPlay;
@@ -529,7 +530,6 @@ class Bytebeat {
 				this.togglePlay(true);
 		}
 	}
-<<<<<<< HEAD
 	changeScale(amount) {
 		if (amount) {
 			this.drawScale = Math.max(this.drawScale + amount, 0);
@@ -541,19 +541,20 @@ class Bytebeat {
 			this.toggleTimeCursor();
 		}
 	}
-	setVolume({ value, max }) {
-		const fraction = parseInt(value) / parseInt(max);
+	setVolume() {
+		const fraction = parseInt(this.controlVolume.value) / parseInt(this.controlVolume.max);
 		this.audioGain.gain.value = fraction * fraction;
 	}
 
 	clearCanvas() {
-		this.canvasCtx.fillRect(0, 0, this.canvasElem.width, this.canvasElem.height);
+		this.canvasCtx.clearRect(0, 0, this.canvasElem.width, this.canvasElem.height);
 		this.clearDrawBuffer();
 	}
 	clearDrawBuffer() {
 		this.drawBuffer = [];
 		this.drawImageData = null;
 	}
+<<<<<<<
 	drawGraphics(endTime) {
 		const
 			width = this.canvasElem.width,
@@ -710,15 +711,6 @@ class Bytebeat {
 		}
 	}
 =======
-	animationFrame() {
-		this.drawGraphics(this.byteSample);
-		if(this.isPlaying) {
-			window.requestAnimationFrame(() => this.animationFrame());
-		}
-	}
-	clearCanvas() {
-		this.canvasCtx.clearRect(0, 0, this.canvasElem.width, this.canvasElem.height);
-	}
 	drawGraphics(endTime) {
 		if(!isFinite(endTime)) {
 			this.resetTime();
@@ -891,25 +883,7 @@ get timeCursorEnabled() {
 		this.settings.drawMode = this.controlDrawMode.value;
 		this.saveSettings();
 	}
-	setFunction() {
-		this.audioWorkletNode.port.postMessage({ setFunction: this.editorElem.value });
-	}
 
-	setScale(amount) {
-		this.settings.drawScale = Math.max(this.settings.drawScale + amount, 0);
-		this.saveSettings();
-		this.clearCanvas();
-		this.toggleTimeCursor();
-		if(this.settings.drawScale <= 0) {
-			this.controlScaleDown.setAttribute('disabled', true);
-		} else {
-			this.controlScaleDown.removeAttribute('disabled');
-		}
-	}
-	setVolume({ value, max }) {
-		const fraction = parseInt(value) / parseInt(max);
-		this.audioGain.gain.value = fraction * fraction;
-	}
 	stopPlay() {
 		this.togglePlay(false, false);
 		this.audioWorkletNode.port.postMessage({ isPlaying: false, resetTime: true });
@@ -939,16 +913,6 @@ get timeCursorEnabled() {
 		if(isSendData) {
 			this.audioWorkletNode.port.postMessage({ isPlaying });
 		}
-	}
-	updateLocation() {
-		const pData = { code: this.editorElem.value };
-		if(this.sampleRate !== 8000) {
-			pData.sampleRate = this.sampleRate;
-		}
-		if(this.playbackMode !== 'Bytebeat') {
-			pData.mode = this.playbackMode;
-		}
-		window.location.hash = '#v3b64' + btoa(pako.deflateRaw(JSON.stringify(pData), { to: 'string' }));
 	}
 >>>>>>>
 <<<<<<<
