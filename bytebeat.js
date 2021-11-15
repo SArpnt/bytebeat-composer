@@ -6,7 +6,6 @@ class Bytebeat {
 		this.audioWorklet = null;
 		this.audioGain = null;
 		this.audioRecorder = null;
-<<<<<<< HEAD
 		this.recordChunks = [];
 
 		this.nextErrType = null;
@@ -49,6 +48,8 @@ class Bytebeat {
 
 		// TODO: sort again and find missing variables, group variables with objects
 
+		//this.getX = t => t / (1 << this.settings.drawScale);
+		//this.mod = (a, b) => ((a % b) + b) % b;
 
 		this.animationFrame = this.animationFrame.bind(this);
 
@@ -72,54 +73,6 @@ class Bytebeat {
 		else
 			document.addEventListener("DOMContentLoaded", onDomLoaded);
 	}
-=======
-		this.recordChunks = [];
-
-
-		this.canvasCtx = null;
-		this.settings = { drawMode: 'Points', drawScale: 5, isSeconds: false };
-		this.drawBuffer = [];
-		this.drawEndBuffer = [];
-		this.byteSample = 0;
-
-		this.isPlaying = false;
-		this.isRecording = false;
-
-		this.playbackMode = 'Bytebeat';
-		this.sampleRate = 8000;
-
-		this.canvasElem = null;
-		this.editorElem = null;
-		this.errorElem = null;
-		
-		this.canvasTogglePlay = null;
-		this.containerFixed = null;
-		this.controlTimeUnits = null;
-		this.controlTimeValue = null;
-		this.controlPlaybackMode = null;
-		this.controlSampleRate = null;
-		this.controlScaleDown = null;
-		this.controlTogglePlay = null;
-		this.controlVolume = null;
-		
-		
-		
-		
-		this.getX = t => t / (1 << this.settings.drawScale);
-
-		this.mod = (a, b) => ((a % b) + b) % b;
-
-
-		this.timeCursor = null;
-		document.addEventListener('DOMContentLoaded', async () => {
-			this.initControls();
-			this.initSettings();
-			await this.initAudioContext();
-			this.initLibraryEvents();
-			this.initEditor();
-		});
-	}
->>>>>>>
 
 	async initAudioContext() {
 		this.audioCtx = new AudioContext();
@@ -331,9 +284,8 @@ class Bytebeat {
 		this.canvasElem = document.getElementById("canvas-main");
 		this.canvasCtx = this.canvasElem.getContext("2d", { alpha: false });
 	}
-<<<<<<<
-=======
-	initSettings() {
+	// TODO
+	/*initSettings() {
 		try {
 			this.settings = JSON.parse(localStorage.settings);
 		} catch(err) {
@@ -342,8 +294,7 @@ class Bytebeat {
 		this.setScale(0);
 		this.setCounterUnits();
 		this.controlDrawMode.value = this.settings.drawMode;
-	}
->>>>>>>
+	}*/
 	refreshCode() {
 		this.audioWorklet.port.postMessage({ code: this.codeEditorElem.value.trim() });
 	}
@@ -358,7 +309,6 @@ class Bytebeat {
 
 		window.location.hash = "#v3b64" + btoa(pako.deflateRaw(pData, { to: "string" }));
 	}
-<<<<<<< HEAD
 	handleWindowResize(force = false) {
 		let newWidth;
 		if (window.innerWidth >= 768 + 4) // 768 is halfway between 512 and 1024
@@ -395,28 +345,6 @@ class Bytebeat {
 			this.togglePlay(true);
 		}
 	}
-=======
-	animationFrame() {
-		this.drawGraphics(this.byteSample);
-		if(this.isPlaying) {
-			window.requestAnimationFrame(() => this.animationFrame());
-		}
-	}
-
-	loadCode({ code, sampleRate, mode: playbackMode }, isPlay = true) {
-		this.playbackMode = this.controlPlaybackMode.value = playbackMode = playbackMode || 'Bytebeat';
-		this.editorElem.value = code;
-		this.setSampleRate(this.controlSampleRate.value = +sampleRate || 8000, false);
-		const sampleRatio = this.sampleRate / this.audioCtx.sampleRate;
-		const data = { playbackMode, sampleRatio, code };
-		if(isPlay) {
-			this.togglePlay(true, false);
-			data.isPlaying = isPlay;
-			data.resetTime = true;
-		}
-		this.audioWorkletNode.port.postMessage(data);
-	}
->>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
 	applySampleRate(rate) {
 		this.setSampleRate(rate);
 		this.controlSampleRate.value = rate;
@@ -722,28 +650,27 @@ class Bytebeat {
 	timeCursorVisible() {
 		return this.sampleRate >> this.drawScale < 3950;
 	}
-<<<<<<<
-	togglePlay(isPlay) {
-		this.canvasTogglePlay.classList.toggle("canvas-toggleplay-pause", isPlay);
-		if (isPlay) {
-			// Play
-			this.canvasTogglePlay.classList.remove("canvas-toggleplay-show");
-			if (this.audioCtx?.resume)
-				this.audioCtx.resume();
-			this.animationFrameId = window.requestAnimationFrame(this.animationFrame);
-		} else {
-			if (this.isRecording) {
-				this.audioRecorder.stop();
-				this.isRecording = false;
+	togglePlay(isPlaying) {
+		if (isPlaying != this.isPlaying) {
+			this.canvasTogglePlay.classList.toggle("canvas-toggleplay-pause", isPlaying);
+			if (isPlaying) {
+				// Play
+				this.canvasTogglePlay.classList.remove("canvas-toggleplay-show");
+				if (this.audioCtx?.resume)
+					this.audioCtx.resume();
+				this.animationFrameId = window.requestAnimationFrame(this.animationFrame);
+			} else {
+				if (this.isRecording) {
+					this.audioRecorder.stop();
+					this.isRecording = false;
+				}
+				window.cancelAnimationFrame(this.animationFrameId);
+				this.animationFrameId = null;
 			}
-			window.cancelAnimationFrame(this.animationFrameId);
-			this.animationFrameId = null;
+			this.isPlaying = isPlaying;
+			this.audioWorklet.port.postMessage({ isPlaying });
 		}
-		this.isPlaying = isPlay;
-		this.audioWorklet.port.postMessage({ isPlaying: isPlay });
 	}
-=======
->>>>>>>
 <<<<<<<
 =======
 	setCounterUnits() {
@@ -758,35 +685,10 @@ class Bytebeat {
 		this.saveSettings();
 	}
 
-	stopPlay() {
-		this.togglePlay(false, false);
-		this.audioWorkletNode.port.postMessage({ isPlaying: false, resetTime: true });
-	}
 	toggleCounterUnits() {
 		this.settings.isSeconds = !this.settings.isSeconds;
 		this.saveSettings();
 		this.setCounterUnits();
-	}
-	togglePlay(isPlaying, isSendData = true) {
-		this.controlTogglePlay.title = isPlaying ? 'Pause' : 'Play';
-		this.controlTogglePlay.classList.toggle('control-play', !isPlaying);
-		this.controlTogglePlay.classList.toggle('control-pause', isPlaying);
-		this.canvasTogglePlay.classList.toggle('canvas-play', !isPlaying);
-		this.canvasTogglePlay.classList.toggle('canvas-pause', isPlaying);
-		if(isPlaying) {
-			this.canvasTogglePlay.classList.remove('canvas-initial');
-			if(this.audioCtx.resume) {
-				this.audioCtx.resume();
-				window.requestAnimationFrame(() => this.animationFrame());
-			}
-		} else if(this.isRecording) {
-			this.audioRecorder.stop();
-			this.isRecording = false;
-		}
-		this.isPlaying = isPlaying;
-		if(isSendData) {
-			this.audioWorkletNode.port.postMessage({ isPlaying });
-		}
 	}
 >>>>>>>
 <<<<<<<
