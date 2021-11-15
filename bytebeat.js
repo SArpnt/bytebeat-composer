@@ -1,5 +1,12 @@
 "use strict";
 
+// TODO: turn bytebeat into an object
+/*
+const bytebeat = Object.seal({
+	audioCtx
+})
+*/
+
 class Bytebeat {
 	constructor() {
 		this.audioCtx = null;
@@ -85,7 +92,7 @@ class Bytebeat {
 					await this.audioCtx.audioWorklet.addModule(URL.createObjectURL(blob));
 				});
 
-		this.audioGain = new GainNode(this.audioCtx, options);
+		this.audioGain = new GainNode(this.audioCtx);
 		this.audioGain.connect(this.audioCtx.destination);
 
 		const mediaDest = this.audioCtx.createMediaStreamDestination();
@@ -153,9 +160,10 @@ class Bytebeat {
 	}
 
 	initLibrary() {
-<<<<<<<
 		// TODO: all this stuff in playlist.js
 		const libraryElem = document.getElementById("library");
+		/*
+<<<<<<<
 		libraryElem.addEventListener("click", e => {
 			const el = e.target;
 			// TODO: create individual click event with stored info after first click
@@ -169,9 +177,11 @@ class Bytebeat {
 					});
 		});
 =======
+		const libraryElem = document.getElementById('container-scroll');
+
 		document.body.querySelectorAll('.library-header').forEach(el =>
 			(el.onclick = () => el.nextElementSibling.classList.toggle('disabled')));
-		const libraryElem = document.getElementById('container-scroll');
+		
 		libraryElem.onclick = e => {
 			const el = e.target;
 			if(el.tagName === 'CODE') {
@@ -191,7 +201,7 @@ class Bytebeat {
 			}
 		};
 >>>>>>>
-
+		*/
 		// TODO: DEFINETLY this in playlist.js, this is horrible
 		libraryElem.addEventListener("mouseover", e => {
 			const el = e.target;
@@ -285,16 +295,16 @@ class Bytebeat {
 		this.canvasCtx = this.canvasElem.getContext("2d", { alpha: false });
 	}
 	// TODO
-	/*initSettings() {
-		try {
+	initSettings() {
+		/*try {
 			this.settings = JSON.parse(localStorage.settings);
 		} catch(err) {
 			this.saveSettings();
 		}
 		this.setScale(0);
 		this.setCounterUnits();
-		this.controlDrawMode.value = this.settings.drawMode;
-	}*/
+		this.controlDrawMode.value = this.settings.drawMode;*/
+	}
 	refreshCode() {
 		this.audioWorklet.port.postMessage({ code: this.codeEditorElem.value.trim() });
 	}
@@ -321,7 +331,7 @@ class Bytebeat {
 		}
 	}
 	animationFrame() {
-		this.drawGraphics(this.byteSample);
+		this.drawGraphics();
 		if (this.nextErr)
 			this.showErrorMessage(this.nextErrType, this.nextErr, this.nextErrPriority);
 
@@ -387,12 +397,10 @@ class Bytebeat {
 		this.drawBuffer = [];
 		this.drawImageData = null;
 	}
-<<<<<<<
-	drawGraphics(endTime) {
-		const
-			width = this.canvasElem.width,
-			height = this.canvasElem.height;
+	drawGraphics() {
+		const { width, height } = this.canvasElem;
 
+		// TODO: move outside drawGraphics function, make property of object
 		const
 			fmod = (a, b) => ((a % b) + b) % b,
 			getXpos = t => t / (1 << this.drawScale),
@@ -408,6 +416,7 @@ class Bytebeat {
 
 		let
 			startTime = this.drawBuffer[0].t,
+			endTime = this.byteSample,
 			lenTime = endTime - startTime,
 			startXPos = fmod(getXpos(startTime), width),
 			endXPos = startXPos + getXpos(lenTime);
@@ -520,8 +529,6 @@ class Bytebeat {
 		// clear buffer except last sample
 		this.drawBuffer = [{ t: endTime, value: this.drawBuffer[bufferLen - 1].value }];
 	}
-
-
 	hideErrorMessage() {
 		if (this.errorElem) {
 			this.errorElem.innerText = "";
@@ -543,74 +550,6 @@ class Bytebeat {
 			this.errorPriority = priority;
 		}
 	}
-=======
-	drawGraphics(endTime) {
-		if(!isFinite(endTime)) {
-			this.resetTime();
-			return;
-		}
-		const buffer = this.drawBuffer;
-		const bufferLen = buffer.length;
-		if(!bufferLen) {
-			return;
-		}
-		const { width, height } = this.canvasElem;
-		const startTime = buffer[0].t;
-		let startX = this.mod(this.getX(startTime), width);
-		const endX = Math.floor(startX + this.getX(endTime - startTime));
-		startX = Math.floor(startX);
-		const drawWidth = Math.min(Math.abs(endX - startX) + 1, 1024);
-		// Restoring the last points of a previous segment
-		const imageData = this.canvasCtx.createImageData(drawWidth, height);
-		if(this.settings.drawScale) {
-			for(let y = 0; y < height; ++y) {
-				this.drawPoint(imageData, drawWidth, 0, y, this.drawEndBuffer[y]);
-			}
-		}
-		// Drawing on a segment
-		const isWaveform = this.settings.drawMode === 'Waveform';
-		let prevY = buffer[0].value;
-		for(let i = 0; i < bufferLen; ++i) {
-			const { t, value: curY } = buffer[i];
-			const curX = this.mod(Math.floor(this.getX(t)) - startX, width);
-			if(isWaveform && curY !== prevY && !isNaN(curY)) {
-				for(let y = prevY, dy = prevY < curY ? 1 : -1; y !== curY; y += dy) {
-					this.drawPoint(imageData, drawWidth, curX, y, 255);
-				}
-				prevY = curY;
-			}
-			const nextElem = buffer[i + 1];
-			const nextX = this.mod(Math.ceil(this.getX(nextElem ? nextElem.t : endTime)) - startX, width);
-			for(let x = curX; x !== nextX; x = this.mod(x + 1, width)) {
-				this.drawPoint(imageData, drawWidth, x, curY, 255);
-			}
-		}
-		// Saving the last points of a segment
-		if(this.settings.drawScale) {
-			for(let y = 0; y < height; ++y) {
-				this.drawEndBuffer[y] = imageData.data[(drawWidth * (255 - y) + drawWidth - 1) << 2];
-			}
-		}
-		// Placing a segment on the canvas
-		this.canvasCtx.putImageData(imageData, startX, 0);
-		if(endX > width) {
-			this.canvasCtx.putImageData(imageData, startX - width, 0);
-		}
-		// Move the cursor to the end of the segment
-		if(this.timeCursorVisible()) {
-			this.timeCursor.style.left = endX / width * 100 + '%';
-		}
-		// Clear buffer
-		this.drawBuffer = [{ t: endTime, value: buffer[bufferLen - 1].value }];
-	}
-	drawPoint(imageData, width, x, y, value) {
-		let idx = (width * (255 - y) + x) << 2;
-		imageData.data[idx++] = imageData.data[idx++] = imageData.data[idx++] = imageData.data[idx] = value;
-	}
-	expandEditor() {
-		this.containerFixed.classList.toggle('container-expanded');
-	}
->>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
 
 	resetTime() {
 		this.setByteSample(0, true, true);
@@ -619,11 +558,13 @@ class Bytebeat {
 			this.canvasTogglePlay.classList.add("canvas-toggleplay-show");
 	}
 	setByteSample(value, send = true, clear = false) {
-		this.controlTimeValue.placeholder = value;
-		this.byteSample = value;
-		if (send)
-			this.audioWorklet.port.postMessage({ setByteSample: [value, clear] });
-		// TODO: update cursor position
+		if (!isFinite(value)) {
+			this.controlTimeValue.placeholder = \\\\\\\\convertUnit(value, this.controlTimeUnit);
+			this.byteSample = value;
+			if (send)
+				this.audioWorklet.port.postMessage({ setByteSample: [value, clear] });
+			// TODO: update cursor position
+		}
 	}
 	setPlaybackMode(playbackMode) {
 		this.playbackMode = playbackMode;
@@ -670,7 +611,7 @@ class Bytebeat {
 			this.isPlaying = isPlaying;
 			this.audioWorklet.port.postMessage({ isPlaying });
 		}
-	}
+	}/*
 <<<<<<<
 =======
 	setCounterUnits() {
@@ -697,6 +638,6 @@ class Bytebeat {
 		localStorage.settings = JSON.stringify(this.settings);
 	}
 >>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
-};
+*/};
 
 const bytebeat = new Bytebeat();

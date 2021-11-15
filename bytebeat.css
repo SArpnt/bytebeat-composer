@@ -137,7 +137,7 @@ body {
 	fill: currentColor;
 }
 #canvas-toggleplay.canvas-toggleplay-pause > #svg-canvas-toggleplay-play,
-#canvas-toggleplay.canvas-toggleplay-play > #svg-canvas-toggleplay-pause {
+#canvas-toggleplay:not(.canvas-toggleplay-pause) > #svg-canvas-toggleplay-pause {
 	display: none;
 }
 
