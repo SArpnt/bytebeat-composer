@@ -96,7 +96,7 @@
 			for (let i = 0; i < 26; i++)
 				delete globalThis[String.fromCharCode(65 + i)], globalThis[String.fromCharCode(97 + i)];
 
-			this.port.postMessage({ generateUrl: true, errorMessage: null });
+			this.port.postMessage({ updateUrl: true, errorMessage: null });
 		}
 		updateSampleRatio() {
 			let flooredTimeOffset;

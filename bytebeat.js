@@ -58,7 +58,6 @@ class Bytebeat {
 			this.initLibrary();
 			let pData = this.initCodeEditor();
 			this.initControls();
-			this.initCanvas();
 
 			this.handleWindowResize(true);
 			document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
@@ -171,8 +170,8 @@ class Bytebeat {
 		if (data.drawBuffer !== undefined)
 			this.drawBuffer = this.drawBuffer.concat(data.drawBuffer);
 
-		if (data.generateUrl)
-			this.generateUrl();
+		if (data.updateUrl)
+			this.updateUrl();
 
 		if (data.errorMessage !== undefined) {
 			if (data.errorMessage === null)
@@ -200,8 +199,8 @@ class Bytebeat {
 		return saveDataInternal;
 	}
 
-<<<<<<<
 	initLibrary() {
+<<<<<<<
 		// TODO: all this stuff in playlist.js
 		const libraryElem = document.getElementById("library");
 		libraryElem.addEventListener("click", e => {
@@ -216,16 +215,7 @@ class Bytebeat {
 						this.loadCode(Object.assign(JSON.parse(el.dataset.songdata), { code }));
 					});
 		});
-	
-		// TODO: DEFINETLY this in playlist.js, this is horrible
-		libraryElem.addEventListener("mouseover", e => {
-			const el = e.target;
-			if (el.tagName === "CODE")
-				el.title = "Click to play this code";
-		});
-	}
 =======
-	initLibraryEvents() {
 		document.body.querySelectorAll('.library-header').forEach(el =>
 			(el.onclick = () => el.nextElementSibling.classList.toggle('disabled')));
 		const libraryElem = document.getElementById('container-scroll');
@@ -247,15 +237,15 @@ class Bytebeat {
 				xhr.send(null);
 			}
 		};
-		libraryElem.onmouseover = function(e) {
-			const el = e.target;
-			if(el.tagName === 'CODE') {
-				el.title = 'Click to play this code';
-			}
-		};
-	}
 >>>>>>>
-<<<<<<< HEAD
+
+		// TODO: DEFINETLY this in playlist.js, this is horrible
+		libraryElem.addEventListener("mouseover", e => {
+			const el = e.target;
+			if (el.tagName === "CODE")
+				el.title = "Click to play this code";
+		});
+	}
 	initCodeEditor() {
 		this.errorElem = document.getElementById("error");
 		this.codeEditorElem = document.getElementById("code-editor");
@@ -321,109 +311,43 @@ class Bytebeat {
 				return pData;
 			} else 
 				console.error("Unrecognized url data");
-			}
 		}
 		return null;
 	}
-=======
-	initEditor() {
-		this.errorElem = document.getElementById('error');
-		this.editorElem = document.getElementById('editor');
-		this.editorElem.oninput = () => this.refreshCode();
-		this.editorElem.onkeydown = e => {
-			if(e.keyCode === 9 /* TAB */ && !e.shiftKey && !e.altKey && !e.ctrlKey) {
-				e.preventDefault();
-				const el = e.target;
-				const { value, selectionStart } = el;
-				el.value = value.slice(0, selectionStart) + '\t' + value.slice(el.selectionEnd);
-				el.setSelectionRange(selectionStart + 1, selectionStart + 1);
-				this.refreshCode();
-			}
-		};
-		/* global pako */
-		let { hash } = window.location;
-		if(!hash) {
-			this.updateLocation();
-			({ hash } = window.location);
-		}
-		if(!hash.startsWith('#v3b64')) {
-			console.error('Unrecognized url data');
-			return;
-		}
-		let pData = pako.inflateRaw(
-			atob(decodeURIComponent(hash.substr(6))), { to: 'string' }
-		);
-		if(!pData.startsWith('{')) { // XXX: old format
-			pData = { code: pData, sampleRate: 8000, mode: 'Bytebeat' };
-		} else {
-			try {
-				pData = JSON.parse(pData);
-				if(pData.formula) { // XXX: old format
-					pData.code = pData.formula;
-				}
-			} catch(err) {
-				console.error("Couldn't load data from url:", err);
-				pData = null;
-			}
-		}
-		if(pData !== null) {
-			this.loadCode(pData, false);
-		}
-		return null;
-	}
->>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
-<<<<<<<
 	initControls() {
 		this.controlTimeUnit = document.getElementById("control-time-unit");
 		this.controlTimeValue = document.getElementById("control-time-value");
 
-		this.controlScaleUp = document.getElementById("control-scaleup");
 		this.controlScaleDown = document.getElementById("control-scaledown");
+		this.controlScaleUp = document.getElementById("control-scaleup");
 
+		this.controlDrawMode = document.getElementById("control-draw-mode");
 		this.controlPlaybackMode = document.getElementById("control-playback-mode");
 		this.controlSampleRate = document.getElementById("control-samplerate");
 		this.controlVolume = document.getElementById("control-volume");
 
 		this.canvasTogglePlay = document.getElementById("canvas-toggleplay");
-	}
-	initCanvas() {
 		this.timeCursor = document.getElementById("canvas-timecursor");
 		this.canvasElem = document.getElementById("canvas-main");
 		this.canvasCtx = this.canvasElem.getContext("2d", { alpha: false });
 	}
+<<<<<<<
 =======
-	initControls() {
-		this.canvasElem = document.getElementById('canvas-main');
-		this.canvasCtx = this.canvasElem.getContext('2d');
-		this.canvasTogglePlay = document.getElementById('canvas-toggleplay');
-		this.containerFixed = document.getElementById('container-fixed');
-		this.controlTimeValue = document.getElementById('control-time-value');
-		this.controlTimeUnits = document.getElementById('control-time-units');
-		this.controlDrawMode = document.getElementById('control-draw-mode');
-		this.controlPlaybackMode = document.getElementById('control-playback-mode');
-		this.controlSampleRate = document.getElementById('control-samplerate');
-		this.controlScaleDown = document.getElementById('control-scaledown');
-		this.controlTogglePlay = document.getElementById('control-toggleplay');
-		this.controlVolume = document.getElementById('control-volume');
-		this.timeCursor = document.getElementById('canvas-timecursor');
-		this.controlTimeValue.oninput = this.controlTimeValue.onkeydown = e => {
-			if (e.key === "Enter") {
-				this.controlTimeValue.blur();
-				this.togglePlay(true);
-				return;
-			}
-			const { value } = this.controlTimeValue;
-			const byteSample = this.settings.isSeconds ? Math.round(value * this.sampleRate) : value;
-			this.setByteSample(byteSample);
-			this.audioWorkletNode.port.postMessage({ byteSample });
-		};
+	initSettings() {
+		try {
+			this.settings = JSON.parse(localStorage.settings);
+		} catch(err) {
+			this.saveSettings();
+		}
+		this.setScale(0);
+		this.setCounterUnits();
+		this.controlDrawMode.value = this.settings.drawMode;
 	}
 >>>>>>>
-refreshCode() {
-	this.audioWorklet.port.postMessage({ code: this.codeEditorElem.value.trim() });
-}
-<<<<<<< HEAD
-	generateUrl() {
+	refreshCode() {
+		this.audioWorklet.port.postMessage({ code: this.codeEditorElem.value.trim() });
+	}
+	updateUrl() {
 		let pData = { code: this.codeEditorElem.value };
 		if (this.sampleRate != 8000)
 			pData.sampleRate = this.sampleRate;
@@ -434,6 +358,7 @@ refreshCode() {
 
 		window.location.hash = "#v3b64" + btoa(pako.deflateRaw(pData, { to: "string" }));
 	}
+<<<<<<< HEAD
 	handleWindowResize(force = false) {
 		let newWidth;
 		if (window.innerWidth >= 768 + 4) // 768 is halfway between 512 and 1024
@@ -471,26 +396,6 @@ refreshCode() {
 		}
 	}
 =======
-	initSettings() {
-		try {
-			this.settings = JSON.parse(localStorage.settings);
-		} catch(err) {
-			this.saveSettings();
-		}
-		this.setScale(0);
-		this.setCounterUnits();
-		this.controlDrawMode.value = this.settings.drawMode;
-	}
-	updateLocation() {
-		const pData = { code: this.editorElem.value };
-		if(this.sampleRate !== 8000) {
-			pData.sampleRate = this.sampleRate;
-		}
-		if(this.playbackMode !== 'Bytebeat') {
-			pData.mode = this.playbackMode;
-		}
-		window.location.hash = '#v3b64' + btoa(pako.deflateRaw(JSON.stringify(pData), { to: 'string' }));
-	}
 	animationFrame() {
 		this.drawGraphics(this.byteSample);
 		if(this.isPlaying) {
@@ -764,7 +669,7 @@ refreshCode() {
 			this.canvasCtx.putImageData(imageData, startX - width, 0);
 		}
 		// Move the cursor to the end of the segment
-		if(this.timeCursorEnabled) {
+		if(this.timeCursorVisible()) {
 			this.timeCursor.style.left = endX / width * 100 + '%';
 		}
 		// Clear buffer
@@ -785,7 +690,6 @@ refreshCode() {
 		if (!this.isPlaying)
 			this.canvasTogglePlay.classList.add("canvas-toggleplay-show");
 	}
-<<<<<<< HEAD
 	setByteSample(value, send = true, clear = false) {
 		this.controlTimeValue.placeholder = value;
 		this.byteSample = value;
@@ -795,6 +699,7 @@ refreshCode() {
 	}
 	setPlaybackMode(playbackMode) {
 		this.playbackMode = playbackMode;
+		this.updateUrl();
 		this.audioWorklet.port.postMessage({ playbackMode });
 	}
 	setSampleRate(sampleRate) {
@@ -811,64 +716,33 @@ refreshCode() {
 			this.audioWorklet.port.postMessage({ playSpeed, updateSampleRatio: true });
 		}
 	}
-=======
-	setByteSample(value) {
-		this.byteSample = +value || 0;
-		if(value === 0) {
-			this.drawBuffer = [];
-			this.clearCanvas();
-			this.timeCursor.style.left = 0;
-			if(!this.isPlaying) {
-				this.canvasTogglePlay.classList.add('canvas-initial');
-			}
-		}
+	toggleTimeCursor() {
+		this.timeCursor.classList.toggle('disabled', !this.timeCursorVisible());
 	}
-	setPlaybackMode(playbackMode) {
-		this.playbackMode = playbackMode;
-		this.updateLocation();
-		this.audioWorkletNode.port.postMessage({ playbackMode });
+	timeCursorVisible() {
+		return this.sampleRate >> this.drawScale < 3950;
 	}
-	setSampleRate(sampleRate, isSendData = true) {
-		this.sampleRate = sampleRate;
-		this.toggleTimeCursor();
-		if(isSendData) {
-			this.audioWorkletNode.port.postMessage({ sampleRatio: this.sampleRate / this.audioCtx.sampleRate });
-		}
-	}
->>>>>>>
 <<<<<<<
-toggleTimeCursor() {
-	this.timeCursor.classList.toggle('disabled', !this.timeCursorVisible());
-}
-timeCursorVisible() {
-	return this.sampleRate >> this.drawScale < 3950;
-}
-togglePlay(isPlay) {
-	this.canvasTogglePlay.classList.toggle("canvas-toggleplay-pause", isPlay);
-	if (isPlay) {
-		// Play
-		this.canvasTogglePlay.classList.remove("canvas-toggleplay-show");
-		if (this.audioCtx?.resume)
-			this.audioCtx.resume();
-		this.animationFrameId = window.requestAnimationFrame(this.animationFrame);
-	} else {
-		if (this.isRecording) {
-			this.audioRecorder.stop();
-			this.isRecording = false;
+	togglePlay(isPlay) {
+		this.canvasTogglePlay.classList.toggle("canvas-toggleplay-pause", isPlay);
+		if (isPlay) {
+			// Play
+			this.canvasTogglePlay.classList.remove("canvas-toggleplay-show");
+			if (this.audioCtx?.resume)
+				this.audioCtx.resume();
+			this.animationFrameId = window.requestAnimationFrame(this.animationFrame);
+		} else {
+			if (this.isRecording) {
+				this.audioRecorder.stop();
+				this.isRecording = false;
+			}
+			window.cancelAnimationFrame(this.animationFrameId);
+			this.animationFrameId = null;
 		}
-		window.cancelAnimationFrame(this.animationFrameId);
-		this.animationFrameId = null;
+		this.isPlaying = isPlay;
+		this.audioWorklet.port.postMessage({ isPlaying: isPlay });
 	}
-	this.isPlaying = isPlay;
-	this.audioWorklet.port.postMessage({ isPlaying: isPlay });
-}
 =======
-toggleTimeCursor() {
-	this.timeCursor.classList.toggle('disabled', !this.timeCursorEnabled);
-}
-get timeCursorEnabled() {
-	return this.sampleRate >> this.settings.drawScale < 3950;
-}
 >>>>>>>
 <<<<<<<
 =======
