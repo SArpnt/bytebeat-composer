@@ -47,7 +47,8 @@
 			"description": "Street Surfer",
 			"author": [
 				["skurk", "http://www.pouet.net/topic.php?which=8357&page=4#c388479"],
-				["raer", "http://www.pouet.net/topic.php?which=8357&page=4#c388494"]],
+				["raer", "http://www.pouet.net/topic.php?which=8357&page=4#c388494"]
+			],
 			"code": "t&4096?(t*(t^t%255)|t>>4)>>1:t>>3|(t&8192?t<<2:t)",
 			"starred": 2
 		}, {

@@ -63,7 +63,6 @@ class Bytebeat {
 		const initAudioPromise = this.initAudioContext();
 		const onDomLoaded = async () => {
 			this.contentElem = document.getElementById("content");
-			this.initLibrary();
 			let pData = this.initCodeEditor();
 			this.initControls();
 
@@ -158,57 +157,6 @@ class Bytebeat {
 		Object.defineProperty(this, "saveData", { value: saveDataInternal });
 		return saveDataInternal;
 	}
-
-	initLibrary() {
-		// TODO: all this stuff in library.js
-		const libraryElem = document.getElementById("library");
-		/*
-<<<<<<<
-		libraryElem.addEventListener("click", e => {
-			const el = e.target;
-			// TODO: create individual click event with stored info after first click
-			if (el.tagName === "CODE")
-				this.loadCode(Object.assign({ code: el.innerText }, el.hasAttribute("data-songdata") ? JSON.parse(el.dataset.songdata) : {}));
-			else if (el.classList.contains("code-load"))
-				fetch(`library/${el.dataset.codeFile}`, { cache: "no-cache" })
-					.then(response => response.text())
-					.then(code => {
-						this.loadCode(Object.assign(JSON.parse(el.dataset.songdata), { code }));
-					});
-		});
-=======
-		const libraryElem = document.getElementById('container-scroll');
-
-		document.body.querySelectorAll('.library-header').forEach(el =>
-			(el.onclick = () => el.nextElementSibling.classList.toggle('disabled')));
-		
-		libraryElem.onclick = e => {
-			const el = e.target;
-			if(el.tagName === 'CODE') {
-				this.loadCode(Object.assign({ code: el.innerText },
-					el.hasAttribute('data-songdata') ? JSON.parse(el.dataset.songdata) : {}));
-			} else if(el.classList.contains('code-load')) {
-				const xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = () => {
-					if(xhr.readyState === 4 && xhr.status === 200) {
-						this.loadCode(Object.assign(JSON.parse(el.dataset.songdata),
-							{ code: xhr.responseText }));
-					}
-				};
-				xhr.open('GET', 'library/' + el.dataset.codeFile, true);
-				xhr.setRequestHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-				xhr.send(null);
-			}
-		};
->>>>>>>
-		*/
-		// TODO: DEFINETLY this in library.js, this is horrible
-		libraryElem.addEventListener("mouseover", e => {
-			const el = e.target;
-			if (el.tagName === "CODE")
-				el.title = "Click to play this code";
-		});
-	}
 	initCodeEditor() {
 		this.errorElem = document.getElementById("error");
 		this.codeEditorElem = document.getElementById("code-editor");
@@ -272,7 +220,7 @@ class Bytebeat {
 					pData = null;
 				}
 				return pData;
-			} else 
+			} else
 				console.error("Unrecognized url data");
 		}
 		return null;

@@ -1,35 +1,43 @@
 (function () {
 	"use strict";
 
-<<<<<<< HEAD
 	function parseEntry(entry) {
 		if (Array.isArray(entry.code))
 			entry.code = entry.code.join("\n");
 
 		return entry;
 	}
-
 	function stripEntryToSong({ code, sampleRate, mode }, includeCode = false) {
 		if (includeCode)
 			return { code, sampleRate, mode };
 		else
 			return { sampleRate, mode };
 	}
-
 	function createEntryElem(entry) {
-		let entryElem = document.createElement("li");
+		const entryElem = document.createElement("li");
 
 		if (entry.description) {
 			let descriptionElem;
-			if (entry.url)
-				descriptionElem = `<a href="${entry.url}" target="_blank">${entry.description}</a>`;
-			else
-				descriptionElem = entry.description;
-			entryElem.innerHTML += descriptionElem;
+			if (entry.url) {
+				descriptionElem = document.createElement("a");
+				descriptionElem.href = entry.url;
+				descriptionElem.target = "_blank";
+			} else
+				descriptionElem = document.createElement("span");
+			descriptionElem.innerHTML = entry.description;
+			// TODO: deal with code elements in description
+			entryElem.append(descriptionElem);
+		} else if (entry.url) {
+			const descriptionElem = document.createElement("span");
+			const sourceElem = document.createElement("a");
+			sourceElem.href = entry.url;
+			sourceElem.target = "_blank";
+			sourceElem.innerText = "source"
+			descriptionElem.append(document.createTextNode("("), sourceElem, document.createTextNode(")"));
+			entryElem.append(descriptionElem);
 		}
 		if (entry.author) {
-			let authorListElem = document.createElement("span");
-			authorListElem.innerHTML += entry.description ? " (by " : "by ";
+			const authorListElem = document.createElement("span");
 			if (!Array.isArray(entry.author))
 				entry.author = [entry.author];
 
@@ -38,54 +46,43 @@
 
 				let authorElem;
 				if (typeof author == "string")
-					authorElem = author;
+					authorElem = document.createTextNode(author);
 				else {
 					authorElem = document.createElement("a");
-					authorElem.innerHTML = author[0];
+					authorElem.innerText = author[0];
 					authorElem.href = author[1];
 					authorElem.target = "_blank";
-					authorElem = authorElem.outerHTML;
 				}
-				authorListElem.innerHTML += authorElem;
+				authorListElem.append(authorElem);
 				if (i < entry.author.length - 1)
-					authorListElem.innerHTML += ", ";
-=======
-	let cachedElemParent, cachedTextNode;
-
-	function escapeHTML(text) {
-		cachedTextNode.nodeValue = text;
-		return cachedElemParent.innerHTML;
-	}
-
-	function createEntryElem({ author, children, code, codeFile, description, mode, sampleRate, starred, url }) {
-		let entry = '';
-		if(description) {
-			entry += !url ? description : `<a href="${ url }" target="_blank">${ description }</a>`;
-		}
-		if(author) {
-			let authorsList = '';
-			const authorsArr = Array.isArray(author) ? author : [author];
-			for(let i = 0, len = authorsArr.length; i < len; ++i) {
-				const authorElem = authorsArr[i];
-				if(typeof authorElem === 'string') {
-					authorsList += description || !url ? authorElem :
-						`<a href="${ url }" target="_blank">${ authorElem }</a>`;
-				} else {
-					authorsList += `<a href="${ authorElem[1] }" target="_blank">${ authorElem[0] }</a>`;
->>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
+					authorListElem.append(document.createTextNode(", "));
 			}
-			if (entry.description)
-				authorListElem.innerHTML += ")";
+			if (entry.description || entry.url) {
+				authorListElem.prepend(document.createTextNode(" (by "));
+				authorListElem.append(document.createTextNode(")"));
+			} else
+				authorListElem.prepend(document.createTextNode("by "));
 
-			authorListElem = authorListElem.outerHTML;
-
-			entryElem.innerHTML += authorListElem;
+			entryElem.append(authorListElem);
 		}
 
-		if (entry.sampleRate)
-			entryElem.innerHTML += ` <span class="library-code-info">${entry.sampleRate.substring(0, entry.sampleRate.length - 3)}kHz</span>`;
-		if (entry.mode)
-			entryElem.innerHTML += ` <span class="library-code-info">${entry.mode}</span>`;
+		if (entry.sampleRate) {
+			const sampleRateElem = document.createElement("span");
+			sampleRateElem.classList = "library-code-info";
+			if (entry.sampleRate % 1000 == 0)
+				sampleRateElem.innerText = `${entry.sampleRate.substring(0, entry.sampleRate.length - 3)}kHz`;
+			else
+				sampleRateElem.innerText = `${entry.sampleRate}Hz`;
+
+			entryElem.append(document.createTextNode(" "), sampleRateElem);
+		}
+		if (entry.mode) {
+			const modeElem = document.createElement("span");
+			modeElem.classList = "library-code-info";
+			modeElem.innerText = entry.mode;
+
+			entryElem.append(document.createTextNode(" "), modeElem);
+		}
 
 		if (entry.starred) {
 			let starElem = document.createElement("span");
@@ -97,30 +94,40 @@
 		}
 
 		if (entryElem.innerHTML)
-			entryElem.innerHTML += "<br>\n";
+			entryElem.append(document.createElement("br"));
 
 		if (entry.codeFile) {
 			let codeFileElem = document.createElement("a");
 			codeFileElem.className = "code-load";
-			codeFileElem.dataset.codeFile = entry.codeFile;
-			codeFileElem.dataset.songdata = JSON.stringify(stripEntryToSong(entry));
 			codeFileElem.innerText = "► Click to load pretty code";
+			const songData = stripEntryToSong(entry);
+			codeFileElem.addEventListener("click", () =>
+				fetch(`library/${entry.codeFile}`, { cache: "no-cache" })
+					.then(response => response.text())
+					.then(code => bytebeat.loadCode(Object.assign(songData, { code })))
+			);
 			entryElem.append(codeFileElem);
 			if (entry.code)
 				entryElem.append(" ");
 		}
 		if (entry.code) {
-			let codeElem = document.createElement("code");
+			const codeElem = document.createElement("code");
+			codeElem.title = "Click to play this code";
 			codeElem.innerText = entry.code;
-			codeElem.dataset.songdata = JSON.stringify(stripEntryToSong(entry));
-			let pre = document.createElement("pre");
+			const fullSongData = stripEntryToSong(entry, true);
+			codeElem.addEventListener("click", () => bytebeat.loadCode(fullSongData));
+
+			const pre = document.createElement("pre");
 			pre.style.margin = "0";
 			pre.style.whiteSpace = "pre-wrap";
 			pre.style.display = "inline";
 			pre.append(codeElem);
 			entryElem.append(pre);
 
-			entryElem.innerHTML += ` <span class="codelength">${entry.code.length}C</span>`;
+			const codeLengthElem = document.createElement("span");
+			codeLengthElem.classList = "codelength";
+			codeLengthElem.innerText = `${entry.code.length}C`;
+			entryElem.append(document.createTextNode(" "), codeLengthElem);
 		}
 
 		if (entry.children) {
@@ -131,87 +138,32 @@
 			}
 			entryElem.append(childrenElem);
 		}
-<<<<<<< HEAD
 
 		return entryElem;
 	}
-=======
-		entry += `<span>${ description ? ` (by ${ authorsList })` : `by ${ authorsList }` }</span>`;
-		}
-		if(url && !description && !author) {
-			entry += `(<a href="${ url }" target="_blank">source</a>)`;
-		}
-		if(sampleRate) {
-			entry += ` <span class="library-code-info">${
-				sampleRate.substring(0, sampleRate.length - 3) }kHz</span>`;
-		}
-		if(mode) {
-			entry += ` <span class="library-code-info">${ mode }</span>`;
-		}
-		let starClass = '';
-		if(starred) {
-			starClass = ' ' + ['star-white', 'star-yellow'][starred - 1];
-		}
-		if(code && Array.isArray(code)) {
-			code = code.join('\n');
-		}
-		const songData = code || codeFile ? JSON.stringify({ sampleRate, mode }) : '';
-		if(codeFile) {
-			entry += ` <a class="code-load" data-songdata='${ songData }' data-code-file="${
-				codeFile }" title="Click to load the pretty code">► pretty code</a>`;
-		}
-		if(entry.length) {
-			entry += '<br>\n';
-		}
-		if(code) {
-			entry += `<code data-songdata='${ songData }'>${
-				escapeHTML(code) }</code> <span class="library-code-info">${ code.length }c</span>`;
-		}
-		if(children) {
-			let childrenStr = '';
-			for(let i = 0, len = children.length; i < len; ++i) {
-				childrenStr += createEntryElem(children[i]);
-			}
-			entry += `<div class="entry-children">${ childrenStr }</div>`;
-		}
-		return `<div class="${ code || codeFile || children ? 'entry' : 'entry-text' }${ starClass || '' }">${
-			entry }</div>`;
-	}
->>>>>>>
 
-<<<<<<<
-	function addPlaylist(obj, id) {
-		let playlist = obj.playlists[id];
-		let playlistElem = document.createElement("ul");
+	function addPlaylist(library, id) {
+		const playlist = library.playlists[id];
+		const playlistElem = document.createElement("ul");
 		for (let i = 0, len = playlist.length; i < len; ++i) {
 			let entry = parseEntry(playlist[i]);
 			playlistElem.append(createEntryElem(entry));
 		}
 		document.getElementById(`library-${id}`).append(playlistElem);
 	}
-=======
-	function addPlaylist({ playlists }, id) {
-		let playlist = '';
-		const playlistArr = playlists[id];
-		for(let i = 0, len = playlistArr.length; i < len; ++i) {
-			playlist += `<div class="entry-top">${ createEntryElem(playlistArr[i]) }</div>`;
-		}
-		document.getElementById(`library-${ id }`).insertAdjacentHTML('beforeend', playlist);
-	}
->>>>>>>
 
 
-	function addAllPlaylists(obj) {
-		for (let p in obj.playlists)
-			addPlaylist(obj, p);
+	function addAllPlaylists(library) {
+		for (let p in library.playlists)
+			addPlaylist(library, p);
 	}
 
 	fetch("library.json", { cache: "no-cache" })
 		.then(response => response.json())
-		.then(obj => {
+		.then(library => {
 			if (["interactive", "loaded", "complete"].includes(document.readyState))
-				addAllPlaylists(obj);
+				addAllPlaylists(library);
 			else
-				document.addEventListener("DOMContentLoaded", () => addAllPlaylists(obj));
+				document.addEventListener("DOMContentLoaded", () => addAllPlaylists(library));
 		});
 })();
