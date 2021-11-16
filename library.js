@@ -135,33 +135,8 @@
 
 		return entryElem;
 	}
-
-	function addPlaylist(obj, id) {
-		let playlist = obj.playlists[id];
-		let playlistElem = document.createElement("ul");
-		for (let i = 0, len = playlist.length; i < len; ++i) {
-			let entry = parseEntry(playlist[i]);
-			playlistElem.append(createEntryElem(entry));
-		}
-		document.getElementById(`library-${id}`).append(playlistElem);
-	}
-
-
-	function addAllPlaylists(obj) {
-		for (let p in obj.playlists)
-			addPlaylist(obj, p);
-	}
-
-	fetch("playlists.json", { cache: "no-cache" })
-		.then(response => response.json())
-		.then(obj => {
-			if (["interactive", "loaded", "complete"].includes(document.readyState))
-				addAllPlaylists(obj);
-			else
-				document.addEventListener("DOMContentLoaded", () => addAllPlaylists(obj));
-		});
 =======
-			entry += `<span>${ description ? ` (by ${ authorsList })` : `by ${ authorsList }` }</span>`;
+		entry += `<span>${ description ? ` (by ${ authorsList })` : `by ${ authorsList }` }</span>`;
 		}
 		if(url && !description && !author) {
 			entry += `(<a href="${ url }" target="_blank">source</a>)`;
@@ -202,7 +177,19 @@
 		return `<div class="${ code || codeFile || children ? 'entry' : 'entry-text' }${ starClass || '' }">${
 			entry }</div>`;
 	}
-	
+>>>>>>>
+
+<<<<<<<
+	function addPlaylist(obj, id) {
+		let playlist = obj.playlists[id];
+		let playlistElem = document.createElement("ul");
+		for (let i = 0, len = playlist.length; i < len; ++i) {
+			let entry = parseEntry(playlist[i]);
+			playlistElem.append(createEntryElem(entry));
+		}
+		document.getElementById(`library-${id}`).append(playlistElem);
+	}
+=======
 	function addPlaylist({ playlists }, id) {
 		let playlist = '';
 		const playlistArr = playlists[id];
@@ -211,23 +198,20 @@
 		}
 		document.getElementById(`library-${ id }`).insertAdjacentHTML('beforeend', playlist);
 	}
-	
-	document.addEventListener('DOMContentLoaded', () => {
-		cachedElemParent = document.createElement('div');
-		cachedTextNode = document.createTextNode('');
-		cachedElemParent.appendChild(cachedTextNode);
-		const xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function() {
-			if(xhr.readyState === 4 && xhr.status === 200) {
-				const obj = JSON.parse(xhr.responseText);
-				for(const p in obj.playlists) {
-					addPlaylist(obj, p);
-				}
-			}
-		};
-		xhr.open('GET', 'playlists.json', true);
-		xhr.setRequestHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-		xhr.send(null);
-	});
->>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
+>>>>>>>
+
+
+	function addAllPlaylists(obj) {
+		for (let p in obj.playlists)
+			addPlaylist(obj, p);
+	}
+
+	fetch("library.json", { cache: "no-cache" })
+		.then(response => response.json())
+		.then(obj => {
+			if (["interactive", "loaded", "complete"].includes(document.readyState))
+				addAllPlaylists(obj);
+			else
+				document.addEventListener("DOMContentLoaded", () => addAllPlaylists(obj));
+		});
 })();

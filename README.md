@@ -1,5 +1,5 @@
 # bytebeat-composer
-Bytebeat player with playlist that contains many interesting formulas from the internet.
+Bytebeat player with playlists that contains many interesting formulas from the internet.
 
 Forked from StephanShi to fix some bugs and soon add new features
 

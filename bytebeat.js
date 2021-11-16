@@ -160,7 +160,7 @@ class Bytebeat {
 	}
 
 	initLibrary() {
-		// TODO: all this stuff in playlist.js
+		// TODO: all this stuff in library.js
 		const libraryElem = document.getElementById("library");
 		/*
 <<<<<<<
@@ -202,7 +202,7 @@ class Bytebeat {
 		};
 >>>>>>>
 		*/
-		// TODO: DEFINETLY this in playlist.js, this is horrible
+		// TODO: DEFINETLY this in library.js, this is horrible
 		libraryElem.addEventListener("mouseover", e => {
 			const el = e.target;
 			if (el.tagName === "CODE")
@@ -624,7 +624,7 @@ class Bytebeat {
 		this.setCounterValue(this.byteSample);
 	}
 
-	toggleCounterUnits() {
+	changeCounterUnits() {
 		this.settings.isSeconds = !this.settings.isSeconds;
 		this.saveSettings();
 		this.setCounterUnits();

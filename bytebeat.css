@@ -199,7 +199,7 @@ summary {
 	font-weight: bold;
 	margin: 5px 0;
 }
-
+/* TODO
 <<<<<<< HEAD
 .star-white::after, .star-yellow::after {
 	content: "\2605";
@@ -254,7 +254,7 @@ summary {
 	border-top: 1px solid #404040;
 }
 >>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
-
+*/
 a, a:visited {
 	color: #88d2fb;
 }
