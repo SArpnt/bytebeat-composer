@@ -384,13 +384,17 @@ class Bytebeat {
 			this.toggleTimeCursor();
 		}
 	}
+	setDrawMode(drawMode = this.controlDrawMode.value) { // TODO
+		//this.settings.drawMode = drawMode;
+		//this.saveSettings();
+	}
 	setVolume() {
 		const fraction = parseInt(this.controlVolume.value) / parseInt(this.controlVolume.max);
 		this.audioGain.gain.value = fraction * fraction;
 	}
 
 	clearCanvas() {
-		this.canvasCtx.clearRect(0, 0, this.canvasElem.width, this.canvasElem.height);
+		this.canvasCtx.fillRect(0, 0, this.canvasElem.width, this.canvasElem.height);
 		this.clearDrawBuffer();
 	}
 	clearDrawBuffer() {
@@ -551,6 +555,9 @@ class Bytebeat {
 		}
 	}
 
+	convertUnit(value, from, to) {
+		return value; // TODO
+	}
 	resetTime() {
 		this.setByteSample(0, true, true);
 		this.timeCursor.cssText = ""; // TODO: remove this after "update cursor position"
@@ -558,8 +565,8 @@ class Bytebeat {
 			this.canvasTogglePlay.classList.add("canvas-toggleplay-show");
 	}
 	setByteSample(value, send = true, clear = false) {
-		if (!isFinite(value)) {
-			this.controlTimeValue.placeholder = \\\\\\\\convertUnit(value, this.controlTimeUnit);
+		if (isFinite(value)) {
+			this.controlTimeValue.placeholder = this.convertUnit(value, /* TODO */);
 			this.byteSample = value;
 			if (send)
 				this.audioWorklet.port.postMessage({ setByteSample: [value, clear] });
@@ -611,19 +618,10 @@ class Bytebeat {
 			this.isPlaying = isPlaying;
 			this.audioWorklet.port.postMessage({ isPlaying });
 		}
-	}/*
-<<<<<<<
-=======
+	}/* TODO
 	setCounterUnits() {
 		this.controlTimeUnit.textContent = this.settings.isSeconds ? 'sec' : 't';
 		this.setCounterValue(this.byteSample);
-	}
-	setCounterValue(value) {
-		this.controlTimeValue.value = this.settings.isSeconds ? (value / this.sampleRate).toFixed(2) : value;
-	}
-	setDrawMode() {
-		this.settings.drawMode = this.controlDrawMode.value;
-		this.saveSettings();
 	}
 
 	toggleCounterUnits() {
@@ -631,13 +629,9 @@ class Bytebeat {
 		this.saveSettings();
 		this.setCounterUnits();
 	}
->>>>>>>
-<<<<<<<
-=======
 	saveSettings() {
 		localStorage.settings = JSON.stringify(this.settings);
-	}
->>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
-*/};
+	}*/
+};
 
 const bytebeat = new Bytebeat();
