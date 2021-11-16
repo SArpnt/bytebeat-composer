@@ -120,7 +120,7 @@
 			}
 			let time = this.sampleRatio * this.audioSample;
 			let byteSample = this.byteSample;
-			let drawBuffer = [];
+			const drawBuffer = [];
 			for (let i = 0; i < chDataLen; i++) {
 				time += this.sampleRatio;
 				const flooredTime = Math.floor(time / this.sampleRateDivisor) * this.sampleRateDivisor;

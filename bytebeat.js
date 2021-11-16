@@ -126,8 +126,13 @@ class Bytebeat {
 
 		if (data.byteSample !== undefined)
 			this.setByteSample(data.byteSample, false);
-		if (data.drawBuffer !== undefined)
+		if (data.drawBuffer !== undefined) {
 			this.drawBuffer = this.drawBuffer.concat(data.drawBuffer);
+			// prevent buffer accumulation when tab inactive
+			// TODO: get function from drawGraphics
+			if (this.drawBuffer.length > this.canvasElem.width)
+				this.drawBuffer = this.drawBuffer.slice(this.canvasElem.width);
+		}
 
 		if (data.updateUrl)
 			this.updateUrl();
@@ -360,6 +365,7 @@ class Bytebeat {
 			playingForward = this.playSpeed > 0;
 
 		// quick buffer reduction for massive lag spikes (switching tab causes animationFrame to wait)
+		// TODO: move to handleMessage
 		this.drawBuffer = this.drawBuffer.slice(-getTimeFromXpos(width));
 
 		const bufferLen = this.drawBuffer.length;

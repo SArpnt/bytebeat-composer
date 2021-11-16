@@ -121,6 +121,12 @@
 					<section>
 						<p>
 							This webpage has a collection of bytebeat music found by SthephanShi, I may add my own compositions here too.
+							Playback modes are:
+							<ul>
+								<li>Bytebeat &mdash; expected output is 0 to 255, values outside this are wrapped, and non-integers are floored.</li>
+								<li>Signed Bytebeat &mdash; expected output is -128 to 127, values outside this are wrapped, and non-integers are floored. This is an uncommon format, which comes from c allowing char to be signed or unsigned depending on the compiler.</li>
+								<li>Floatbeat &mdash; expected output is -1.0 to 1.0, values outside this are clipped. This allows higher quality audio, and is common for other generative music.</li>
+							<ul>
 						</p>
 						<p>
 							This website is a fork of <a href="https://dollchan.net/bytebeat" target="_blank">bytebeat-composer</a> by <a href="https://github.com/SthephanShinkufag" target="_blank">SthephanShi</a>, which itself is a fork of <a href="http://entropedia.co.uk/generative_music/" target="_blank">8-bit Generative Composer</a> by <a href="http://twitter.com/paul_hayes/" target="_blank">@paul_hayes</a>.<br>
@@ -148,6 +154,10 @@
 					<details>
 						<summary>Big code &mdash; code with size more than 1kB</summary>
 						<div id="library-bigcode" class="text-section"></div>
+					</details>
+					<details>
+						<summary>[Floatbeat] &mdash; assumes output is −1.0 to 1.0</summary>
+						<div id="library-floatbeat" class="text-section"></div>
 					</details>
 					<details>
 						<summary>SthephanShi &mdash; code SthephanShi discovered</summary>
