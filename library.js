@@ -28,7 +28,7 @@
 			const songElems = Array.from(descriptionElem.querySelectorAll("code, [data-code-file], [data-song-data]"));
 			if (songElems.length) {
 				for (let elem of songElems) {
-					const songData = elem.dataset.songData ? JSON.parse(elem.dataset.songData) : {}
+					const songData = elem.dataset.songData ? JSON.parse(elem.dataset.songData) : {};
 					if (elem.dataset.hasOwnProperty("codeFile")) {
 						elem.addEventListener("click", () =>
 							fetch(`library/${elem.dataset.codeFile}`, { cache: "no-cache" })
@@ -119,9 +119,10 @@
 			entryElem.append(document.createElement("br"));
 
 		if (entry.codeFile) {
-			let codeFileElem = document.createElement("a");
+			let codeFileElem = document.createElement("a"); // TODO: make this a button
 			codeFileElem.className = "code-load";
 			codeFileElem.innerText = "► Click to load pretty code";
+			codeFileElem.href = "#";
 			const songData = stripEntryToSong(entry);
 			codeFileElem.addEventListener("click", () =>
 				fetch(`library/${entry.codeFile}`, { cache: "no-cache" })
