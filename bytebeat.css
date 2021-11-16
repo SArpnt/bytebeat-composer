@@ -186,7 +186,7 @@ code {
 	white-space: break-spaces;
 	cursor: pointer;
 }
-.library-code-info {
+.library-song-info {
 	color: grey;
 	cursor: default;
 }
@@ -199,62 +199,16 @@ summary {
 	font-weight: bold;
 	margin: 5px 0;
 }
-/* TODO
-<<<<<<< HEAD
+
 .star-white::after, .star-yellow::after {
 	content: "\2605";
 	display: inline-block;
 	margin-top: -3px;
 }
-
 .star-yellow::after {
 	color: yellow;
 }
-=======
-.entry {
-	position: relative;
-}
 
-.entry-children > .entry:not(:last-child) {
-	margin-bottom: 3px;
-}
-
-.entry-children > .entry::before {
-	content: "\25CF";
-	position: absolute;
-	top: 2px;
-	left: -11px;
-	color: #555;
-	font-size: 10px;
-}
-
-.entry.star-white::before {
-	content: "\2605";
-	position: absolute;
-	top: -2px;
-	left: -12px;
-	color: white;
-	font-size: 11px;
-}
-
-.entry.star-yellow::before {
-	content: "\2605";
-	position: absolute;
-	top: -2px;
-	left: -12px;
-	color: yellow;
-	font-size: 11px;
-}
-
-.entry-top {
-	padding: 4px 4px 8px 16px;
-}
-
-.entry-top:not(:first-child) {
-	border-top: 1px solid #404040;
-}
->>>>>>> 54c7adabbc48945e063081839fcbb960cd399332
-*/
 a, a:visited {
 	color: #88d2fb;
 }

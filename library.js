@@ -68,7 +68,7 @@
 
 		if (entry.sampleRate) {
 			const sampleRateElem = document.createElement("span");
-			sampleRateElem.classList = "library-code-info";
+			sampleRateElem.classList = "library-song-info";
 			if (entry.sampleRate % 1000 == 0)
 				sampleRateElem.innerText = `${entry.sampleRate.substring(0, entry.sampleRate.length - 3)}kHz`;
 			else
@@ -78,7 +78,7 @@
 		}
 		if (entry.mode) {
 			const modeElem = document.createElement("span");
-			modeElem.classList = "library-code-info";
+			modeElem.classList = "library-song-info";
 			modeElem.innerText = entry.mode;
 
 			entryElem.append(document.createTextNode(" "), modeElem);
@@ -125,7 +125,7 @@
 			entryElem.append(pre);
 
 			const codeLengthElem = document.createElement("span");
-			codeLengthElem.classList = "codelength";
+			codeLengthElem.classList = "library-song-info";
 			codeLengthElem.innerText = `${entry.code.length}C`;
 			entryElem.append(document.createTextNode(" "), codeLengthElem);
 		}
