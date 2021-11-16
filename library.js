@@ -25,14 +25,36 @@
 			} else
 				descriptionElem = document.createElement("span");
 			descriptionElem.innerHTML = entry.description;
-			// TODO: deal with code elements in description
+			const songElems = Array.from(descriptionElem.querySelectorAll("code, [data-code-file], [data-song-data]"));
+			if (songElems.length) {
+				for (let elem of songElems) {
+					const songData = elem.dataset.songData ? JSON.parse(elem.dataset.songData) : {}
+					if (elem.dataset.hasOwnProperty("codeFile")) {
+						elem.addEventListener("click", () =>
+							fetch(`library/${elem.dataset.codeFile}`, { cache: "no-cache" })
+								.then(response => response.text())
+								.then(code => bytebeat.loadCode(Object.assign(
+									songData,
+									{ code },
+								)))
+						);
+					} else {
+						elem.addEventListener("click", () =>
+							bytebeat.loadCode(Object.assign(
+								{ code: elem.innerText },
+								songData,
+							))
+						);
+					}
+				}
+			}
 			entryElem.append(descriptionElem);
 		} else if (entry.url) {
 			const descriptionElem = document.createElement("span");
 			const sourceElem = document.createElement("a");
 			sourceElem.href = entry.url;
 			sourceElem.target = "_blank";
-			sourceElem.innerText = "source"
+			sourceElem.innerText = "source";
 			descriptionElem.append(document.createTextNode("("), sourceElem, document.createTextNode(")"));
 			entryElem.append(descriptionElem);
 		}

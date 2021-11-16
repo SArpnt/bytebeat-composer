@@ -28,25 +28,25 @@
 					<input title="Time value" name="control-time-value" id="control-time-value" type="number" placeholder="0" style="width: 8em;" onchange="bytebeat.setByteSample(bytebeat.convertUnit(+this.value)); this.value = '';"></input>
 				</span>
 				<span class="control-group buttons buttons-playback">
-					<button title="Pause" id="control-pause" onclick="bytebeat.togglePlay(false);">⏸</button><!--
-					--><button title="Stop" id="control-stop" onclick="bytebeat.togglePlay(false); bytebeat.resetTime();">⏹</button><!--
-					--><button title="Restart" id="control-restart" onclick="bytebeat.resetTime();">⏮</button><!--
-					--><button title="Fast reverse" id="control-fr" onclick="bytebeat.setPlaySpeed(-4); bytebeat.togglePlay(true);">⏪</button><!--
-					--><button title="Reverse" id="control-reverse" onclick="bytebeat.setPlaySpeed(-1); bytebeat.togglePlay(true);">◀</button><!--
-					--><button title="Play" id="control-play" onclick="bytebeat.setPlaySpeed(1); bytebeat.togglePlay(true);">▶</button><!--
-					--><button title="Fast Forward" id="control-ff" onclick="bytebeat.setPlaySpeed(4); bytebeat.togglePlay(true);">⏩</button><!--
-					--><button title="Record" onclick="bytebeat.rec()">⏺</button>
+					<button title="Pause" id="control-pause" onclick="bytebeat.togglePlay(false);">⏸</button>
+					<button title="Stop" id="control-stop" onclick="bytebeat.togglePlay(false); bytebeat.resetTime();">⏹</button>
+					<button title="Restart" id="control-restart" onclick="bytebeat.resetTime();">⏮</button>
+					<button title="Fast reverse" id="control-fr" onclick="bytebeat.setPlaySpeed(-4); bytebeat.togglePlay(true);">⏪</button>
+					<button title="Reverse" id="control-reverse" onclick="bytebeat.setPlaySpeed(-1); bytebeat.togglePlay(true);">◀</button>
+					<button title="Play" id="control-play" onclick="bytebeat.setPlaySpeed(1); bytebeat.togglePlay(true);">▶</button>
+					<button title="Fast Forward" id="control-ff" onclick="bytebeat.setPlaySpeed(4); bytebeat.togglePlay(true);">⏩</button>
+					<button title="Record" onclick="bytebeat.rec()">⏺</button>
 				</span>
 				<span class="control-group buttons buttons-zoom">
-					<button title="Zoom in" id="control-scaledown" onclick="bytebeat.changeScale(-1);">+</button><!--
-					--><button title="Zoom out" id="control-scaleup" onclick="bytebeat.changeScale(1);">-</button>
+					<button title="Zoom in" id="control-scaledown" onclick="bytebeat.changeScale(-1);">+</button>
+					<button title="Zoom out" id="control-scaleup" onclick="bytebeat.changeScale(1);">-</button>
 				</span>
-				<span class="control-group">
+				<!-- TODO <span class="control-group">
 					<select title="Draw mode" id="control-draw-mode" onchange="bytebeat.setDrawMode(this.value);">
 						<option value="Points" selected>Points</option>
 						<option value="Waveform">Waveform</option>
 					</select>
-				</span>
+				</span>-->
 				<span class="control-group">
 					<select title="Playback mode" id="control-playback-mode" onchange="bytebeat.setPlaybackMode(this.value);">
 						<option value="Bytebeat" selected>Bytebeat</option>
@@ -167,7 +167,7 @@
 	</div>
 
 	<!-- SVG BUTTONS -->
-	<!-- TODO: create svgs for all controls-->
+	<!: create svgs for all controls-->
 	<div id="svg-icons" style="height: 0; width: 0; overflow: hidden;">
 		<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 			<symbol viewBox="0 0 32 32" id="symbol-play">
