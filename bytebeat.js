@@ -1,64 +1,69 @@
 "use strict";
 
-// TODO: turn bytebeat into an object
-/*
 const bytebeat = Object.seal({
-	audioCtx
-})
-*/
+	audioCtx: null,
+	audioWorklet: null,
+	audioGain: null,
+	audioRecorder: null,
+	recordChunks: [],
 
-class Bytebeat {
-	constructor() {
-		this.audioCtx = null;
-		this.audioWorklet = null;
-		this.audioGain = null;
-		this.audioRecorder = null;
-		this.recordChunks = [];
+	nextErrType: null,
+	nextErr: null,
+	nextErrPriority: undefined,
+	errorPriority: -Infinity,
 
-		this.nextErrType = null;
-		this.nextErr = null;
-		this.nextErrPriority = undefined;
-		this.errorPriority = -Infinity;
+	canvasCtx: null,
+	//drawSettings: { mode: "Points", scale: 5 },
+	drawMode: "Points",
+	drawScale: 5,
+	drawBuffer: [],
+	drawImageData: null,
+	byteSample: 0,
 
-		this.canvasCtx = null;
-		//this.drawSettings = { mode: "Points", scale: 5 };
-		this.drawMode = "Points";
-		this.drawScale = 5;
-		this.drawBuffer = [];
-		this.drawImageData = null;
-		this.byteSample = 0;
+	isPlaying: false,
+	isRecording: false,
 
-		this.isPlaying = false;
-		this.isRecording = false;
+	//songData: { sampleRate: 8000, mode: "Bytebeat" };
+	playbackMode: "Bytebeat",
+	sampleRate: 8000,
+	playSpeed: 1,
 
-		//this.songData = { sampleRate: 8000, mode: "Bytebeat" };
-		this.playbackMode = "Bytebeat";
-		this.sampleRate = 8000;
-		this.playSpeed = 1;
+	canvasElem: null,
+	codeEditorElem: null,
+	errorElem: null,
+	timeCursorElem: null,
 
-		this.canvasElem = null;
-		this.codeEditorElem = null;
-		this.errorElem = null;
+	contentElem: null,
 
-		this.contentElem = null;
+	animationFrameId: null,
 
-		this.animationFrameId = null;
+	controlTimeUnit: null,
+	controlTimeValue: null,
+	controlScaleUp: null,
+	controlScaleDown: null,
+	controlPlaybackMode: null,
+	controlSampleRate: null,
+	controlVolume: null,
+	canvasTogglePlay: null,
 
-		this.controlTimeUnit = null;
-		this.controlTimeValue = null;
-		this.controlScaleUp = null;
-		this.controlScaleDown = null;
-		this.controlPlaybackMode = null;
-		this.controlSampleRate = null;
-		this.controlVolume = null;
-		this.canvasTogglePlay = null;
+	// TODO: sort again and find missing variables, group variables with objects
 
-		// TODO: sort again and find missing variables, group variables with objects
+	//getX: t => t / (1 << this.settings.drawScale),
+	//mod: (a, b) => ((a % b) + b) % b,
 
-		//this.getX = t => t / (1 << this.settings.drawScale);
-		//this.mod = (a, b) => ((a % b) + b) % b;
-
+	init() {
 		this.animationFrame = this.animationFrame.bind(this);
+		{
+			const a = document.createElement("a");
+			//document.head.appendChild(a); // TODO: is this needed on any browser? doesn't seem neccecary on chrome or firefox
+			this.saveData = function saveData(blob, fileName) {
+				const url = URL.createObjectURL(blob);
+				a.href = url;
+				a.download = fileName;
+				a.click();
+				setTimeout(() => window.URL.revokeObjectURL(url));
+			};
+		}
 
 		const initAudioPromise = this.initAudioContext();
 		const onDomLoaded = async () => {
@@ -78,7 +83,7 @@ class Bytebeat {
 			onDomLoaded();
 		else
 			document.addEventListener("DOMContentLoaded", onDomLoaded);
-	}
+	},
 
 	async initAudioContext() {
 		this.audioCtx = new AudioContext();
@@ -97,7 +102,7 @@ class Bytebeat {
 		const mediaDest = this.audioCtx.createMediaStreamDestination();
 		this.audioRecorder = new MediaRecorder(mediaDest.stream);
 		this.audioRecorder.ondataavailable = e => this.recordChunks.push(e.data);
-		this.audioRecorder.onstop = e => {
+		this.audioRecorder.addEventListener("stop", e => {
 			let file, type;
 			const types = ["audio/webm", "audio/ogg"];
 			const files = ["track.webm", "track.ogg"];
@@ -108,7 +113,7 @@ class Bytebeat {
 				}
 			}
 			this.saveData(new Blob(this.recordChunks, { type }), file);
-		};
+		});
 		this.audioGain.connect(mediaDest);
 
 		await addModulePromise;
@@ -116,7 +121,7 @@ class Bytebeat {
 		this.audioWorklet.port.addEventListener("message", this.handleMessage.bind(this));
 		this.audioWorklet.port.start();
 		this.audioWorklet.connect(this.audioGain);
-	}
+	},
 	handleMessage(e) {
 		const data = e.data;
 		if (data.clearCanvas)
@@ -147,21 +152,8 @@ class Bytebeat {
 			} else
 				this.showErrorMessage(data.errorMessage.type, data.errorMessage.err, data.errorMessage.priority);
 		}
-	}
-	get saveData() {
-		const a = document.createElement("a");
-		document.documentElement.appendChild(a); // TODO: is this needed?
-		a.style.display = "none"; // TODO: maybe put a in head instead of setting style
-		const saveDataInternal = function saveDataInternal(blob, fileName) {
-			url = URL.createObjectURL(blob);
-			a.href = url;
-			a.download = fileName;
-			a.click();
-			setTimeout(() => window.URL.revokeObjectURL(url));
-		};
-		Object.defineProperty(this, "saveData", { value: saveDataInternal });
-		return saveDataInternal;
-	}
+	},
+	saveData: null,
 	initCodeEditor() {
 		this.errorElem = document.getElementById("error");
 		this.codeEditorElem = document.getElementById("code-editor");
@@ -229,7 +221,7 @@ class Bytebeat {
 				console.error("Unrecognized url data");
 		}
 		return null;
-	}
+	},
 	initControls() {
 		this.controlTimeUnit = document.getElementById("control-time-unit");
 		this.controlTimeValue = document.getElementById("control-time-value");
@@ -237,16 +229,16 @@ class Bytebeat {
 		this.controlScaleDown = document.getElementById("control-scaledown");
 		this.controlScaleUp = document.getElementById("control-scaleup");
 
-		this.controlDrawMode = document.getElementById("control-draw-mode");
+		//this.controlDrawMode = document.getElementById("control-draw-mode");
 		this.controlPlaybackMode = document.getElementById("control-playback-mode");
 		this.controlSampleRate = document.getElementById("control-samplerate");
 		this.controlVolume = document.getElementById("control-volume");
 
 		this.canvasTogglePlay = document.getElementById("canvas-toggleplay");
-		this.timeCursor = document.getElementById("canvas-timecursor");
+		this.timeCursorElem = document.getElementById("canvas-timecursor");
 		this.canvasElem = document.getElementById("canvas-main");
 		this.canvasCtx = this.canvasElem.getContext("2d", { alpha: false });
-	}
+	},
 	// TODO
 	initSettings() {
 		/*try {
@@ -257,10 +249,10 @@ class Bytebeat {
 		this.setScale(0);
 		this.setCounterUnits();
 		this.controlDrawMode.value = this.settings.drawMode;*/
-	}
+	},
 	refreshCode() {
 		this.audioWorklet.port.postMessage({ code: this.codeEditorElem.value.trim() });
-	}
+	},
 	updateUrl() {
 		let pData = { code: this.codeEditorElem.value };
 		if (this.sampleRate != 8000)
@@ -271,7 +263,7 @@ class Bytebeat {
 		pData = JSON.stringify(pData);
 
 		window.location.hash = "#v3b64" + btoa(pako.deflateRaw(pData, { to: "string" }));
-	}
+	},
 	handleWindowResize(force = false) {
 		let newWidth;
 		if (window.innerWidth >= 768 + 4) // 768 is halfway between 512 and 1024
@@ -282,7 +274,7 @@ class Bytebeat {
 			this.canvasElem.width = newWidth;
 			this.contentElem.style.maxWidth = (newWidth + 4) + "px"; // TODO: see if it's possible to get rid of this at some point
 		}
-	}
+	},
 	animationFrame() {
 		this.drawGraphics();
 		if (this.nextErr)
@@ -292,7 +284,7 @@ class Bytebeat {
 			this.animationFrameId = window.requestAnimationFrame(this.animationFrame);
 		else
 			this.animationFrameId = null;
-	}
+	},
 
 	loadCode(pData, refreshCode = true, play = true) {
 		if (pData != null) {
@@ -307,15 +299,15 @@ class Bytebeat {
 			this.resetTime();
 			this.togglePlay(true);
 		}
-	}
+	},
 	applySampleRate(rate) {
 		this.setSampleRate(rate);
 		this.controlSampleRate.value = rate;
-	}
+	},
 	applyPlaybackMode(playbackMode) {
 		this.setPlaybackMode(playbackMode);
 		this.controlPlaybackMode.value = playbackMode;
-	}
+	},
 
 	rec() {
 		if (this.audioCtx && !this.isRecording) {
@@ -325,7 +317,7 @@ class Bytebeat {
 			if (!this.isPlaying)
 				this.togglePlay(true);
 		}
-	}
+	},
 	changeScale(amount) {
 		if (amount) {
 			this.drawScale = Math.max(this.drawScale + amount, 0);
@@ -336,24 +328,24 @@ class Bytebeat {
 				this.controlScaleDown.removeAttribute("disabled");
 			this.toggleTimeCursor();
 		}
-	}
+	},
 	setDrawMode(drawMode = this.controlDrawMode.value) { // TODO
 		//this.settings.drawMode = drawMode;
 		//this.saveSettings();
-	}
+	},
 	setVolume() {
 		const fraction = parseInt(this.controlVolume.value) / parseInt(this.controlVolume.max);
 		this.audioGain.gain.value = fraction * fraction;
-	}
+	},
 
 	clearCanvas() {
 		this.canvasCtx.fillRect(0, 0, this.canvasElem.width, this.canvasElem.height);
 		this.clearDrawBuffer();
-	}
+	},
 	clearDrawBuffer() {
 		this.drawBuffer = [];
 		this.drawImageData = null;
-	}
+	},
 	drawGraphics() {
 		const { width, height } = this.canvasElem;
 
@@ -476,17 +468,17 @@ class Bytebeat {
 		// cursor
 		if (this.timeCursorVisible()) {
 			if (playingForward) {
-				this.timeCursor.style.removeProperty("right");
-				this.timeCursor.style.left = `${fmod(Math.ceil(getXpos(endTime)), width) / width * 100}%`;
+				this.timeCursorElem.style.removeProperty("right");
+				this.timeCursorElem.style.left = `${fmod(Math.ceil(getXpos(endTime)), width) / width * 100}%`;
 			} else {
-				this.timeCursor.style.removeProperty("left");
-				this.timeCursor.style.right = `${(1 - (fmod(Math.ceil(getXpos(endTime)), width) + 1) / width) * 100}%`;
+				this.timeCursorElem.style.removeProperty("left");
+				this.timeCursorElem.style.right = `${(1 - (fmod(Math.ceil(getXpos(endTime)), width) + 1) / width) * 100}%`;
 			}
 		}
 
 		// clear buffer except last sample
 		this.drawBuffer = [{ t: endTime, value: this.drawBuffer[bufferLen - 1].value }];
-	}
+	},
 	hideErrorMessage() {
 		if (this.errorElem) {
 			this.errorElem.innerText = "";
@@ -496,7 +488,7 @@ class Bytebeat {
 			this.nextErrPriority = undefined;
 			this.errorPriority = -Infinity;
 		}
-	}
+	},
 	showErrorMessage(errType, err, priority = 0) {
 		if (this.errorElem && priority > this.errorPriority) {
 			this.errorElem.dataset.errType = errType;
@@ -507,17 +499,17 @@ class Bytebeat {
 			this.nextErrPriority = undefined;
 			this.errorPriority = priority;
 		}
-	}
+	},
 
 	convertUnit(value, from, to) {
 		return value; // TODO
-	}
+	},
 	resetTime() {
 		this.setByteSample(0, true, true);
-		this.timeCursor.cssText = ""; // TODO: remove this after "update cursor position"
+		this.timeCursorElem.style.cssText = ""; // TODO: remove this after "update cursor position"
 		if (!this.isPlaying)
 			this.canvasTogglePlay.classList.add("canvas-toggleplay-show");
-	}
+	},
 	setByteSample(value, send = true, clear = false) {
 		if (isFinite(value)) {
 			this.controlTimeValue.placeholder = this.convertUnit(value, /* TODO */);
@@ -526,32 +518,32 @@ class Bytebeat {
 				this.audioWorklet.port.postMessage({ setByteSample: [value, clear] });
 			// TODO: update cursor position
 		}
-	}
+	},
 	setPlaybackMode(playbackMode) {
 		this.playbackMode = playbackMode;
 		this.updateUrl();
 		this.audioWorklet.port.postMessage({ playbackMode });
-	}
+	},
 	setSampleRate(sampleRate) {
 		this.sampleRate = sampleRate;
 		this.audioWorklet.port.postMessage({ sampleRate, updateSampleRatio: true });
 		this.toggleTimeCursor();
-	}
+	},
 	setSampleRateDivisor(sampleRateDivisor) {
 		this.audioWorklet.port.postMessage({ sampleRateDivisor, updateSampleRatio: true });
-	}
+	},
 	setPlaySpeed(playSpeed) {
 		if (this.playSpeed != playSpeed) {
 			this.playSpeed = playSpeed;
 			this.audioWorklet.port.postMessage({ playSpeed, updateSampleRatio: true });
 		}
-	}
+	},
 	toggleTimeCursor() {
-		this.timeCursor.classList.toggle('disabled', !this.timeCursorVisible());
-	}
+		this.timeCursorElem.classList.toggle('disabled', !this.timeCursorVisible());
+	},
 	timeCursorVisible() {
 		return this.sampleRate >> this.drawScale < 3950;
-	}
+	},
 	togglePlay(isPlaying) {
 		if (isPlaying != this.isPlaying) {
 			this.canvasTogglePlay.classList.toggle("canvas-toggleplay-pause", isPlaying);
@@ -572,20 +564,20 @@ class Bytebeat {
 			this.isPlaying = isPlaying;
 			this.audioWorklet.port.postMessage({ isPlaying });
 		}
-	}/* TODO
+	},/* TODO
 	setCounterUnits() {
 		this.controlTimeUnit.textContent = this.settings.isSeconds ? 'sec' : 't';
 		this.setCounterValue(this.byteSample);
-	}
+	},
 
 	changeCounterUnits() {
 		this.settings.isSeconds = !this.settings.isSeconds;
 		this.saveSettings();
 		this.setCounterUnits();
-	}
+	},
 	saveSettings() {
 		localStorage.settings = JSON.stringify(this.settings);
-	}*/
-};
+	},*/
+});
 
-const bytebeat = new Bytebeat();
+bytebeat.init();
