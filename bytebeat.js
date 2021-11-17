@@ -46,11 +46,6 @@ const bytebeat = Object.seal({
 	controlVolume: null,
 	canvasTogglePlay: null,
 
-	// TODO: sort again and find missing variables, group variables with objects
-
-	//getX: t => t / (1 << this.settings.drawScale),
-	//mod: (a, b) => ((a % b) + b) % b,
-
 	init() {
 		this.animationFrame = this.animationFrame.bind(this);
 		{
@@ -346,30 +341,28 @@ const bytebeat = Object.seal({
 		this.drawBuffer = [];
 		this.drawImageData = null;
 	},
+	fmod(a, b) { return ((a % b) + b) % b; },
+	getXpos(t) { return t / (1 << this.drawScale); },
+	getTimeFromXpos(x) { return x * (1 << this.drawScale); },
 	drawGraphics() {
 		const { width, height } = this.canvasElem;
 
-		// TODO: move outside drawGraphics function, make property of object
-		const
-			fmod = (a, b) => ((a % b) + b) % b,
-			getXpos = t => t / (1 << this.drawScale),
-			getTimeFromXpos = x => x * (1 << this.drawScale),
-			playingForward = this.playSpeed > 0;
-
 		// quick buffer reduction for massive lag spikes (switching tab causes animationFrame to wait)
 		// TODO: move to handleMessage
-		this.drawBuffer = this.drawBuffer.slice(-getTimeFromXpos(width));
+		this.drawBuffer = this.drawBuffer.slice(-this.getTimeFromXpos(width));
 
 		const bufferLen = this.drawBuffer.length;
 		if (!bufferLen)
 			return;
 
+		const playingForward = this.playSpeed > 0;
+
 		let
 			startTime = this.drawBuffer[0].t,
 			endTime = this.byteSample,
 			lenTime = endTime - startTime,
-			startXPos = fmod(getXpos(startTime), width),
-			endXPos = startXPos + getXpos(lenTime);
+			startXPos = this.fmod(this.getXpos(startTime), width),
+			endXPos = startXPos + this.getXpos(lenTime);
 
 		{
 			let drawStartX = Math.floor(startXPos);
@@ -378,7 +371,7 @@ const bytebeat = Object.seal({
 			let drawOverflow = false;
 			// clip draw area if too large
 			if (drawLenX > width) { // TODO: put this into a better section so the variables don't all have to be set again
-				startTime = getTimeFromXpos(getXpos(endTime) - width);
+				startTime = this.getTimeFromXpos(this.getXpos(endTime) - width);
 				let sliceIndex = 0;
 				for (let i in this.drawBuffer) { // TODO: replace this with binary search
 					if ((this.drawBuffer[i + 1]?.t ?? endTime) <= startTime)
@@ -390,8 +383,8 @@ const bytebeat = Object.seal({
 					}
 				}
 				lenTime = endTime - startTime;
-				startXPos = fmod(getXpos(startTime), width);
-				endXPos = startXPos + getXpos(lenTime);
+				startXPos = this.fmod(this.getXpos(startTime), width);
+				endXPos = startXPos + this.getXpos(lenTime);
 				drawStartX = Math.ceil(startXPos); // this is a bit of a hack, since this doesn't relate to the other variables properly
 				// i can only get away with this because the other vars like startTime and such aren't used
 				// the proper solution would be to somehow round up startTime by a pixel
@@ -424,9 +417,9 @@ const bytebeat = Object.seal({
 					imageData.data[((drawLenX * y + x) << 2) + 3] = 255;
 			// draw
 			const iterateOverLine = (bufferElem, nextBufferElemTime, callback) => {
-				const startX = fmod(Math.floor(getXpos(playingForward ? bufferElem.t : nextBufferElemTime + 1)) - imagePos, width);
-				const endX = fmod(Math.ceil(getXpos(playingForward ? nextBufferElemTime : bufferElem.t + 1)) - imagePos, width);
-				for (let xPos = startX; xPos != endX; xPos = fmod(xPos + 1, width))
+				const startX = this.fmod(Math.floor(this.getXpos(playingForward ? bufferElem.t : nextBufferElemTime + 1)) - imagePos, width);
+				const endX = this.fmod(Math.ceil(this.getXpos(playingForward ? nextBufferElemTime : bufferElem.t + 1)) - imagePos, width);
+				for (let xPos = startX; xPos != endX; xPos = this.fmod(xPos + 1, width))
 					callback(xPos);
 			};
 
@@ -469,10 +462,10 @@ const bytebeat = Object.seal({
 		if (this.timeCursorVisible()) {
 			if (playingForward) {
 				this.timeCursorElem.style.removeProperty("right");
-				this.timeCursorElem.style.left = `${fmod(Math.ceil(getXpos(endTime)), width) / width * 100}%`;
+				this.timeCursorElem.style.left = `${this.fmod(Math.ceil(this.getXpos(endTime)), width) / width * 100}%`;
 			} else {
 				this.timeCursorElem.style.removeProperty("left");
-				this.timeCursorElem.style.right = `${(1 - (fmod(Math.ceil(getXpos(endTime)), width) + 1) / width) * 100}%`;
+				this.timeCursorElem.style.right = `${(1 - (this.fmod(Math.ceil(this.getXpos(endTime)), width) + 1) / width) * 100}%`;
 			}
 		}
 

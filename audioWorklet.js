@@ -3,7 +3,7 @@
 (function () {
 	class BytebeatProcessor extends AudioWorkletProcessor {
 		constructor() {
-			super(); // TODO: should there be any arguments?
+			super({ numberOfInputs: 0 });
 
 			this.audioSample = 0; // TODO: is this needed? might be better to use currentTime
 			this.lastFlooredTime = -1;
@@ -22,6 +22,8 @@
 			this.sampleRate = 8000;
 			this.sampleRateDivisor = 1;
 			this.playSpeed = 1;
+
+			Object.seal(this);
 
 
 			this.updateSampleRatio();
@@ -74,8 +76,6 @@
 			params.push("window");
 			values.push(globalThis);
 
-			// TODO: block out vars ["currentFrame", "currentTime", "registerProcessor", "sampleRate", "AudioWorkletGlobalScope", "AudioWorkletProcessor"]
-
 			// test bytebeat
 			{
 				const oldFunc = this.func;
@@ -92,9 +92,16 @@
 				}
 			}
 
-			// delete single letter variables to prevent persistent variable errors (covers a good enough range)
+			// delete most enumerable variables, and all single letter variables (not foolproof but works well enough)
 			for (let i = 0; i < 26; i++)
 				delete globalThis[String.fromCharCode(65 + i)], globalThis[String.fromCharCode(97 + i)];
+			for (let v in globalThis)
+				if (![
+					"currentFrame",
+					"currentTime",
+					"sampleRate",
+				].includes(v))
+					delete globalThis[v];
 
 			this.port.postMessage({ updateUrl: true, errorMessage: null });
 		}
