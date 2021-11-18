@@ -1,3 +1,4 @@
+import { EditorView } from "./codemirror.bundle.min.mjs"; // TODO: remove this
 import "https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.3/pako.min.js";
 import { whenDomContentLoaded } from "./common.mjs";
 
@@ -31,7 +32,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 		playSpeed: 1,
 
 		canvasElem: null,
-		codeEditorElem: null,
+		codeEditor: null,
 		errorElem: null,
 		timeCursorElem: null,
 
@@ -66,8 +67,9 @@ Object.defineProperty(globalThis, "bytebeat", {
 			await whenDomContentLoaded();
 
 			this.contentElem = document.getElementById("content");
-			let pData = this.initCodeEditor();
+			let pData = this.getUrlData();
 			this.initControls();
+			this.initCodeEditor(document.getElementById("code-editor"));
 
 			this.handleWindowResize(true);
 			document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
@@ -83,7 +85,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 
 			// fetch and Blob are done to prevent caching
 			const addModulePromise =
-				fetch("./audioWorklet.mjs", { type: "module", cache: "no-cache" })
+				fetch("scripts/audioWorklet.mjs", { type: "module", cache: "no-cache" })
 					.then(response => response.blob())
 					.then(async blob => {
 						await this.audioCtx.audioWorklet.addModule(URL.createObjectURL(blob));
@@ -147,55 +149,87 @@ Object.defineProperty(globalThis, "bytebeat", {
 			}
 		},
 		saveData: null,
-		initCodeEditor() {
-			this.errorElem = document.getElementById("error");
-			this.codeEditorElem = document.getElementById("code-editor");
-			this.codeEditorElem.addEventListener("input", this.refreshCode.bind(this));
-			this.codeEditorElem.addEventListener("keydown", e => {
-				if (e.key === "Tab" && !e.altKey && !e.ctrlKey) {
-					// TODO: undo/redo text
-					e.preventDefault();
-					let el = e.target;
-					let
-						selectionStart = el.selectionStart,
-						selectionEnd = el.selectionEnd;
-					if (e.shiftKey) {
-						// remove indentation on all selected lines
-						let lines = el.value.split("\n");
+		initCodeEditor(codeEditor) {
+			console.debug({ codeEditor });
 
-						let getLine = char => {
-							let line = 0;
-							for (let c = 0; ; line++) {
-								c += lines[line].length;
-								if (c > char)
-									break;
-							}
-							return line;
-						};
-						let
-							startLine = getLine(selectionStart),
-							endLine = getLine(selectionEnd),
-							newSelectionStart = selectionStart,
-							newSelectionEnd = selectionEnd;
-						for (let i = startLine; i <= endLine; i++) {
-							if (lines[i][0] == "\t") {
-								lines[i] = lines[i].slice(1);
-								if (i == startLine)
-									newSelectionStart--;
-								newSelectionEnd--;
-							}
-						}
+			if (codeEditor instanceof Element) {
+				if (codeEditor.tagName == "TEXTAREA") {
+					this.codeEditor = codeEditor;
+					codeEditor.addEventListener("input", this.refreshCode.bind(this));
+					{
+						let keyTrap = true;
+						codeEditor.addEventListener("keydown", e => {
+							if (!e.altKey && !e.ctrlKey) {
+								if (e.key === "Escape") {
+									if (keyTrap) {
+										e.preventDefault();
+										keyTrap = false;
+									}
+								} else if (e.key === "Tab" && keyTrap) {
+									// TODO: undo/redo text
+									e.preventDefault();
+									const el = e.target;
+									const { selectionStart, selectionEnd } = el;
+									if (e.shiftKey) {
+										// remove indentation on all selected lines
+										let lines = el.value.split("\n");
 
-						el.value = lines.join("\n");
-						el.setSelectionRange(newSelectionStart, newSelectionEnd);
-					} else {
-						// add tab character
-						el.value = `${el.value.slice(0, selectionStart)}\t${el.value.slice(selectionEnd)}`;
-						el.setSelectionRange(selectionStart + 1, selectionStart + 1);
+										let getLine = char => {
+											let line = 0;
+											for (let c = 0; ; line++) {
+												c += lines[line].length;
+												if (c > char) 1;
+												break;
+											}
+											return line;
+										};
+										let
+											startLine = getLine(selectionStart),
+											endLine = getLine(selectionEnd),
+											newSelectionStart = selectionStart,
+											newSelectionEnd = selectionEnd;
+										for (let i = startLine; i <= endLine; i++) {
+											if (lines[i][0] == "\t") {
+												lines[i] = lines[i].slice(1);
+												if (i == startLine)
+													newSelectionStart--;
+												newSelectionEnd--;
+											}
+										}
+
+										el.value = lines.join("\n");
+										el.setSelectionRange(newSelectionStart, newSelectionEnd);
+									} else {
+										// add tab character
+										el.value = `${el.value.slice(0, selectionStart)}\t${el.value.slice(selectionEnd)}`;
+										el.setSelectionRange(selectionStart + 1, selectionStart + 1);
+									}
+									this.refreshCode();
+								} else
+									keyTrap = false;
+							}
+						});
 					}
-					this.refreshCode();
+				} else if (codeEditor.classList.contains("cm-editor")) {
+					// do nothing, wait for fancyEditor
 				}
-			});
+			} else if (codeEditor instanceof EditorView) {
+				this.codeEditor = codeEditor;
+			}
+		},
+		get codeEditorText() {
+			if (this.codeEditor instanceof Element)
+				return this.codeEditor.value;
+			else
+				return this.codeEditor.state.doc.toString();
+		},
+		set codeEditorText(value) {
+			if (this.codeEditor instanceof Element)
+				this.codeEditor.value = value;
+			else
+				this.codeEditor.dispatch({ changes: { from: 0, to: codeEditor.state.doc.length, insert: value } });
+		},
+		getUrlData() {
 			if (window.location.hash) {
 				if (window.location.hash.startsWith("#v3b64")) {
 					let pData;
@@ -227,6 +261,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.controlSampleRate = document.getElementById("control-samplerate");
 			this.controlVolume = document.getElementById("control-volume");
 
+			this.errorElem = document.getElementById("error");
 			this.canvasTogglePlay = document.getElementById("canvas-toggleplay");
 			this.timeCursorElem = document.getElementById("canvas-timecursor");
 			this.canvasElem = document.getElementById("canvas-main");
@@ -244,10 +279,10 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.controlDrawMode.value = this.settings.drawMode;*/
 		},
 		refreshCode() {
-			this.audioWorklet.port.postMessage({ code: this.codeEditorElem.value.trim() });
+			this.audioWorklet.port.postMessage({ code: this.codeEditorText.trim() });
 		},
 		updateUrl() {
-			let pData = { code: this.codeEditorElem.value };
+			let pData = { code: this.codeEditorText };
 			if (this.sampleRate != 8000)
 				pData.sampleRate = this.sampleRate;
 			if (this.playbackMode != "Bytebeat")
@@ -282,7 +317,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 		loadCode(pData, refreshCode = true, play = true) {
 			if (pData != null) {
 				let { code, sampleRate, mode: playbackMode } = pData;
-				this.codeEditorElem.value = code;
+				this.codeEditorText = code;
 				this.applySampleRate(+sampleRate || 8000);
 				this.applyPlaybackMode(playbackMode || "Bytebeat");
 			}

@@ -30,7 +30,7 @@ function createEntryElem(entry) {
 				const songData = elem.dataset.songData ? JSON.parse(elem.dataset.songData) : {};
 				if (elem.dataset.hasOwnProperty("codeFile")) {
 					elem.addEventListener("click", () =>
-						fetch(`./library/${elem.dataset.codeFile}`, { cache: "no-cache" })
+						fetch(`library/${elem.dataset.codeFile}`, { cache: "no-cache" })
 							.then(response => response.text())
 							.then(code => bytebeat.loadCode(Object.assign(
 								songData,
@@ -124,7 +124,7 @@ function createEntryElem(entry) {
 		codeFileElem.href = "#";
 		const songData = stripEntryToSong(entry);
 		codeFileElem.addEventListener("click", () =>
-			fetch(`./library/${entry.codeFile}`, { cache: "no-cache" })
+			fetch(`library/${entry.codeFile}`, { cache: "no-cache" })
 				.then(response => response.text())
 				.then(code => bytebeat.loadCode(Object.assign(songData, { code })))
 		);
@@ -180,7 +180,7 @@ function addAllPlaylists(library) {
 		addPlaylist(library, p);
 }
 
-fetch("./library.json", { cache: "no-cache" })
+fetch("library.json", { cache: "no-cache" })
 	.then(response => response.json())
 	.then(library =>
 		whenDomContentLoaded().then(() => addAllPlaylists(library))
