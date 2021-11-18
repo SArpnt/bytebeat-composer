@@ -1,17 +1,26 @@
 import { EditorState, EditorView, basicSetup, javascript } from "./codemirror.bundle.min.mjs";
-import { whenDomContentLoaded } from "./common.mjs"
+import { whenDomContentLoaded } from "./common.mjs";
 
+let inputListener = null;
 const codeEditor = new EditorView({
 	state: EditorState.create({
-		extensions: [basicSetup, javascript()],
+		extensions: [
+			basicSetup,
+			javascript(),
+			EditorView.updateListener.of(v => {
+				if (v.docChanged && inputListener)
+					inputListener();
+			}),
+		],
 	}),
-	doc: document.getElementById("code-editor").value,
 });
 
-globalThis.codeEditor = codeEditor; // TODO: temporary
 codeEditor.dom.id = "code-editor";
 
 await whenDomContentLoaded();
 document.getElementById("code-editor").replaceWith(codeEditor.dom);
 
-bytebeat.initCodeEditor(codeEditor); // TODO: handle if bytebeat not defined
+if (!globalThis.hasOwnProperty("bytebeat")) // TODO: all the resolve stuff is a horrible hack
+	await new Promise(resolve => globalThis.bytebeat = resolve);
+
+inputListener = globalThis.bytebeat.initCodeEditor(codeEditor);

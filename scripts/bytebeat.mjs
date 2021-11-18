@@ -2,6 +2,8 @@ import { EditorView } from "./codemirror.bundle.min.mjs"; // TODO: remove this
 import "https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.3/pako.min.js";
 import { whenDomContentLoaded } from "./common.mjs";
 
+let resolve = globalThis.bytebeat ?? null;
+
 Object.defineProperty(globalThis, "bytebeat", {
 	value: Object.seal({
 		audioCtx: null,
@@ -64,18 +66,20 @@ Object.defineProperty(globalThis, "bytebeat", {
 			}
 
 			const initAudioPromise = this.initAudioContext();
+
 			await whenDomContentLoaded();
 
 			this.contentElem = document.getElementById("content");
 			let pData = this.getUrlData();
 			this.initControls();
-			this.initCodeEditor(document.getElementById("code-editor"));
+			const codeEditorPromise = this.initCodeEditor(document.getElementById("code-editor"));
 
 			this.handleWindowResize(true);
 			document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
 
 			await initAudioPromise;
 			this.setVolume();
+			await codeEditorPromise;
 			this.loadCode(pData, false, false);
 			this.refreshCode();
 		},
@@ -149,74 +153,83 @@ Object.defineProperty(globalThis, "bytebeat", {
 			}
 		},
 		saveData: null,
-		initCodeEditor(codeEditor) {
-			console.debug({ codeEditor });
-
-			if (codeEditor instanceof Element) {
-				if (codeEditor.tagName == "TEXTAREA") {
-					this.codeEditor = codeEditor;
-					codeEditor.addEventListener("input", this.refreshCode.bind(this));
-					{
-						let keyTrap = true;
-						codeEditor.addEventListener("keydown", e => {
-							if (!e.altKey && !e.ctrlKey) {
-								if (e.key === "Escape") {
-									if (keyTrap) {
-										e.preventDefault();
-										keyTrap = false;
-									}
-								} else if (e.key === "Tab" && keyTrap) {
-									// TODO: undo/redo text
-									e.preventDefault();
-									const el = e.target;
-									const { selectionStart, selectionEnd } = el;
-									if (e.shiftKey) {
-										// remove indentation on all selected lines
-										let lines = el.value.split("\n");
-
-										let getLine = char => {
-											let line = 0;
-											for (let c = 0; ; line++) {
-												c += lines[line].length;
-												if (c > char) 1;
-												break;
-											}
-											return line;
-										};
-										let
-											startLine = getLine(selectionStart),
-											endLine = getLine(selectionEnd),
-											newSelectionStart = selectionStart,
-											newSelectionEnd = selectionEnd;
-										for (let i = startLine; i <= endLine; i++) {
-											if (lines[i][0] == "\t") {
-												lines[i] = lines[i].slice(1);
-												if (i == startLine)
-													newSelectionStart--;
-												newSelectionEnd--;
-											}
+		initCodeEditor: (function () {
+			let resolve = null; // TODO: all the resolve stuff is a horrible hack
+			return function initCodeEditor(codeEditor) {
+				if (codeEditor instanceof Element) {
+					if (codeEditor.tagName == "TEXTAREA") {
+						codeEditor.addEventListener("input", this.refreshCode.bind(this));
+						{
+							let keyTrap = true;
+							codeEditor.addEventListener("keydown", e => {
+								if (!e.altKey && !e.ctrlKey) {
+									if (e.key === "Escape") {
+										if (keyTrap) {
+											e.preventDefault();
+											keyTrap = false;
 										}
+									} else if (e.key === "Tab" && keyTrap) {
+										// TODO: undo/redo text
+										e.preventDefault();
+										const el = e.target;
+										const { selectionStart, selectionEnd } = el;
+										if (e.shiftKey) {
+											// remove indentation on all selected lines
+											let lines = el.value.split("\n");
 
-										el.value = lines.join("\n");
-										el.setSelectionRange(newSelectionStart, newSelectionEnd);
-									} else {
-										// add tab character
-										el.value = `${el.value.slice(0, selectionStart)}\t${el.value.slice(selectionEnd)}`;
-										el.setSelectionRange(selectionStart + 1, selectionStart + 1);
-									}
-									this.refreshCode();
-								} else
-									keyTrap = false;
-							}
-						});
+											let getLine = char => {
+												let line = 0;
+												for (let c = 0; ; line++) {
+													c += lines[line].length;
+													if (c > char) 1;
+													break;
+												}
+												return line;
+											};
+											let
+												startLine = getLine(selectionStart),
+												endLine = getLine(selectionEnd),
+												newSelectionStart = selectionStart,
+												newSelectionEnd = selectionEnd;
+											for (let i = startLine; i <= endLine; i++) {
+												if (lines[i][0] == "\t") {
+													lines[i] = lines[i].slice(1);
+													if (i == startLine)
+														newSelectionStart--;
+													newSelectionEnd--;
+												}
+											}
+
+											el.value = lines.join("\n");
+											el.setSelectionRange(newSelectionStart, newSelectionEnd);
+										} else {
+											// add tab character
+											el.value = `${el.value.slice(0, selectionStart)}\t${el.value.slice(selectionEnd)}`;
+											el.setSelectionRange(selectionStart + 1, selectionStart + 1);
+										}
+										this.refreshCode();
+									} else
+										keyTrap = false;
+								}
+							});
+						}
+						this.codeEditor = codeEditor;
+					} else if (codeEditor.classList.contains("cm-editor")) {
+						if (!(this.codeEditor instanceof EditorView) || codeEditor !== this.codeEditor.dom)
+							return new Promise(r => resolve = r);
 					}
-				} else if (codeEditor.classList.contains("cm-editor")) {
-					// do nothing, wait for fancyEditor
+				} else if (codeEditor instanceof EditorView) {
+					if (this.codeEditor)
+						codeEditor.dispatch({ changes: { from: 0, insert: this.codeEditor.value } });
+					this.codeEditor = codeEditor;
+					if (resolve) {
+						resolve();
+						resolve = null;
+					}
+					return this.refreshCode.bind(this);
 				}
-			} else if (codeEditor instanceof EditorView) {
-				this.codeEditor = codeEditor;
-			}
-		},
+			};
+		})(),
 		get codeEditorText() {
 			if (this.codeEditor instanceof Element)
 				return this.codeEditor.value;
@@ -227,7 +240,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			if (this.codeEditor instanceof Element)
 				this.codeEditor.value = value;
 			else
-				this.codeEditor.dispatch({ changes: { from: 0, to: codeEditor.state.doc.length, insert: value } });
+				this.codeEditor.dispatch({ changes: { from: 0, to: this.codeEditor.state.doc.length, insert: value } });
 		},
 		getUrlData() {
 			if (window.location.hash) {
@@ -612,3 +625,5 @@ Object.defineProperty(globalThis, "bytebeat", {
 });
 
 bytebeat.init();
+if (resolve)
+	resolve();
