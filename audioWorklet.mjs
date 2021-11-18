@@ -1,5 +1,3 @@
-"use strict";
-
 (function () {
 	class BytebeatProcessor extends AudioWorkletProcessor {
 		constructor() {
@@ -76,6 +74,8 @@
 			params.push("window");
 			values.push(globalThis);
 
+			this.deleteGlobals();
+
 			// test bytebeat
 			{
 				const oldFunc = this.func;
@@ -92,6 +92,9 @@
 				}
 			}
 
+			this.port.postMessage({ updateUrl: true, errorMessage: null });
+		}
+		deleteGlobals() {
 			// delete most enumerable variables, and all single letter variables (not foolproof but works well enough)
 			for (let i = 0; i < 26; i++)
 				delete globalThis[String.fromCharCode(65 + i)], globalThis[String.fromCharCode(97 + i)];
@@ -102,8 +105,6 @@
 					"sampleRate",
 				].includes(v))
 					delete globalThis[v];
-
-			this.port.postMessage({ updateUrl: true, errorMessage: null });
 		}
 		updateSampleRatio() {
 			let flooredTimeOffset;

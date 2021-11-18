@@ -14,9 +14,9 @@
 	<link rel="shortcut icon" href="favicon.png">
 	<link rel="stylesheet" type="text/css" href="bytebeat.css">
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.3/pako.min.js"></script>
-	<script async src="bytebeat.js"></script>
-	<script async src="library.js"></script>
+	<link rel="modulepreload" href="audioWorklet.mjs">
+	<script type="module" async src="bytebeat.mjs"></script>
+	<script type="module" async src="library.mjs"></script>
 </head>
 <body>
 	<main id="content">
