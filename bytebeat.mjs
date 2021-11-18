@@ -1,5 +1,5 @@
 import "https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.3/pako.min.js";
-import { whenDomContentLoaded } from "common.mjs";
+import { whenDomContentLoaded } from "./common.mjs";
 
 Object.defineProperty(globalThis, "bytebeat", {
 	value: Object.seal({
@@ -83,7 +83,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 
 			// fetch and Blob are done to prevent caching
 			const addModulePromise =
-				fetch("audioWorklet.mjs", { type: "module", cache: "no-cache" })
+				fetch("./audioWorklet.mjs", { type: "module", cache: "no-cache" })
 					.then(response => response.blob())
 					.then(async blob => {
 						await this.audioCtx.audioWorklet.addModule(URL.createObjectURL(blob));
