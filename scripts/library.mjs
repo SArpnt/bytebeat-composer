@@ -1,4 +1,4 @@
-import { whenDomContentLoaded } from "./common.mjs";
+import domLoaded from "./domLoaded.mjs";
 
 function parseEntry(entry) {
 	if (Array.isArray(entry.code))
@@ -183,5 +183,5 @@ function addAllPlaylists(library) {
 fetch("library.json", { cache: "no-cache" })
 	.then(response => response.json())
 	.then(library =>
-		whenDomContentLoaded().then(() => addAllPlaylists(library))
+		domLoaded.then(() => addAllPlaylists(library))
 	);

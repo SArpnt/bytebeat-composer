@@ -1,5 +1,5 @@
 import { EditorState, EditorView, basicSetup, javascript } from "./codemirror.bundle.min.mjs";
-import { whenDomContentLoaded } from "./common.mjs";
+import domLoaded from "./domLoaded.mjs";
 
 let inputListener = null;
 const codeEditor = new EditorView({
@@ -17,7 +17,7 @@ const codeEditor = new EditorView({
 
 codeEditor.dom.id = "code-editor";
 
-await whenDomContentLoaded();
+await domLoaded;
 document.getElementById("code-editor").replaceWith(codeEditor.dom);
 
 if (!globalThis.hasOwnProperty("bytebeat")) // TODO: all the resolve stuff is a horrible hack

@@ -1,6 +1,6 @@
 import { EditorView } from "./codemirror.bundle.min.mjs"; // TODO: remove this
 import "https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.3/pako.min.js";
-import { whenDomContentLoaded } from "./common.mjs";
+import domLoaded from "./domLoaded.mjs";
 
 let resolve = globalThis.bytebeat ?? null;
 
@@ -67,7 +67,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 
 			const initAudioPromise = this.initAudioContext();
 
-			await whenDomContentLoaded();
+			await domLoaded;
 
 			this.contentElem = document.getElementById("content");
 			let pData = this.getUrlData();
