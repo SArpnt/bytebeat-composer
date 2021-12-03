@@ -87,7 +87,7 @@
 					this.func(0);
 				} catch (err) {
 					this.func = oldFunc;
-					this.port.postMessage({ errorMessage: { type: errType, err, priority: 1 } });
+					this.port.postMessage({ errorMessage: { type: errType, err: err.toString(), priority: 1 } });
 					return;
 				}
 			}
@@ -138,7 +138,7 @@
 					try {
 						funcValue = this.func(roundSample);
 					} catch (err) {
-						this.port.postMessage({ errorMessage: { type: "runtime", err } });
+						this.port.postMessage({ errorMessage: { type: "runtime", err: err.toString() } });
 						funcValue = NaN;
 					}
 					if (funcValue != this.lastFuncValue) {

@@ -156,6 +156,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 		initCodeEditor: (function () {
 			let resolve = null; // TODO: all the resolve stuff is a horrible hack
 			return function initCodeEditor(codeEditor) {
+				console.info(codeEditor);
 				if (codeEditor instanceof Element) {
 					if (codeEditor.tagName == "TEXTAREA") {
 						codeEditor.addEventListener("input", this.refreshCode.bind(this));
