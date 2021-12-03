@@ -63,6 +63,7 @@ body {
 }
 #code-editor.cm-editor .cm-scroller {
 	font: 14px/14px Monospace;
+	padding: 2px;
 }
 #code-editor.cm-editor .cm-activeLine {
 	background-color: transparent;
@@ -81,7 +82,8 @@ body {
 	border: 0;
 }*/
 #code-editor.cm-editor .cm-content {
-	padding: 2px;
+	padding: 0;
+	caret-color: initial;
 }
 #code-editor.cm-editor .cm-line {
 	padding: 0;
@@ -91,8 +93,8 @@ body {
 	border: 1px solid grey;
 	margin: -1px;
 }
-#code-editor.cm-editor .cm-selectionBackground {
-	background-color: #09f;
+#code-editor.cm-editor .cm-selectionMatch {
+	background-color: #333;
 }
 
 /**

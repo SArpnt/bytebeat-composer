@@ -1,6 +1,6 @@
 import {
 	EditorState, EditorView,
-	keymap, insertTab, indentLess, defaultKeymap, insertNewline, highlightSpecialChars, history, /*foldGutter,*/ drawSelection, classHighlightStyle, bracketMatching, rectangularSelection, highlightSelectionMatches, searchKeymap, commentKeymap,
+	keymap, insertTab, indentLess, defaultKeymap, insertNewline, highlightSpecialChars, history, /*foldGutter,*/ classHighlightStyle, bracketMatching, highlightSelectionMatches, searchKeymap, commentKeymap,
 	javascript,
 } from "./codemirror.bundle.min.mjs";
 import domLoaded from "./domLoaded.mjs";
@@ -21,11 +21,8 @@ const codeEditor = new EditorView({
 			highlightSpecialChars(),
 			history(),
 			//foldGutter(),
-			drawSelection(),
-			EditorState.allowMultipleSelections.of(true),
 			classHighlightStyle,
 			bracketMatching(),
-			rectangularSelection(),
 			highlightSelectionMatches(),
 			javascript(),
 			EditorView.updateListener.of(v => {
