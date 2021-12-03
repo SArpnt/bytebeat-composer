@@ -1,2 +1,11 @@
-export { EditorState, EditorView, basicSetup } from "@codemirror/basic-setup";
+export { defaultKeymap, insertNewline, insertTab, indentLess } from "@codemirror/commands";
+export { EditorView, keymap, highlightSpecialChars, drawSelection } from "@codemirror/view";
+export { EditorState } from "@codemirror/state";
+export { history } from "@codemirror/history";
+//export { foldGutter } from "@codemirror/fold";
+export { classHighlightStyle } from "@codemirror/highlight";
+export { bracketMatching } from "@codemirror/matchbrackets";
+export { rectangularSelection } from "@codemirror/rectangular-selection";
+export { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
+export { commentKeymap } from "@codemirror/comment";
 export { javascript } from "@codemirror/lang-javascript";
