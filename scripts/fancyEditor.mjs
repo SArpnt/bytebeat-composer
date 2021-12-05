@@ -1,6 +1,6 @@
 import {
 	EditorState, EditorView,
-	keymap, insertTab, indentLess, defaultKeymap, insertNewline, highlightSpecialChars, history, /*foldGutter,*/ classHighlightStyle, bracketMatching, highlightSelectionMatches, searchKeymap, commentKeymap,
+	keymap, insertTab, indentLess, defaultKeymap, insertNewline, highlightSpecialChars, history, classHighlightStyle, bracketMatching, highlightSelectionMatches, searchKeymap, commentKeymap,
 	javascript,
 } from "./codemirror.bundle.min.mjs";
 import domLoaded from "./domLoaded.mjs";
@@ -20,7 +20,6 @@ const codeEditor = new EditorView({
 			EditorView.lineWrapping,
 			highlightSpecialChars(),
 			history(),
-			//foldGutter(),
 			classHighlightStyle,
 			bracketMatching(),
 			highlightSelectionMatches(),
@@ -36,7 +35,6 @@ const codeEditor = new EditorView({
 codeEditor.dom.id = "code-editor";
 
 await domLoaded;
-document.getElementById("code-editor-container").append(codeEditor.dom);
 
 if (!globalThis.hasOwnProperty("bytebeat")) // TODO: all the resolve stuff is a horrible hack
 	await new Promise(resolve => globalThis.bytebeat = resolve);

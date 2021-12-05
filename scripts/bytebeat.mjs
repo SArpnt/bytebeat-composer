@@ -156,7 +156,6 @@ Object.defineProperty(globalThis, "bytebeat", {
 		initCodeEditor: (function () {
 			let resolve = null; // TODO: all the resolve stuff is a horrible hack
 			return function initCodeEditor(codeEditor) {
-				console.info(codeEditor);
 				if (codeEditor instanceof Element) {
 					if (codeEditor.tagName == "TEXTAREA") {
 						codeEditor.addEventListener("input", this.refreshCode.bind(this));
@@ -220,8 +219,17 @@ Object.defineProperty(globalThis, "bytebeat", {
 							return new Promise(r => resolve = r);
 					}
 				} else if (codeEditor instanceof EditorView) {
-					if (this.codeEditor)
+					let selection = null;
+					if (this.codeEditor) {
 						codeEditor.dispatch({ changes: { from: 0, insert: this.codeEditor.value } });
+						if (document.activeElement === this.codeEditor)
+							selection = { anchor: this.codeEditor.selectionStart, head: this.codeEditor.selectionEnd };
+					}
+					(this.codeEditor ?? document.getElementById("code-editor")).replaceWith(codeEditor.dom);
+					if (selection) {
+						codeEditor.focus();
+						codeEditor.dispatch({ selection });
+					}
 					this.codeEditor = codeEditor;
 					if (resolve) {
 						resolve();

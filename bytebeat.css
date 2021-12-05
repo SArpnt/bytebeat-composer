@@ -43,8 +43,6 @@ body {
 /**
  * code editor
  */
-#code-editor-container {
-}
 #code-editor {
 	display: block;
 	box-sizing: border-box;
@@ -57,6 +55,7 @@ body {
 }
 #code-editor:not(.cm-editor) {
 	word-break: break-all;
+	margin: 0;
 	white-space: break-spaces;
 	font: 14px/14px Monospace;
 	outline: none;
@@ -71,16 +70,6 @@ body {
 #code-editor.cm-editor .cm-cursor {
 	border-left-color: white;
 }
-/*#code-editor.cm-editor .cm-gutters {
-	background: black;
-	color: white;
-	border-right: 2px solid
-}
-#code-editor.cm-editor .cm-foldPlaceholder {
-	background-color: gray;
-	color: white;
-	border: 0;
-}*/
 #code-editor.cm-editor .cm-content {
 	padding: 0;
 	caret-color: initial;
