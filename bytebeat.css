@@ -97,11 +97,12 @@ body {
 
 /* editor highlight style */
 #code-editor.cm-editor .cmt-keyword { color: violet; }
-#code-editor.cm-editor .cmt-string { color: lightsalmon; }
+#code-editor.cm-editor .cmt-string { color: #fa7; }
 #code-editor.cm-editor .cmt-number { color: lightgreen; }
 #code-editor.cm-editor .cmt-variableName { color: skyblue; }
 #code-editor.cm-editor .cmt-propertyName { color: #ff9; }
-#code-editor.cm-editor .cmt-comment { color: lime; }
+#code-editor.cm-editor .cmt-comment { color: #5a5; }
+#code-editor.cm-editor .cmt-string2 { color: #f78; }
 
 /**
  * playback controls
