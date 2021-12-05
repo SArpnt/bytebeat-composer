@@ -87,13 +87,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 		async initAudioContext() {
 			this.audioCtx = new AudioContext();
 
-			// fetch and Blob are done to prevent caching
-			const addModulePromise =
-				fetch("scripts/audioWorklet.mjs", { type: "module", cache: "no-cache" })
-					.then(response => response.blob())
-					.then(async blob => {
-						await this.audioCtx.audioWorklet.addModule(URL.createObjectURL(blob));
-					});
+			const addModulePromise = await this.audioCtx.audioWorklet.addModule("scripts/audioWorklet.mjs");
 
 			this.audioGain = new GainNode(this.audioCtx);
 			this.audioGain.connect(this.audioCtx.destination);
@@ -543,7 +537,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			}
 		},
 		showErrorMessage(errType, err, priority = 0) {
-			if (this.errorElem && priority > this.errorPriority) {
+			if (this.errorElem && priority >= this.errorPriority) {
 				this.errorElem.dataset.errType = errType;
 				this.errorElem.innerText = err.toString();
 
