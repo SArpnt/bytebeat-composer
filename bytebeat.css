@@ -58,6 +58,7 @@ body {
 	margin: 0;
 	white-space: break-spaces;
 	font: 14px/14px Monospace;
+	tab-size: 4;
 	outline: none;
 }
 #code-editor.cm-editor .cm-scroller {
@@ -76,6 +77,7 @@ body {
 }
 #code-editor.cm-editor .cm-line {
 	padding: 0;
+	tab-size: 4;
 }
 #code-editor.cm-editor .cm-matchingBracket {
 	background-color: transparent;
@@ -85,6 +87,14 @@ body {
 #code-editor.cm-editor .cm-selectionMatch {
 	background-color: #333;
 }
+
+/* editor highlight style */
+#code-editor.cm-editor .cmt-keyword { color: violet; }
+#code-editor.cm-editor .cmt-string { color: lightsalmon; }
+#code-editor.cm-editor .cmt-number { color: lightgreen; }
+#code-editor.cm-editor .cmt-variableName { color: skyblue; }
+#code-editor.cm-editor .cmt-propertyName { color: #ff9; }
+#code-editor.cm-editor .cmt-comment { color: lime; }
 
 /**
  * playback controls
