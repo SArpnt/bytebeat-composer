@@ -15,12 +15,12 @@ function jsOptimize(script, isExpression = true) {
 				evalOptScript = evalOptScript.trim().match(
 					hasParens ?
 						/^(?<quote>[`"'])(?<content>.*)\1$/s :
-						/^(?<quote>`)(?<content>.*)`$/s
+						/^`(?<content>.*)`$/s
 				);
 				console.debug("string match:", hasParens, evalOptScript);
 				if (evalOptScript) {
 					const
-						quote = evalOptScript.groups.quote,
+						quote = evalOptScript.groups.quote ?? "`",
 						stringContent = evalOptScript.groups.content;
 					console.debug("string match info:", { quote, stringContent });
 					if (stringContent.includes(evalOptScript.groups.quote) || stringContent.includes("\\")) // TODO: improve escape handling
