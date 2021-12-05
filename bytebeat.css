@@ -43,15 +43,18 @@ body {
 /**
  * code editor
  */
-#code-editor {
-	display: block;
-	box-sizing: border-box;
+#code-editor-container {
 	width: 100%;
 	height: 200px;
-	resize: vertical;
+	display: block;
+	box-sizing: border-box;
 	border: 2px solid white;
-	color: white;
-	background: black;
+	resize: vertical;
+	overflow: hidden;
+}
+#code-editor {
+	width: 100%;
+	height: 100%;
 }
 #code-editor:not(.cm-editor) {
 	word-break: break-all;
@@ -59,7 +62,11 @@ body {
 	white-space: break-spaces;
 	font: 14px/14px Monospace;
 	tab-size: 4;
+	color: inherit;
+	background-color: inherit;
+	border: none;
 	outline: none;
+	resize: none;
 }
 #code-editor.cm-editor .cm-scroller {
 	font: 14px/14px Monospace;
