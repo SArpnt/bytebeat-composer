@@ -103,6 +103,11 @@ body {
 #code-editor.cm-editor .cmt-propertyName { color: #ff9; }
 #code-editor.cm-editor .cmt-comment { color: #5a5; }
 #code-editor.cm-editor .cmt-string2 { color: #f78; }
+#code-editor.cm-editor .cmt-invalid {
+	text-decoration: underline;
+	text-decoration-color: red;
+	text-decoration-style: wavy;
+}
 
 /**
  * playback controls
