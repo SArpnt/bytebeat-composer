@@ -2,8 +2,7 @@
 //import jsOptimize from "./jsOptimize.mjs";
 function jsOptimize(script, isExpression = true) {
 	script = script.trim();
-	{
-		// detect eval(unescape(escape(<const string>).replace(/u(..)/g, "$1%")))
+	{ // detect eval(unescape(escape(<const string>).replace(/u(..)/g, "$1%")))
 		let evalOptScript = script;
 		let replaces = 0;
 		evalOptScript = evalOptScript.replace(/^eval\s*\(\s*unescape\s*\(\s*escape/, () => (replaces++, ""));
@@ -12,13 +11,13 @@ function jsOptimize(script, isExpression = true) {
 			if (replaces === 2) {
 				console.debug("detected eval compress, escape args:", evalOptScript);
 				let hasParens = false;
-				evalOptScript = evalOptScript.replace(/^\s*\(\s*(?<content>.*)\)\s*$/s, (_, content) => (hasParens = true, content));
-				evalOptScript = evalOptScript.match(
+				evalOptScript = evalOptScript.replace(/^\s*\((?<content>.*)\)\s*$/s, (_, content) => (hasParens = true, content));
+				evalOptScript = evalOptScript.trim().match(
 					hasParens ?
-						/^(?<quote>[`"'])(?<content>.*)\1\s*$/s :
-						/^(?<quote>`)(?<content>.*)`\s*$/s
+						/^(?<quote>[`"'])(?<content>.*)\1$/s :
+						/^(?<quote>`)(?<content>.*)`$/s
 				);
-				console.debug("string match:", evalOptScript);
+				console.debug("string match:", hasParens, evalOptScript);
 				if (evalOptScript) {
 					const
 						quote = evalOptScript.groups.quote,
