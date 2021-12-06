@@ -53,7 +53,8 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 		this.isPlaying = false;
 
 		this.func = null;
-		this.playbackMode = "Bytebeat";
+		this.calcByteValue = null;
+		this.playbackMode = null;
 		this.sampleRate = 8000;
 		this.sampleRateDivisor = 1;
 		this.playSpeed = 1;
@@ -72,7 +73,6 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 
 		// set vars
 		for (let v of [
-			"playbackMode",
 			"isPlaying",
 			"sampleRate",
 			"sampleRateDivisor",
@@ -82,6 +82,9 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 				this[v] = data[v];
 
 		// run functions
+		if (data.playbackMode !== undefined)
+			this.setPlaybackMode(data.playbackMode);
+
 		if (data.setByteSample !== undefined)
 			this.setByteSample(...data.setByteSample);
 
@@ -93,6 +96,23 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 			this.updateSampleRatio();
 	}
 
+	setPlaybackMode(mode) {
+		this.calcByteValue = // create function based on mode
+			mode === "Bytebeat" ? funcValue => {
+				this.lastByteValue = funcValue & 255;
+				this.lastValue = this.lastByteValue / 127.5 - 1;
+			} : mode === "Signed Bytebeat" ? funcValue => {
+				this.lastByteValue = (funcValue + 128) & 255;
+				this.lastValue = this.lastByteValue / 127.5 - 1;
+			} : mode === "Floatbeat" ? funcValue => {
+				this.lastValue = funcValue;
+				this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
+			} : funcValue => {
+				this.lastByteValue = NaN;
+			};
+
+		this.playbackMode = mode;
+	}
 	setByteSample(value, clear = false) {
 		this.byteSample = value;
 		this.port.postMessage({ [clear ? "clearCanvas" : "clearDrawBuffer"]: true });
@@ -161,6 +181,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 			chData.fill(0);
 			return true;
 		}
+
 		let time = this.sampleRatio * this.audioSample;
 		let byteSample = this.byteSample;
 		const drawBuffer = [];
@@ -179,20 +200,8 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 				if (funcValue != this.lastFuncValue) {
 					if (isNaN(funcValue))
 						this.lastByteValue = NaN;
-					else {
-						if (this.playbackMode == "Bytebeat") {
-							this.lastByteValue = funcValue & 255;
-							this.lastValue = this.lastByteValue / 127.5 - 1;
-						} else if (this.playbackMode == "Signed Bytebeat") {
-							this.lastByteValue = (funcValue + 128) & 255;
-							this.lastValue = this.lastByteValue / 127.5 - 1;
-						} else if (this.playbackMode == "Floatbeat") {
-							this.lastValue = funcValue;
-							this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
-						} else {
-							this.lastByteValue = NaN;
-						}
-					}
+					else
+						this.calcByteValue(funcValue);
 					drawBuffer.push({ t: roundSample, value: this.lastByteValue });
 				}
 				byteSample += flooredTime - this.lastFlooredTime;

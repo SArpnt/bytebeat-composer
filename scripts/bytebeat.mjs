@@ -29,8 +29,8 @@ Object.defineProperty(globalThis, "bytebeat", {
 		isRecording: false,
 
 		//songData: { sampleRate: 8000, mode: "Bytebeat" };
-		playbackMode: "Bytebeat",
-		sampleRate: 8000,
+		playbackMode: null,
+		sampleRate: null,
 		playSpeed: 1,
 
 		canvasElem: null,
