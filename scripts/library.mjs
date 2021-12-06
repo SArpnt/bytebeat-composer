@@ -2,7 +2,7 @@ import domLoaded from "./domLoaded.mjs";
 
 function parseEntry(entry) {
 	if (Array.isArray(entry.code))
-		entry.code = entry.code.join("\n");
+		entry.code = entry.code.join("\n"); // TODO: check if this is still needed
 
 	return entry;
 }
@@ -87,6 +87,13 @@ function createEntryElem(entry) {
 		entryElem.append(authorListElem);
 	}
 
+	if (entry.date) {
+		const dateElem = document.createElement("span");
+		dateElem.classList = "library-song-info";
+		dateElem.innerText = `(${entry.date})`;
+
+		entryElem.append(document.createTextNode(" "), dateElem);
+	}
 	if (entry.sampleRate) {
 		const sampleRateElem = document.createElement("span");
 		sampleRateElem.classList = "library-song-info";
@@ -165,7 +172,7 @@ function createEntryElem(entry) {
 }
 
 function addPlaylist(library, id) {
-	const playlist = library.playlists[id];
+	const playlist = library[id];
 	const playlistElem = document.createElement("ul");
 	for (let i = 0, len = playlist.length; i < len; ++i) {
 		let entry = parseEntry(playlist[i]);
@@ -175,13 +182,13 @@ function addPlaylist(library, id) {
 }
 
 
-function addAllPlaylists(library) {
-	for (let p in library.playlists)
+function addLibrary(library) {
+	for (let p in library)
 		addPlaylist(library, p);
 }
 
 fetch("library.json", { cache: "no-cache" })
 	.then(response => response.json())
 	.then(library =>
-		domLoaded.then(() => addAllPlaylists(library))
+		domLoaded.then(() => addLibrary(library))
 	);
