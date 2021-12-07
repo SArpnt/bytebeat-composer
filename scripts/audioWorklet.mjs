@@ -105,7 +105,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 				this.lastByteValue = (funcValue + 128) & 255;
 				this.lastValue = this.lastByteValue / 127.5 - 1;
 			} : mode === "Floatbeat" ? funcValue => {
-				this.lastValue = funcValue;
+				this.lastValue = Math.min(Math.max(funcValue, -1), 1);
 				this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
 			} : funcValue => {
 				this.lastByteValue = NaN;
