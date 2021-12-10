@@ -2,7 +2,7 @@ import {
 	EditorState, EditorView,
 	keymap, insertTab, indentLess, defaultKeymap, insertNewline, highlightSpecialChars, history, classHighlightStyle, bracketMatching, highlightSelectionMatches, searchKeymap, commentKeymap,
 	javascript,
-} from "./codemirror.bundle.min.mjs";
+} from "./bundle.min.mjs";
 import domLoaded from "./domLoaded.mjs";
 
 let inputListener = null;

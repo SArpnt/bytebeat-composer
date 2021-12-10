@@ -2,9 +2,9 @@ import { nodeResolve } from "@rollup/plugin-node-resolve";
 import { terser } from "rollup-plugin-terser";
 
 export default {
-	input: "./codemirror.mjs",
+	input: "./rollup.mjs",
 	output: {
-		file: "../scripts/codemirror.bundle.min.mjs",
+		file: "../scripts/bundle.min.mjs",
 		format: "es",
 	},
 	plugins: [nodeResolve(), terser()],
