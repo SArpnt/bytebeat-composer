@@ -98,7 +98,7 @@ function createEntryElem(entry) {
 		const sampleRateElem = document.createElement("span");
 		sampleRateElem.classList = "library-song-info";
 		if (entry.sampleRate % 1000 == 0)
-			sampleRateElem.innerText = `${entry.sampleRate.substring(0, entry.sampleRate.length - 3)}kHz`;
+			sampleRateElem.innerText = `${entry.sampleRate.toString().substring(0, entry.sampleRate.length - 3)}kHz`;
 		else
 			sampleRateElem.innerText = `${entry.sampleRate}Hz`;
 
