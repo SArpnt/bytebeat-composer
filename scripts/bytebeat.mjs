@@ -80,8 +80,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			await initAudioPromise;
 			this.setVolume();
 			await codeEditorPromise;
-			this.loadCode(pData, false, false);
-			this.refreshCode();
+			this.loadCode(pData, false);
 		},
 
 		async initAudioContext() {
@@ -330,15 +329,15 @@ Object.defineProperty(globalThis, "bytebeat", {
 				this.animationFrameId = null;
 		},
 
-		loadCode(pData, refreshCode = true, play = true) {
+		loadCode(pData, play = true) {
+			let code, sampleRate, playbackMode;
 			if (pData != null) {
-				let { code, sampleRate, mode: playbackMode } = pData;
+				({ code, sampleRate, mode: playbackMode } = pData);
 				this.codeEditorText = code;
-				this.applySampleRate(+sampleRate || 8000);
-				this.applyPlaybackMode(playbackMode || "Bytebeat");
 			}
-			if (refreshCode)
-				this.refreshCode();
+			this.applySampleRate(sampleRate ?? 8000);
+			this.applyPlaybackMode(playbackMode ?? "Bytebeat");
+			this.refreshCode();
 			if (play) {
 				this.resetTime();
 				this.togglePlay(true);
