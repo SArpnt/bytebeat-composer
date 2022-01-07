@@ -187,7 +187,7 @@ function addLibrary(library) {
 		addPlaylist(library, p);
 }
 
-fetch("library.json", { cache: "no-cache" })
+fetch("library/library.json", { cache: "no-cache" })
 	.then(response => response.json())
 	.then(library =>
 		domLoaded.then(() => addLibrary(library))
