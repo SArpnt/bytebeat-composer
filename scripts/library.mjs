@@ -15,6 +15,13 @@ function stripEntryToSong({ code, sampleRate, mode }, includeCode = false) {
 function createEntryElem(entry) {
 	const entryElem = document.createElement("li");
 
+	if (entry.starred) {
+		entryElem.classList.add([
+			"star-white",
+			"star-yellow",
+		][entry.starred - 1]);
+	}
+
 	if (entry.description) {
 		let descriptionElem;
 		if (entry.url) {
@@ -110,15 +117,6 @@ function createEntryElem(entry) {
 		modeElem.innerText = entry.mode;
 
 		entryElem.append(document.createTextNode(" "), modeElem);
-	}
-
-	if (entry.starred) {
-		let starElem = document.createElement("span");
-		starElem.className = [
-			"star-white",
-			"star-yellow",
-		][entry.starred - 1];
-		entryElem.append(" ", starElem);
 	}
 
 	if (entryElem.innerHTML)

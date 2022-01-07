@@ -252,12 +252,10 @@ summary {
 	margin: 5px 0;
 }
 
-.star-white::after, .star-yellow::after {
-	content: "\2605";
-	display: inline-block;
-	margin-top: -3px;
+.star-white, .star-yellow {
+	list-style-type: "\2605";
 }
-.star-yellow::after {
+.star-yellow::marker {
 	color: yellow;
 }
 
