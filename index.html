@@ -26,14 +26,14 @@
 					<input title="Time value" name="control-time-value" id="control-time-value" type="number" placeholder="0" style="width: 8em;" onchange="bytebeat.setByteSample(bytebeat.convertUnit(+this.value)); this.value = '';"></input>
 				</span>
 				<span class="control-group buttons buttons-playback">
-					<button title="Pause" id="control-pause" onclick="bytebeat.togglePlay(false);">⏸</button>
-					<button title="Stop" id="control-stop" onclick="bytebeat.togglePlay(false); bytebeat.resetTime();">⏹</button>
-					<button title="Restart" id="control-restart" onclick="bytebeat.resetTime();">⏮</button>
-					<button title="Fast reverse" id="control-fr" onclick="bytebeat.setPlaySpeed(-4); bytebeat.togglePlay(true);">⏪</button>
-					<button title="Reverse" id="control-reverse" onclick="bytebeat.setPlaySpeed(-1); bytebeat.togglePlay(true);">◀</button>
-					<button title="Play" id="control-play" onclick="bytebeat.setPlaySpeed(1); bytebeat.togglePlay(true);">▶</button>
-					<button title="Fast Forward" id="control-ff" onclick="bytebeat.setPlaySpeed(4); bytebeat.togglePlay(true);">⏩</button>
-					<button title="Record" onclick="bytebeat.rec()">⏺</button>
+					<button title="Pause" id="control-pause" onclick="bytebeat.togglePlay(false);">&#x23f8;</button>
+					<button title="Stop" id="control-stop" onclick="bytebeat.togglePlay(false); bytebeat.resetTime();">&#x23f9;</button>
+					<button title="Restart" id="control-restart" onclick="bytebeat.resetTime();">&#x23ee;</button>
+					<button title="Fast reverse" id="control-fr" onclick="bytebeat.setPlaySpeed(-4); bytebeat.togglePlay(true);">&#x23ea;</button>
+					<button title="Reverse" id="control-reverse" onclick="bytebeat.setPlaySpeed(-1); bytebeat.togglePlay(true);">&#x25c0;</button>
+					<button title="Play" id="control-play" onclick="bytebeat.setPlaySpeed(1); bytebeat.togglePlay(true);">&#x25b6;</button>
+					<button title="Fast Forward" id="control-ff" onclick="bytebeat.setPlaySpeed(4); bytebeat.togglePlay(true);">&#x23e9;</button>
+					<button title="Record" onclick="bytebeat.rec()">&#x23fa;</button>
 				</span>
 				<span class="control-group buttons buttons-zoom">
 					<button title="Zoom in" id="control-scaledown" onclick="bytebeat.changeScale(-1);">+</button>
