@@ -18,7 +18,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 		errorPriority: -Infinity,
 
 		canvasCtx: null,
-		drawSettings: { mode: "Points", scale: 5 },
+		drawSettings: { mode: null, scale: 5 },
 		drawBuffer: [],
 		drawImageData: null,
 		byteSample: 0,
@@ -289,7 +289,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 		updateUrl() {
 			let pData = { code: this.codeEditorText };
 			if (this.songData.sampleRate !== 8000)
-				pData.songData.sampleRate = this.songData.sampleRate;
+				pData.sampleRate = this.songData.sampleRate;
 			if (this.songData.mode !== "Bytebeat")
 				pData.mode = this.songData.mode;
 
@@ -359,13 +359,15 @@ Object.defineProperty(globalThis, "bytebeat", {
 					this.controlScaleDown.setAttribute("disabled", true);
 				else
 					this.controlScaleDown.removeAttribute("disabled");
+
 				this.toggleTimeCursor();
 				this.moveTimeCursor();
+				this.saveSettings();
 			}
 		},
-		setDrawMode(drawMode = this.controlDrawMode.value) { // TODO
-			//this.drawSettings.drawMode = drawMode;
-			//this.saveSettings();
+		setDrawMode(drawMode = this.controlDrawMode.value) {
+			this.drawSettings.mode = drawMode;
+			this.saveSettings();
 		},
 		setVolume() {
 			const fraction = parseInt(this.controlVolume.value) / parseInt(this.controlVolume.max);
@@ -605,11 +607,15 @@ Object.defineProperty(globalThis, "bytebeat", {
 		setTimeUnit() {
 			this.controlTimeUnit.textContent = this.settings.isSeconds ? 'sec' : 't';
 			this.setCounterValue(this.byteSample);
+
+			this.saveSettings();
 		},
 		changeTimeUnit() {
 			this.settings.isSeconds = !this.settings.isSeconds;
-			this.saveSettings();
+			
 			this.setCounterUnits();
+
+			this.saveSettings();
 		},*/
 		saveSettings() {
 			localStorage.settings = JSON.stringify({ drawSettings: this.drawSettings/*, timeUnit: this.timeUnit*/ });
@@ -622,6 +628,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 				} catch (err) {
 					console.error("Couldn't load settings!", localStorage.settings);
 					this.saveSettings();
+					return;
 				}
 				this.drawSettings = settings.drawSettings;
 				//this.setTimeUnit(settings.timeUnit);
