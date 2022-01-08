@@ -35,6 +35,14 @@ function jsOptimize(script, isExpression = true) {
 	return script;
 };
 
+function betterErrorString(err) {
+	const stack = err.stack;
+	const line1 = stack.slice(0, stack.indexOf("\n"));
+	const location = line1.slice(line1.indexOf(">") + 2).split(":");
+	location[1] -= 3; // remove offset added by new Function and return statement
+	return `${err.toString()} (at line ${location[1]}, character ${location[2]})`;
+}
+
 
 class BytebeatProcessor extends AudioWorkletProcessor {
 	constructor() {
@@ -136,12 +144,13 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 		let errType;
 		try {
 			errType = "compile";
-			this.func = new Function(...params, "t", `return 0, ${optimizedCode || "undefined"}\n;`).bind(globalThis, ...values);
+			this.func = new Function(...params, "t", `return 0,\n${optimizedCode || "undefined"}\n;`).bind(globalThis, ...values);
 			errType = "runtime";
 			this.func(0);
 		} catch (err) {
-			this.func = oldFunc;
-			this.port.postMessage({ updateUrl: true, errorMessage: { type: errType, err: err.toString(), priority: 1 } });
+			if (errType === "compile")
+				this.func = oldFunc;
+			this.port.postMessage({ updateUrl: true, errorMessage: { type: errType, err: betterErrorString(err), priority: 1 } });
 			return;
 		}
 		this.port.postMessage({ updateUrl: true, errorMessage: null });
@@ -191,7 +200,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 				try {
 					funcValue = this.func(roundSample);
 				} catch (err) {
-					this.port.postMessage({ errorMessage: { type: "runtime", err: err.toString() } });
+					this.port.postMessage({ errorMessage: { type: "runtime", err: betterErrorString(err) } });
 					funcValue = NaN;
 				}
 				if (funcValue !== this.lastFuncValue) {
