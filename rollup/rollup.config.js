@@ -4,7 +4,7 @@ import { terser } from "rollup-plugin-terser";
 export default {
 	input: "./rollup.mjs",
 	output: {
-		file: "../scripts/bundle.min.mjs",
+		file: "../scripts/codemirror.min.mjs",
 		format: "es",
 	},
 	plugins: [nodeResolve(), terser()],

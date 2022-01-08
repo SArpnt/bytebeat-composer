@@ -1,4 +1,4 @@
-import { EditorView } from "./bundle.min.mjs"; // TODO: remove this
+import { EditorView } from "./codemirror.min.mjs"; // TODO: remove this
 import "https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.3/pako.min.js";
 import domLoaded from "./domLoaded.mjs";
 
