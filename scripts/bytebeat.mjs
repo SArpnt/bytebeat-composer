@@ -18,9 +18,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 		errorPriority: -Infinity,
 
 		canvasCtx: null,
-		//drawSettings: { mode: "Points", scale: 5 },
-		drawMode: "Points",
-		drawScale: 5,
+		drawSettings: { mode: "Points", scale: 5 },
 		drawBuffer: [],
 		drawImageData: null,
 		byteSample: 0,
@@ -28,9 +26,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 		isPlaying: false,
 		isRecording: false,
 
-		//songData: { sampleRate: 8000, mode: "Bytebeat" };
-		playbackMode: null,
-		sampleRate: null,
+		songData: { sampleRate: null, mode: null },
 		playSpeed: 1,
 
 		canvasElem: null,
@@ -46,6 +42,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 		controlTimeValue: null,
 		controlScaleUp: null,
 		controlScaleDown: null,
+		controlDrawMode: null,
 		controlPlaybackMode: null,
 		controlSampleRate: null,
 		controlVolume: null,
@@ -126,7 +123,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			if (data.drawBuffer !== undefined) {
 				this.drawBuffer = this.drawBuffer.concat(data.drawBuffer);
 				// prevent buffer accumulation when tab inactive
-				const maxDrawBufferSize = this.getTimeFromXpos(this.canvasElem.width)
+				const maxDrawBufferSize = this.getTimeFromXpos(this.canvasElem.width);
 				if (this.byteSample - this.drawBuffer[this.drawBuffer.length >> 1].t > maxDrawBufferSize) // reasonable lazy cap
 					this.drawBuffer = this.drawBuffer.slice(this.drawBuffer.length >> 1);
 				else if (this.drawBuffer.length > maxDrawBufferSize) // emergency cap
@@ -152,7 +149,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			let resolve = null; // TODO: all the resolve stuff is a horrible hack
 			return function initCodeEditor(codeEditor) {
 				if (codeEditor instanceof Element) {
-					if (codeEditor.tagName == "TEXTAREA") {
+					if (codeEditor.tagName === "TEXTAREA") {
 						codeEditor.addEventListener("input", this.refreshCode.bind(this));
 						{
 							let keyTrap = true;
@@ -187,9 +184,9 @@ Object.defineProperty(globalThis, "bytebeat", {
 												newSelectionStart = selectionStart,
 												newSelectionEnd = selectionEnd;
 											for (let i = startLine; i <= endLine; i++) {
-												if (lines[i][0] == "\t") {
+												if (lines[i][0] === "\t") {
 													lines[i] = lines[i].slice(1);
-													if (i == startLine)
+													if (i === startLine)
 														newSelectionStart--;
 													newSelectionEnd--;
 												}
@@ -273,7 +270,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.controlScaleDown = document.getElementById("control-scaledown");
 			this.controlScaleUp = document.getElementById("control-scaleup");
 
-			//this.controlDrawMode = document.getElementById("control-draw-mode");
+			this.controlDrawMode = document.getElementById("control-draw-mode");
 			this.controlPlaybackMode = document.getElementById("control-playback-mode");
 			this.controlSampleRate = document.getElementById("control-samplerate");
 			this.controlVolume = document.getElementById("control-volume");
@@ -293,17 +290,17 @@ Object.defineProperty(globalThis, "bytebeat", {
 			}
 			this.setScale(0);
 			this.setCounterUnits();
-			this.controlDrawMode.value = this.settings.drawMode;*/
+			this.controlDrawMode.value = this.drawSettings.drawMode;*/
 		},
 		refreshCode() {
 			this.audioWorklet.port.postMessage({ code: this.codeEditorText.trim() });
 		},
 		updateUrl() {
 			let pData = { code: this.codeEditorText };
-			if (this.sampleRate != 8000)
-				pData.sampleRate = this.sampleRate;
-			if (this.playbackMode != "Bytebeat")
-				pData.mode = this.playbackMode;
+			if (this.songData.sampleRate !== 8000)
+				pData.songData.sampleRate = this.songData.sampleRate;
+			if (this.songData.mode !== "Bytebeat")
+				pData.mode = this.songData.mode;
 
 			pData = JSON.stringify(pData);
 
@@ -315,9 +312,9 @@ Object.defineProperty(globalThis, "bytebeat", {
 				newWidth = 1024;
 			else
 				newWidth = 512;
-			if (newWidth != this.canvasElem.width || force) {
+			if (newWidth !== this.canvasElem.width || force) {
 				this.canvasElem.width = newWidth;
-				this.contentElem.style.maxWidth = (newWidth + 4) + "px"; // TODO: see if it's possible to get rid of this at some point
+				this.contentElem.style.maxWidth = `${newWidth + 4}px`; // TODO: see if it's possible to get rid of this
 			}
 		},
 		animationFrame() {
@@ -333,7 +330,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 
 		loadCode(pData, play = true) {
 			let code, sampleRate, playbackMode;
-			if (pData != null) {
+			if (pData !== null) {
 				({ code, sampleRate, mode: playbackMode } = pData);
 				this.codeEditorText = code;
 			}
@@ -365,9 +362,9 @@ Object.defineProperty(globalThis, "bytebeat", {
 		},
 		changeScale(amount) {
 			if (amount) {
-				this.drawScale = Math.max(this.drawScale + amount, 0);
+				this.drawSettings.drawScale = Math.max(this.drawSettings.drawScale + amount, 0);
 				this.clearCanvas();
-				if (this.drawScale <= 0)
+				if (this.drawSettings.drawScale <= 0)
 					this.controlScaleDown.setAttribute("disabled", true);
 				else
 					this.controlScaleDown.removeAttribute("disabled");
@@ -376,7 +373,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			}
 		},
 		setDrawMode(drawMode = this.controlDrawMode.value) { // TODO
-			//this.settings.drawMode = drawMode;
+			//this.drawSettings.drawMode = drawMode;
 			//this.saveSettings();
 		},
 		setVolume() {
@@ -393,8 +390,8 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.drawImageData = null;
 		},
 		fmod(a, b) { return ((a % b) + b) % b; },
-		getXpos(t) { return t / (1 << this.drawScale); },
-		getTimeFromXpos(x) { return x * (1 << this.drawScale); },
+		getXpos(t) { return t / (1 << this.drawSettings.drawScale); },
+		getTimeFromXpos(x) { return x * (1 << this.drawSettings.drawScale); },
 		drawGraphics() {
 			const { width, height } = this.canvasElem;
 
@@ -448,7 +445,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 				// create imageData
 				let imageData = this.canvasCtx.createImageData(drawLenX, height);
 				// create / add drawimageData
-				if (this.drawScale) { // full zoom can't have multiple samples on one pixel
+				if (this.drawSettings.drawScale) { // full zoom can't have multiple samples on one pixel
 					if (this.drawImageData) {
 						if (!drawOverflow) {
 							let x = playingForward ? 0 : drawLenX - 1;
@@ -470,7 +467,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 				const iterateOverLine = (bufferElem, nextBufferElemTime, callback) => {
 					const startX = this.fmod(Math.floor(this.getXpos(playingForward ? bufferElem.t : nextBufferElemTime + 1)) - imagePos, width);
 					const endX = this.fmod(Math.ceil(this.getXpos(playingForward ? nextBufferElemTime : bufferElem.t + 1)) - imagePos, width);
-					for (let xPos = startX; xPos != endX; xPos = this.fmod(xPos + 1, width))
+					for (let xPos = startX; xPos !== endX; xPos = this.fmod(xPos + 1, width))
 						callback(xPos);
 				};
 
@@ -499,7 +496,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 				else if (endXPos < 0)
 					this.canvasCtx.putImageData(imageData, imagePos + width, 0);
 				// write to drawImageData
-				if (this.drawScale) { // full zoom can't have multiple samples on one pixel
+				if (this.drawSettings.drawScale) { // full zoom can't have multiple samples on one pixel
 					const x = playingForward ? drawLenX - 1 : 0;
 					for (let y = 0; y < height; y++) {
 						this.drawImageData.data[y << 2] = imageData.data[(drawLenX * y + x) << 2];
@@ -567,20 +564,20 @@ Object.defineProperty(globalThis, "bytebeat", {
 			}
 		},
 		setPlaybackMode(playbackMode) {
-			this.playbackMode = playbackMode;
+			this.songData.mode = playbackMode;
 			this.updateUrl();
-			this.audioWorklet.port.postMessage({ playbackMode });
+			this.audioWorklet.port.postMessage({ songData: this.songData });
 		},
 		setSampleRate(sampleRate) {
-			this.sampleRate = sampleRate;
-			this.audioWorklet.port.postMessage({ sampleRate, updateSampleRatio: true });
+			this.songData.sampleRate = sampleRate;
+			this.audioWorklet.port.postMessage({ songData: this.songData, updateSampleRatio: true });
 			this.toggleTimeCursor();
 		},
 		setSampleRateDivisor(sampleRateDivisor) {
 			this.audioWorklet.port.postMessage({ sampleRateDivisor, updateSampleRatio: true });
 		},
 		setPlaySpeed(playSpeed) {
-			if (this.playSpeed != playSpeed) {
+			if (this.playSpeed !== playSpeed) {
 				this.playSpeed = playSpeed;
 				this.audioWorklet.port.postMessage({ playSpeed, updateSampleRatio: true });
 			}
@@ -589,10 +586,10 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.timeCursorElem.classList.toggle('disabled', !this.timeCursorVisible());
 		},
 		timeCursorVisible() {
-			return this.sampleRate >> this.drawScale < 3950;
+			return this.songData.sampleRate >> this.drawSettings.drawScale < 3950;
 		},
 		togglePlay(isPlaying) {
-			if (isPlaying != this.isPlaying) {
+			if (isPlaying !== this.isPlaying) {
 				this.canvasTogglePlay.classList.toggle("canvas-toggleplay-pause", isPlaying);
 				if (isPlaying) {
 					// Play

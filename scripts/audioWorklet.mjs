@@ -54,9 +54,8 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 
 		this.func = null;
 		this.calcByteValue = null;
-		this.playbackMode = null;
-		this.sampleRate = 8000;
-		this.sampleRateDivisor = 1;
+		this.songData = { sampleRate: null, mode: null },
+			this.sampleRateDivisor = 1;
 		this.playSpeed = 1;
 
 		Object.seal(this);
@@ -74,7 +73,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 		// set vars
 		for (let v of [
 			"isPlaying",
-			"sampleRate",
+			"songData",
 			"sampleRateDivisor",
 			"playSpeed",
 		])
@@ -82,8 +81,8 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 				this[v] = data[v];
 
 		// run functions
-		if (data.playbackMode !== undefined)
-			this.setPlaybackMode(data.playbackMode);
+		if (data.songData !== undefined)
+			this.updatePlaybackMode();
 
 		if (data.setByteSample !== undefined)
 			this.setByteSample(...data.setByteSample);
@@ -96,22 +95,20 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 			this.updateSampleRatio();
 	}
 
-	setPlaybackMode(mode) {
+	updatePlaybackMode() {
 		this.calcByteValue = // create function based on mode
-			mode === "Bytebeat" ? funcValue => {
+			this.songData.mode === "Bytebeat" ? funcValue => {
 				this.lastByteValue = funcValue & 255;
 				this.lastValue = this.lastByteValue / 127.5 - 1;
-			} : mode === "Signed Bytebeat" ? funcValue => {
+			} : this.songData.mode === "Signed Bytebeat" ? funcValue => {
 				this.lastByteValue = (funcValue + 128) & 255;
 				this.lastValue = this.lastByteValue / 127.5 - 1;
-			} : mode === "Floatbeat" ? funcValue => {
+			} : this.songData.mode === "Floatbeat" ? funcValue => {
 				this.lastValue = Math.min(Math.max(funcValue, -1), 1);
 				this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
 			} : funcValue => {
 				this.lastByteValue = NaN;
 			};
-
-		this.playbackMode = mode;
 	}
 	setByteSample(value, clear = false) {
 		this.byteSample = value;
@@ -154,7 +151,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 		for (let i = 0; i < 26; i++)
 			delete globalThis[String.fromCharCode(65 + i)], globalThis[String.fromCharCode(97 + i)];
 		for (let v in globalThis)
-			if (![
+			if (![ // TODO: get rid of these global variables
 				"currentFrame",
 				"currentTime",
 				"sampleRate",
@@ -167,12 +164,12 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 			flooredTimeOffset = 0;
 		else
 			flooredTimeOffset = this.lastFlooredTime - Math.floor(this.sampleRatio * this.audioSample);
-		this.sampleRatio = this.sampleRate * this.playSpeed / sampleRate;
+		this.sampleRatio = this.songData.sampleRate * this.playSpeed / sampleRate; // TODO: this is the only use of global sampleRate, can it be removed?
 		this.lastFlooredTime = Math.floor(this.sampleRatio * this.audioSample) - flooredTimeOffset;
 		return this.sampleRatio;
 	}
 
-	process(inputs, outputs, parameters) { // TODO: stop this from blocking messages when lagging
+	process(inputs, outputs, parameters) {
 		const chData = outputs[0][0];
 		const chDataLen = chData.length; // for performance
 		if (!chDataLen)
@@ -188,7 +185,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 		for (let i = 0; i < chDataLen; i++) {
 			time += this.sampleRatio;
 			const flooredTime = Math.floor(time / this.sampleRateDivisor) * this.sampleRateDivisor;
-			if (this.lastFlooredTime != flooredTime) {
+			if (this.lastFlooredTime !== flooredTime) {
 				const roundSample = Math.floor(byteSample / this.sampleRateDivisor) * this.sampleRateDivisor;
 				let funcValue;
 				try {
@@ -197,7 +194,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 					this.port.postMessage({ errorMessage: { type: "runtime", err: err.toString() } });
 					funcValue = NaN;
 				}
-				if (funcValue != this.lastFuncValue) {
+				if (funcValue !== this.lastFuncValue) {
 					if (isNaN(funcValue))
 						this.lastByteValue = NaN;
 					else
@@ -211,8 +208,15 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 			chData[i] = this.lastValue;
 		}
 		this.audioSample += chDataLen;
+
+		const message = {};
+		if (byteSample !== this.byteSample)
+			message.byteSample = byteSample;
+		if (drawBuffer.length)
+			message.drawBuffer = drawBuffer;
+		this.port.postMessage(message);
+
 		this.byteSample = byteSample;
-		this.port.postMessage({ byteSample, drawBuffer });
 		return true;
 	}
 }
