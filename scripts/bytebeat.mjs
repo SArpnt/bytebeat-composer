@@ -28,6 +28,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 
 		songData: { sampleRate: null, mode: null },
 		playSpeed: 1,
+		volume: null,
 
 		canvasElem: null,
 		codeEditor: null,
@@ -77,7 +78,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.loadSettings();
 
 			await initAudioPromise;
-			this.setVolume();
+			this.setVolume(false);
 			await codeEditorPromise;
 			this.loadCode(pData, false);
 		},
@@ -369,9 +370,18 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.drawSettings.mode = drawMode;
 			this.saveSettings();
 		},
-		setVolume() {
-			const fraction = parseInt(this.controlVolume.value) / parseInt(this.controlVolume.max);
-			this.audioGain.gain.value = fraction * fraction;
+		setVolume(save = true, volume) {
+			if (volume !== undefined) {
+				this.volume = volume;
+				this.controlVolume.value = volume;
+			} else
+				this.volume = this.controlVolume.valueAsNumber;
+
+			if (this.audioGain !== null)
+				this.audioGain.gain.value = this.volume * this.volume;
+
+			if (save)
+				this.saveSettings();
 		},
 
 		clearCanvas() {
@@ -618,7 +628,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.saveSettings();
 		},*/
 		saveSettings() {
-			localStorage.settings = JSON.stringify({ drawSettings: this.drawSettings/*, timeUnit: this.timeUnit*/ });
+			localStorage.settings = JSON.stringify({ drawSettings: this.drawSettings, volume: this.volume/*, timeUnit: this.timeUnit*/ });
 		},
 		loadSettings() {
 			if (localStorage.settings) {
@@ -630,8 +640,12 @@ Object.defineProperty(globalThis, "bytebeat", {
 					this.saveSettings();
 					return;
 				}
-				this.drawSettings = settings.drawSettings;
-				//this.setTimeUnit(settings.timeUnit);
+				if (Object.hasOwnProperty.call(settings, "drawSettings"))
+					this.drawSettings = settings.drawSettings;
+				if (Object.hasOwnProperty.call(settings, "volume"))
+					this.setVolume(false, settings.volume);
+				//if (Object.hasOwnProperty.call(settings, "timeUnit"))
+				//	this.setTimeUnit(settings.timeUnit);
 			}
 		},
 	})
