@@ -76,7 +76,7 @@ function createEntryElem(entry) {
 		for (let i in entry.author) {
 			let author = entry.author[i];
 
-			if (typeof author == "string")
+			if (typeof author === "string")
 				authorListElem.append(author);
 			else {
 				const authorElem = document.createElement("a");
@@ -145,7 +145,7 @@ function createEntryElem(entry) {
 	if (entry.sampleRate) {
 		const sampleRateElem = document.createElement("span");
 		sampleRateElem.className = "library-song-info";
-		if (entry.sampleRate % 1000 == 0)
+		if (entry.sampleRate % 1000 === 0)
 			sampleRateElem.innerText = `${entry.sampleRate.toString().substring(0, entry.sampleRate.length - 3)}kHz`;
 		else
 			sampleRateElem.innerText = `${entry.sampleRate}Hz`;
