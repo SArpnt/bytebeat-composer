@@ -10,6 +10,10 @@
  * main page
  */
 
+:root {
+	--control-radius: 3px;
+}
+
 html {
 	background-color: black;
 	color: white;
@@ -116,7 +120,7 @@ body {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
-	column-gap: 1em;
+	column-gap: .5em;
 
 	margin: 2px 0;
 }
@@ -126,11 +130,10 @@ body {
 	flex-wrap: wrap;
 }
 .controls button {
-	width: 2em;
+	width: 1.9em;
 	height: 1.8em;
 	padding: 0;
 	display: inline-block;
-	margin-right: 3px;
 }
 .controls .text {
 	align-self: center;
@@ -138,6 +141,18 @@ body {
 #control-volume {
 	width: 10em;
 	align-self: center;
+}
+
+.controls button, .controls input, .controls select {
+	border-radius: 0;
+}
+.controls button:first-child, .controls input:first-child, .controls select:first-child, .controls .control-round-left {
+	border-top-left-radius: var(--control-radius);
+	border-bottom-left-radius: var(--control-radius);
+}
+.controls button:last-child, .controls input:last-child, .controls select:first-child, .controls .control-round-right {
+	border-top-right-radius: var(--control-radius);
+	border-bottom-right-radius: var(--control-radius);
 }
 
 /**
