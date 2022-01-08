@@ -2,7 +2,7 @@ import { EditorView } from "./bundle.min.mjs"; // TODO: remove this
 import "https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.3/pako.min.js";
 import domLoaded from "./domLoaded.mjs";
 
-let resolve = globalThis.bytebeat ?? null;
+const resolve = globalThis.bytebeat ?? null;
 
 Object.defineProperty(globalThis, "bytebeat", {
 	value: Object.seal({
@@ -126,9 +126,11 @@ Object.defineProperty(globalThis, "bytebeat", {
 			if (data.drawBuffer !== undefined) {
 				this.drawBuffer = this.drawBuffer.concat(data.drawBuffer);
 				// prevent buffer accumulation when tab inactive
-				// TODO: get function from drawGraphics
-				if (this.drawBuffer.length > this.canvasElem.width)
-					this.drawBuffer = this.drawBuffer.slice(this.canvasElem.width);
+				const maxDrawBufferSize = this.getTimeFromXpos(this.canvasElem.width)
+				if (this.byteSample - this.drawBuffer[this.drawBuffer.length >> 1].t > maxDrawBufferSize) // reasonable lazy cap
+					this.drawBuffer = this.drawBuffer.slice(this.drawBuffer.length >> 1);
+				else if (this.drawBuffer.length > maxDrawBufferSize) // emergency cap
+					this.drawBuffer = this.drawBuffer.slice(this.drawBuffer.length - maxDrawBufferSize);
 			}
 
 			if (data.updateUrl)
