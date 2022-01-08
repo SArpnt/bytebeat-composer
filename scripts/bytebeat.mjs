@@ -74,6 +74,8 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.handleWindowResize(true);
 			document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
 
+			this.loadSettings();
+
 			await initAudioPromise;
 			this.setVolume();
 			await codeEditorPromise;
@@ -281,17 +283,6 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.canvasElem = document.getElementById("canvas-main");
 			this.canvasCtx = this.canvasElem.getContext("2d", { alpha: false });
 		},
-		// TODO
-		initSettings() {
-			/*try {
-				this.settings = JSON.parse(localStorage.settings);
-			} catch(err) {
-				this.saveSettings();
-			}
-			this.setScale(0);
-			this.setCounterUnits();
-			this.controlDrawMode.value = this.drawSettings.drawMode;*/
-		},
 		refreshCode() {
 			this.audioWorklet.port.postMessage({ code: this.codeEditorText.trim() });
 		},
@@ -362,9 +353,9 @@ Object.defineProperty(globalThis, "bytebeat", {
 		},
 		changeScale(amount) {
 			if (amount) {
-				this.drawSettings.drawScale = Math.max(this.drawSettings.drawScale + amount, 0);
+				this.drawSettings.scale = Math.max(this.drawSettings.scale + amount, 0);
 				this.clearCanvas();
-				if (this.drawSettings.drawScale <= 0)
+				if (this.drawSettings.scale <= 0)
 					this.controlScaleDown.setAttribute("disabled", true);
 				else
 					this.controlScaleDown.removeAttribute("disabled");
@@ -390,8 +381,8 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.drawImageData = null;
 		},
 		fmod(a, b) { return ((a % b) + b) % b; },
-		getXpos(t) { return t / (1 << this.drawSettings.drawScale); },
-		getTimeFromXpos(x) { return x * (1 << this.drawSettings.drawScale); },
+		getXpos(t) { return t / (1 << this.drawSettings.scale); },
+		getTimeFromXpos(x) { return x * (1 << this.drawSettings.scale); },
 		drawGraphics() {
 			const { width, height } = this.canvasElem;
 
@@ -445,7 +436,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 				// create imageData
 				let imageData = this.canvasCtx.createImageData(drawLenX, height);
 				// create / add drawimageData
-				if (this.drawSettings.drawScale) { // full zoom can't have multiple samples on one pixel
+				if (this.drawSettings.scale) { // full zoom can't have multiple samples on one pixel
 					if (this.drawImageData) {
 						if (!drawOverflow) {
 							let x = playingForward ? 0 : drawLenX - 1;
@@ -496,7 +487,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 				else if (endXPos < 0)
 					this.canvasCtx.putImageData(imageData, imagePos + width, 0);
 				// write to drawImageData
-				if (this.drawSettings.drawScale) { // full zoom can't have multiple samples on one pixel
+				if (this.drawSettings.scale) { // full zoom can't have multiple samples on one pixel
 					const x = playingForward ? drawLenX - 1 : 0;
 					for (let y = 0; y < height; y++) {
 						this.drawImageData.data[y << 2] = imageData.data[(drawLenX * y + x) << 2];
@@ -586,7 +577,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.timeCursorElem.classList.toggle('disabled', !this.timeCursorVisible());
 		},
 		timeCursorVisible() {
-			return this.songData.sampleRate >> this.drawSettings.drawScale < 3950;
+			return this.songData.sampleRate >> this.drawSettings.scale < 3950;
 		},
 		togglePlay(isPlaying) {
 			if (isPlaying !== this.isPlaying) {
@@ -608,20 +599,34 @@ Object.defineProperty(globalThis, "bytebeat", {
 				this.isPlaying = isPlaying;
 				this.audioWorklet.port.postMessage({ isPlaying });
 			}
-		},/* TODO
-	setCounterUnits() {
-		this.controlTimeUnit.textContent = this.settings.isSeconds ? 'sec' : 't';
-		this.setCounterValue(this.byteSample);
-	},
+		},
 
-	changeCounterUnits() {
-		this.settings.isSeconds = !this.settings.isSeconds;
-		this.saveSettings();
-		this.setCounterUnits();
-	},
-	saveSettings() {
-		localStorage.settings = JSON.stringify(this.settings);
-	},*/
+		/* TODO
+		setTimeUnit() {
+			this.controlTimeUnit.textContent = this.settings.isSeconds ? 'sec' : 't';
+			this.setCounterValue(this.byteSample);
+		},
+		changeTimeUnit() {
+			this.settings.isSeconds = !this.settings.isSeconds;
+			this.saveSettings();
+			this.setCounterUnits();
+		},*/
+		saveSettings() {
+			localStorage.settings = JSON.stringify({ drawSettings: this.drawSettings/*, timeUnit: this.timeUnit*/ });
+		},
+		loadSettings() {
+			if (localStorage.settings) {
+				let settings;
+				try {
+					settings = JSON.parse(localStorage.settings);
+				} catch (err) {
+					console.error("Couldn't load settings!", localStorage.settings);
+					this.saveSettings();
+				}
+				this.drawSettings = settings.drawSettings;
+				//this.setTimeUnit(settings.timeUnit);
+			}
+		},
 	})
 });
 
