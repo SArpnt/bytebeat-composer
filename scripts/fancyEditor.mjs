@@ -34,9 +34,9 @@ const codeEditor = new EditorView({
 
 codeEditor.dom.id = "code-editor";
 
-await domLoaded;
+domLoaded.then(async () => {
+	if (!globalThis.hasOwnProperty("bytebeat")) // TODO: all the resolve stuff is a horrible hack
+		await new Promise(resolve => globalThis.bytebeat = resolve);
 
-if (!globalThis.hasOwnProperty("bytebeat")) // TODO: all the resolve stuff is a horrible hack
-	await new Promise(resolve => globalThis.bytebeat = resolve);
-
-inputListener = globalThis.bytebeat.initCodeEditor(codeEditor);
+	inputListener = globalThis.bytebeat.initCodeEditor(codeEditor);
+});
