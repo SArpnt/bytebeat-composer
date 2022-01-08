@@ -65,7 +65,7 @@ function createEntryElem(entry) {
 		sourceElem.href = entry.url;
 		sourceElem.target = "_blank";
 		sourceElem.innerText = "source";
-		descriptionElem.append(document.createTextNode("("), sourceElem, document.createTextNode(")"));
+		descriptionElem.append("(", sourceElem, ")");
 		entryElem.append(descriptionElem);
 	}
 	if (entry.author) {
@@ -76,26 +76,63 @@ function createEntryElem(entry) {
 		for (let i in entry.author) {
 			let author = entry.author[i];
 
-			let authorElem;
 			if (typeof author == "string")
-				authorElem = document.createTextNode(author);
+				authorListElem.append(author);
 			else {
-				authorElem = document.createElement("a");
+				const authorElem = document.createElement("a");
 				authorElem.innerText = author[0];
 				authorElem.href = author[1];
 				authorElem.target = "_blank";
+				authorListElem.append(authorElem);
 			}
-			authorListElem.append(authorElem);
 			if (i < entry.author.length - 1)
-				authorListElem.append(document.createTextNode(", "));
+				authorListElem.append(", ");
 		}
 		if (entry.description || entry.url) {
-			authorListElem.prepend(document.createTextNode(" (by "));
-			authorListElem.append(document.createTextNode(")"));
+			authorListElem.prepend(" (by ");
+			authorListElem.append(")");
 		} else
-			authorListElem.prepend(document.createTextNode("by "));
+			authorListElem.prepend("by ");
 
 		entryElem.append(authorListElem);
+	}
+	if (entry.remixed) {
+		if (entryElem.innerHTML)
+			entryElem.append(" ");
+
+		const remixElem = document.createElement("span");
+		remixElem.append("(");
+
+		if (entry.remixed.url) {
+			const urlElem = document.createElement("a");
+			urlElem.href = entry.url;
+			urlElem.target = "_blank";
+			if (entry.description) {
+				urlElem.innerHTML = entry.remixed.description;
+				remixElem.append("remix of ", urlElem);
+			} else if (entry.remixed.author) {
+				urlElem.innerText = "song";
+				remixElem.append("remix of ", urlElem);
+			} else {
+				urlElem.innerText = "remix";
+				remixElem.append(urlElem);
+			}
+		} else {
+			if (entry.description) {
+				const descriptionElem = document.createElement("span");
+				descriptionElem.innerHTML = entry.remixed.description;
+				remixElem.append("remix of ", description);
+			} else if (entry.author)
+				remixElem.append("remix of song");
+			else
+				remixElem.append("remix");
+		}
+
+		if (entry.remixed.author)
+			remixElem.append(` by ${entry.remixed.author}`);
+
+		remixElem.append(")");
+		entryElem.append(remixElem);
 	}
 
 	if (entry.date) {
@@ -103,7 +140,7 @@ function createEntryElem(entry) {
 		dateElem.className = "library-song-info";
 		dateElem.innerText = `(${entry.date})`;
 
-		entryElem.append(document.createTextNode(" "), dateElem);
+		entryElem.append(" ", dateElem);
 	}
 	if (entry.sampleRate) {
 		const sampleRateElem = document.createElement("span");
@@ -113,14 +150,14 @@ function createEntryElem(entry) {
 		else
 			sampleRateElem.innerText = `${entry.sampleRate}Hz`;
 
-		entryElem.append(document.createTextNode(" "), sampleRateElem);
+		entryElem.append(" ", sampleRateElem);
 	}
 	if (entry.mode) {
 		const modeElem = document.createElement("span");
 		modeElem.className = "library-song-info";
 		modeElem.innerText = entry.mode;
 
-		entryElem.append(document.createTextNode(" "), modeElem);
+		entryElem.append(" ", modeElem);
 	}
 
 	if (entryElem.innerHTML)
