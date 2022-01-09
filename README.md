@@ -17,7 +17,7 @@ Longline Theory and Information Theory are played correctly since a signed byteb
 
 Syntax highlighting has been added, with a good amount of useful settings but nothing intrusive
 
-## Warning
+## warning
 
 The only security measure in place is only running the function in an AudioWorklet, on the global scope.
 As far as i can tell, this should be mostly secure, but this doesn't prevent:
@@ -27,3 +27,39 @@ As far as i can tell, this should be mostly secure, but this doesn't prevent:
 - anything else an AudioWorklet could do that i don't know about (i know barely anything about security)
 on a secure browser the website _should_ be safe, but i can't guarantee anything.
 If i've messed up anywhere then results could be much worse
+
+## embedding
+
+https://sarpnt.github.io/bytebeat-composer/embeddable.html is an embeddable version of the page, designed to be used in other projects.
+it doesn't have the library, doesn't save settings, and can recieve commands via `postMessage`
+
+command format:
+```js
+{
+	show: { // show / hide webpage elements
+		codeEditor: boolean,
+		controls: boolean, // also prevents clicking the canvas to start/stop song
+		error: boolean,
+		scope: boolean,
+	},
+	forceScopeWidth: number?, // force the scope width, non-numbers set back to auto
+	getSong: boolean, // song will be sent to parent page in the format
+	setSong: {
+		code: string,
+		sampleRate: number, // default 8000
+		mode: string, // default "Bytebeat"
+	},
+	// commands to control playback aren't implemented yet
+}
+```
+
+any messages recieved will be in this format:
+```js
+{
+	song: { // sent on getSong
+		code: string,
+		sampleRate: number,
+		mode: string,
+	},
+}
+```
