@@ -1,6 +1,6 @@
 import isPlainObject from "./isPlainObject.mjs";
 
-window.addEventListener("message", e => {
+window.parent.addEventListener("message", e => {
 	console.info("recieved message", e.data);
 	if (isPlainObject(e.data)) {
 		const data = e.data;
