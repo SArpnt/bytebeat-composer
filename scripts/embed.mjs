@@ -14,12 +14,14 @@ window.addEventListener("message", e => {
 		if (isPlainObject(e.data.show)) {
 			for (const [name, ...ids] of [
 				["codeEditor", "code-editor-container"],
-				["controls", "controls", "canvas-toggleplay", show => document.getElementById("canvas-container").dataset.disabled = !show],
+				["timeControls", show => document.getElementById("controls").dataset.timeControlsDisabled = !show, "canvas-toggleplay", show => document.getElementById("canvas-container").dataset.disabled = !show],
+				["playbackControls", show => document.getElementById("controls").dataset.playbackControlsDisabled = !show],
+				["viewControls", show => document.getElementById("controls").dataset.viewControlsDisabled = !show,],
+				["songControls", show => document.getElementById("controls").dataset.songControlsDisabled = !show,],
 				["error", "error"],
 				["scope", "canvas-container"],
 			])
 				if (e.data.show[name] !== undefined) {
-					console.info(name, ids);
 					if (e.data.show[name])
 						for (const id of ids) {
 							if (typeof id === "function")

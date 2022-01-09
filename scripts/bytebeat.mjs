@@ -280,7 +280,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.controlScaleUp = document.getElementById("control-scaleup");
 
 			this.controlDrawMode = document.getElementById("control-draw-mode");
-			this.controlPlaybackMode = document.getElementById("control-playback-mode");
+			this.controlPlaybackMode = document.getElementById("control-song-mode");
 			this.controlSampleRate = document.getElementById("control-samplerate");
 			this.controlVolume = document.getElementById("control-volume");
 

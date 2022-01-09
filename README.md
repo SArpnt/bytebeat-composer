@@ -38,7 +38,10 @@ command format:
 {
 	show: { // show / hide webpage elements
 		codeEditor: boolean,
-		controls: boolean, // also prevents clicking the canvas to start/stop song
+		timeControls: boolean, // also prevents clicking the canvas to start/stop song
+		playbackControls: boolean,
+		viewControls: boolean,
+		songControls: boolean,
 		error: boolean,
 		scope: boolean,
 	},

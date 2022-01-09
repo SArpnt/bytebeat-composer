@@ -162,6 +162,13 @@ html[data-embed] #code-editor-container {
 	border-bottom-right-radius: var(--control-radius);
 }
 
+#controls[data-time-controls-disabled=true] .control-time,
+#controls[data-playback-controls-disabled=true] .control-playback,
+#controls[data-view-controls-disabled=true] .control-view,
+#controls[data-song-controls-disabled=true] .control-song {
+	display: none !important;
+}
+
 /**
  * scope
  */
