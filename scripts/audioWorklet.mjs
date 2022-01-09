@@ -36,14 +36,18 @@ function jsOptimize(script, isExpression = true) {
 };
 
 function betterErrorString(err, errTime) {
-	if (errTime !== undefined) {
-		const stack = err.stack;
-		const line1 = stack.slice(0, stack.indexOf("\n"));
-		const location = line1.slice(line1.indexOf(">") + 2).split(":");
-		location[1] -= 3; // remove offset added by new Function and return statement
-		return `${err.toString()} (at line ${location[1]}, character ${location[2]}, t=${errTime})`;
-	} else
-		return err.toString();
+	if (err instanceof Error) {
+		if (errTime !== undefined) {
+			const stack = err.stack;
+			const line1 = stack.slice(0, stack.indexOf("\n"));
+			const location = line1.slice(line1.indexOf(">") + 2).split(":");
+			location[1] -= 3; // remove offset added by new Function and return statement
+			return `${err.message} (at line ${err.lineNumber - 3}, character ${err.columnNumber}, t=${errTime})`;
+		} else
+			return err.message;
+	} else {
+		return `Thrown: ${JSON.stringify(err)} (at t=${errTime})`;
+	}
 }
 
 // delete most enumerable variables, and all single letter variables (not foolproof but works well enough)

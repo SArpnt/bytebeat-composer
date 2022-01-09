@@ -391,9 +391,10 @@ Object.defineProperty(globalThis, "bytebeat", {
 		updateDrawMode() {
 			this.controlDrawMode.value = this.drawSettings.mode;
 		},
-		setDrawMode(drawMode = this.controlDrawMode.value) {
+		setDrawMode(drawMode = this.controlDrawMode.value, save = true) {
 			this.drawSettings.mode = drawMode;
-			this.saveSettings();
+			if (save)
+				this.saveSettings();
 		},
 		setVolume(save = true, volume) {
 			if (volume !== undefined) {
@@ -699,7 +700,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 				this.loadDefaultSettings();
 		},
 		loadDefaultSettings() {
-			this.setDrawMode();
+			this.setDrawMode(undefined, false);
 			this.drawSettings.scale = 5;
 			this.setVolume(false);
 		}
