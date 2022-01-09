@@ -74,6 +74,7 @@ function freezeExistingGlobals() {
 			Object.freeze(globalThis[k].prototype);
 			Object.defineProperty(globalThis, k, {
 				writable: false,
+				configurable: false,
 			});
 		}
 	};
