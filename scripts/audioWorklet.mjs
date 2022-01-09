@@ -71,7 +71,7 @@ function freezeExistingGlobals() {
 			].includes(k))
 				Object.freeze(globalThis[k]);
 			if (typeof globalThis[k] === "function" && Object.hasOwnProperty.call(globalThis[k], "prototype"))
-			Object.freeze(globalThis[k].prototype);
+				Object.freeze(globalThis[k].prototype);
 			Object.defineProperty(globalThis, k, {
 				writable: false,
 				configurable: false,
