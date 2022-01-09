@@ -43,14 +43,14 @@ function createEntryElem(entry) {
 					elem.addEventListener("click", () =>
 						fetch(`library/${elem.dataset.codeFile}`, { cache: "no-cache" })
 							.then(response => response.text())
-							.then(code => bytebeat.loadCode(Object.assign(
+							.then(code => bytebeat.setSong(Object.assign(
 								songData,
 								{ code },
 							)))
 					);
 				} else {
 					elem.addEventListener("click", () =>
-						bytebeat.loadCode(Object.assign(
+						bytebeat.setSong(Object.assign(
 							{ code: elem.innerText },
 							songData,
 						))
@@ -178,7 +178,7 @@ function createEntryElem(entry) {
 				codeFileElem.addEventListener("click", () =>
 					fetch(`library/${fileType.name}/${entry.file}`, { cache: "no-cache" })
 						.then(response => response.text())
-						.then(code => bytebeat.loadCode(Object.assign(songData, { code })))
+						.then(code => bytebeat.setSong(Object.assign(songData, { code })))
 				);
 				entryElem.append(codeFileElem, " ");
 			}
@@ -195,7 +195,7 @@ function createEntryElem(entry) {
 			codeElem.title = "Click to play this code";
 			codeElem.innerText = entry[name];
 			const fullSongData = stripEntryToSong(entry, name);
-			codeElem.addEventListener("click", () => bytebeat.loadCode(fullSongData));
+			codeElem.addEventListener("click", () => bytebeat.setSong(fullSongData));
 			codeTypeElem.append(codeElem);
 
 			const codeLengthElem = document.createElement("span");

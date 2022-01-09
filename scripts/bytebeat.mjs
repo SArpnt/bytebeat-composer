@@ -68,7 +68,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			await domLoaded;
 
 			this.contentElem = document.getElementById("content");
-			let pData = this.getUrlData();
+			let songData = this.getUrlData();
 			this.initControls();
 			const codeEditorPromise = this.initCodeEditor(document.getElementById("code-editor"));
 
@@ -80,7 +80,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			await initAudioPromise;
 			this.setVolume(false);
 			await codeEditorPromise;
-			this.loadCode(pData, false);
+			this.setSong(songData, false);
 		},
 
 		async initAudioContext() {
@@ -134,7 +134,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			}
 
 			if (data.updateUrl)
-				this.updateUrl();
+				this.setUrlData();
 
 			if (data.errorMessage !== undefined) {
 				if (data.errorMessage === null)
@@ -246,25 +246,31 @@ Object.defineProperty(globalThis, "bytebeat", {
 			else
 				this.codeEditor.dispatch({ changes: { from: 0, to: this.codeEditor.state.doc.length, insert: value } });
 		},
+
 		getUrlData() {
-			if (window.location.hash) {
+			if (window.location.hash && globalThis.useUrlData !== false) {
 				if (window.location.hash.startsWith("#v3b64")) {
-					let pData;
+					let songData;
 					try {
-						pData = JSON.parse(
+						songData = JSON.parse(
 							pako.inflateRaw(
 								atob(decodeURIComponent(window.location.hash.substr(6))), { to: "string" }
 							)
 						);
 					} catch (err) {
 						console.error("Couldn't load data from url:", err);
-						pData = null;
+						songData = null;
 					}
-					return pData;
+					return songData;
 				} else
 					console.error("Unrecognized url data");
 			}
 			return null;
+		},
+		setUrlData() {
+			if (globalThis.useUrlData !== false) {
+				window.location.hash = "#v3b64" + btoa(pako.deflateRaw(JSON.stringify(this.getSong()), { to: "string" }));
+			}
 		},
 		initControls() {
 			this.controlTimeUnit = document.getElementById("control-time-unit");
@@ -287,17 +293,6 @@ Object.defineProperty(globalThis, "bytebeat", {
 		refreshCode() {
 			if (this.audioWorklet)
 				this.audioWorklet.port.postMessage({ code: this.codeEditorText.trim() });
-		},
-		updateUrl() {
-			let pData = { code: this.codeEditorText };
-			if (this.songData.sampleRate !== 8000)
-				pData.sampleRate = this.songData.sampleRate;
-			if (this.songData.mode !== "Bytebeat")
-				pData.mode = this.songData.mode;
-
-			pData = JSON.stringify(pData);
-
-			window.location.hash = "#v3b64" + btoa(pako.deflateRaw(pData, { to: "string" }));
 		},
 		handleWindowResize(force) {
 			this.autoSizeCanvas(force);
@@ -329,10 +324,19 @@ Object.defineProperty(globalThis, "bytebeat", {
 				this.animationFrameId = null;
 		},
 
-		loadCode(pData, play = true) {
+		getSong(includeDefault = false) {
+			let songData = { code: this.codeEditorText };
+			if (includeDefault || this.songData.sampleRate !== 8000)
+				songData.sampleRate = this.songData.sampleRate;
+			if (includeDefault || this.songData.mode !== "Bytebeat")
+				songData.mode = this.songData.mode;
+
+			return songData;
+		},
+		setSong(songData, play = true) {
 			let code, sampleRate, playbackMode;
-			if (pData !== null) {
-				({ code, sampleRate, mode: playbackMode } = pData);
+			if (songData !== null) {
+				({ code, sampleRate, mode: playbackMode } = songData);
 				this.codeEditorText = code;
 			}
 			this.applySampleRate(sampleRate ?? 8000);
@@ -596,7 +600,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 		setPlaybackMode(playbackMode) {
 			if (this.audioWorklet) {
 				this.songData.mode = playbackMode;
-				this.updateUrl();
+				this.setUrlData();
 				this.audioWorklet.port.postMessage({ songData: this.songData });
 			}
 		},

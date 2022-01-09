@@ -8,6 +8,7 @@ function isPlainObject(value) {
 }
 
 globalThis.useLocalStorage = false;
+globalThis.useUrlData = false;
 
 window.addEventListener("message", e => {
 	console.info("recieved message", e.data);
@@ -47,6 +48,13 @@ window.addEventListener("message", e => {
 				delete bytebeat.canvasElem.dataset.forcedWidth;
 				bytebeat.autoSizeCanvas();
 			}
+		}
+
+		if (e.data.getSong) {
+			window.parent.postMessage({ song: bytebeat.getSong(true) });
+		}
+		if (isPlainObject(e.data.setSong)) {
+			bytebeat.setSong(e.data.setSong);
 		}
 	}
 }, false);
