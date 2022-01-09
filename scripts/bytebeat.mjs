@@ -334,13 +334,13 @@ Object.defineProperty(globalThis, "bytebeat", {
 			return songData;
 		},
 		setSong(songData, play = true) {
-			let code, sampleRate, playbackMode;
+			let code, sampleRate, mode;
 			if (songData !== null) {
-				({ code, sampleRate, mode: playbackMode } = songData);
+				({ code, sampleRate, mode } = songData);
 				this.codeEditorText = code;
 			}
 			this.applySampleRate(sampleRate ?? 8000);
-			this.applyPlaybackMode(playbackMode ?? "Bytebeat");
+			this.applyPlaybackMode(mode ?? "Bytebeat");
 			this.refreshCode();
 			if (play) {
 				this.resetTime();

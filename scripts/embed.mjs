@@ -54,7 +54,7 @@ window.addEventListener("message", e => {
 			window.parent.postMessage({ song: bytebeat.getSong(true) });
 		}
 		if (isPlainObject(e.data.setSong)) {
-			bytebeat.setSong(e.data.setSong);
+			bytebeat.setSong(e.data.setSong, false);
 		}
 	}
 }, false);
