@@ -285,7 +285,8 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.canvasCtx = this.canvasElem.getContext("2d", { alpha: false });
 		},
 		refreshCode() {
-			this.audioWorklet.port.postMessage({ code: this.codeEditorText.trim() });
+			if (this.audioWorklet)
+				this.audioWorklet.port.postMessage({ code: this.codeEditorText.trim() });
 		},
 		updateUrl() {
 			let pData = { code: this.codeEditorText };
@@ -388,9 +389,11 @@ Object.defineProperty(globalThis, "bytebeat", {
 		},
 
 		clearCanvas(clearDrawBuffer = true) {
-			this.canvasCtx.fillRect(0, 0, this.canvasElem.width, this.canvasElem.height);
-			if (clearDrawBuffer)
-				this.clearDrawBuffer();
+			if (this.canvasCtx) {
+				this.canvasCtx.fillRect(0, 0, this.canvasElem.width, this.canvasElem.height);
+				if (clearDrawBuffer)
+					this.clearDrawBuffer();
+			}
 		},
 		clearDrawBuffer() {
 			this.drawBuffer = [];
@@ -532,8 +535,8 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.drawBuffer = [{ t: endTime, value: this.drawBuffer[bufferLen - 1].value, carry: true }];
 		},
 		moveTimeCursor(time = this.byteSample) {
-			const width = this.canvasElem.width;
-			if (this.timeCursorVisible()) {
+			if (this.timeCursorElem && this.timeCursorVisible()) {
+				const width = this.canvasElem.width;
 				if (this.playSpeed > 0) {
 					this.timeCursorElem.style.removeProperty("right");
 					this.timeCursorElem.style.left = `${this.fmod(Math.ceil(this.getXpos(time)), width) / width * 100}%`;
@@ -574,7 +577,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 				this.canvasTogglePlay.classList.add("canvas-toggleplay-show");
 		},
 		setByteSample(value, send = true, clear = false) {
-			if (isFinite(value)) {
+			if (this.audioWorklet && isFinite(value)) {
 				this.controlTimeValue.placeholder = this.convertUnit(value, /* TODO */);
 				this.byteSample = value;
 				if (send)
@@ -583,32 +586,38 @@ Object.defineProperty(globalThis, "bytebeat", {
 			}
 		},
 		setPlaybackMode(playbackMode) {
-			this.songData.mode = playbackMode;
-			this.updateUrl();
-			this.audioWorklet.port.postMessage({ songData: this.songData });
+			if (this.audioWorklet) {
+				this.songData.mode = playbackMode;
+				this.updateUrl();
+				this.audioWorklet.port.postMessage({ songData: this.songData });
+			}
 		},
 		setSampleRate(sampleRate) {
-			this.songData.sampleRate = sampleRate;
-			this.audioWorklet.port.postMessage({ songData: this.songData, updateSampleRatio: true });
-			this.toggleTimeCursor();
+			if (this.audioWorklet) {
+				this.songData.sampleRate = sampleRate;
+				this.audioWorklet.port.postMessage({ songData: this.songData, updateSampleRatio: true });
+				this.toggleTimeCursor();
+			}
 		},
 		setSampleRateDivisor(sampleRateDivisor) {
-			this.audioWorklet.port.postMessage({ sampleRateDivisor, updateSampleRatio: true });
+			if (this.audioWorklet)
+				this.audioWorklet.port.postMessage({ sampleRateDivisor, updateSampleRatio: true });
 		},
 		setPlaySpeed(playSpeed) {
-			if (this.playSpeed !== playSpeed) {
+			if (this.audioWorklet && this.playSpeed !== playSpeed) {
 				this.playSpeed = playSpeed;
 				this.audioWorklet.port.postMessage({ playSpeed, updateSampleRatio: true });
 			}
 		},
 		toggleTimeCursor() {
-			this.timeCursorElem.classList.toggle("disabled", !this.timeCursorVisible());
+			if (this.timeCursorElem)
+				this.timeCursorElem.classList.toggle("disabled", !this.timeCursorVisible());
 		},
 		timeCursorVisible() {
 			return this.songData.sampleRate >> this.drawSettings.scale < 3950;
 		},
 		togglePlay(isPlaying) {
-			if (isPlaying !== this.isPlaying) {
+			if (this.audioWorklet && isPlaying !== this.isPlaying) {
 				this.canvasTogglePlay.classList.toggle("canvas-toggleplay-pause", isPlaying);
 				if (isPlaying) {
 					// Play
