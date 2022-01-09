@@ -37,16 +37,15 @@ function jsOptimize(script, isExpression = true) {
 
 function betterErrorString(err, errTime) {
 	if (err instanceof Error) {
-		if (errTime !== undefined) {
-			const stack = err.stack;
-			const line1 = stack.slice(0, stack.indexOf("\n"));
-			const location = line1.slice(line1.indexOf(">") + 2).split(":");
-			location[1] -= 3; // remove offset added by new Function and return statement
+		if (errTime !== undefined)
 			return `${err.message} (at line ${err.lineNumber - 3}, character ${err.columnNumber}, t=${errTime})`;
-		} else
-			return err.message;
+		else
+			return `${err.message} (at line ${err.lineNumber - 3}, character ${err.columnNumber})`;
 	} else {
-		return `Thrown: ${JSON.stringify(err)} (at t=${errTime})`;
+		if (errTime !== undefined)
+			return `Thrown: ${JSON.stringify(err)} (at t=${errTime})`;
+		else
+			return `Thrown: ${JSON.stringify(err)}`;
 	}
 }
 
