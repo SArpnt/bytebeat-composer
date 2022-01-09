@@ -48,6 +48,7 @@ command format:
 		code: string,
 		sampleRate: number, // default 8000
 		mode: string, // default "Bytebeat"
+		// changes will be made later so that any settings that don't exist here won't be changed
 	},
 	// commands to control playback aren't implemented yet
 }
