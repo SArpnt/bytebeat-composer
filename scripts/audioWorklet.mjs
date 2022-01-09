@@ -35,13 +35,13 @@ function jsOptimize(script, isExpression = true) {
 	return script;
 };
 
-function betterErrorString(err, errType) {
-	if (errType === "runtime") {
+function betterErrorString(err, errTime) {
+	if (errTime !== undefined) {
 		const stack = err.stack;
 		const line1 = stack.slice(0, stack.indexOf("\n"));
 		const location = line1.slice(line1.indexOf(">") + 2).split(":");
 		location[1] -= 3; // remove offset added by new Function and return statement
-		return `${err.toString()} (at line ${location[1]}, character ${location[2]})`;
+		return `${err.toString()} (at line ${location[1]}, character ${location[2]}, t=${errTime})`;
 	} else
 		return err.toString();
 }
@@ -189,7 +189,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 			// TODO: handle arbitrary thrown objects, and modified Errors
 			if (errType === "compile")
 				this.func = oldFunc;
-			this.port.postMessage({ updateUrl: true, errorMessage: { type: errType, err: betterErrorString(err, errType), priority: 1 } });
+			this.port.postMessage({ updateUrl: true, errorMessage: { type: errType, err: betterErrorString(err, 0), priority: 1 } });
 			return;
 		}
 		this.port.postMessage({ updateUrl: true, errorMessage: null });
@@ -227,7 +227,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 				try {
 					funcValue = this.func(roundSample);
 				} catch (err) {
-					this.port.postMessage({ errorMessage: { type: "runtime", err: betterErrorString(err, "runtime") } });
+					this.port.postMessage({ errorMessage: { type: "runtime", err: betterErrorString(err, roundSample) } });
 					funcValue = NaN;
 				}
 				if (funcValue !== this.lastFuncValue) {
