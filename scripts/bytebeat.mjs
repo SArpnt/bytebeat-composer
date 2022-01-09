@@ -299,15 +299,23 @@ Object.defineProperty(globalThis, "bytebeat", {
 
 			window.location.hash = "#v3b64" + btoa(pako.deflateRaw(pData, { to: "string" }));
 		},
-		handleWindowResize(force = false) {
-			let newWidth;
-			if (window.innerWidth >= 768 + 4) // 768 is halfway between 512 and 1024
-				newWidth = 1024;
-			else
-				newWidth = 512;
-			if (newWidth !== this.canvasElem.width || force) {
-				this.canvasElem.width = newWidth;
-				this.contentElem.style.maxWidth = `${newWidth + 4}px`; // TODO: see if it's possible to get rid of this
+		handleWindowResize(force) {
+			this.autoSizeCanvas(force);
+		},
+		autoSizeCanvas(force) {
+			if (!this.canvasElem.dataset.forcedWidth) {
+				if (window.innerWidth >= 768 + 4) // 768 is halfway between 512 and 1024
+					this.setCanvasWidth(1024, force);
+				else
+					this.setCanvasWidth(512, force);
+			}
+		},
+		setCanvasWidth(width, force = false) {
+			if (this.canvasElem) {
+				if (width !== this.canvasElem.width || force) {
+					this.canvasElem.width = width;
+					this.contentElem.style.maxWidth = `${width + 4}px`; // TODO: see if it's possible to get rid of this
+				}
 			}
 		},
 		animationFrame() {
@@ -652,10 +660,11 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.saveSettings();
 		},*/
 		saveSettings() {
-			localStorage.settings = JSON.stringify({ drawSettings: this.drawSettings, volume: this.volume/*, timeUnit: this.timeUnit*/ });
+			if (globalThis.useLocalStorage !== false)
+				localStorage.settings = JSON.stringify({ drawSettings: this.drawSettings, volume: this.volume/*, timeUnit: this.timeUnit*/ });
 		},
 		loadSettings() {
-			if (localStorage.settings) {
+			if (localStorage.settings && globalThis.useLocalStorage !== false) {
 				let settings;
 				try {
 					settings = JSON.parse(localStorage.settings);
