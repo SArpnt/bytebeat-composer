@@ -46,6 +46,38 @@ function betterErrorString(err, errType) {
 		return err.toString();
 }
 
+// delete most enumerable variables, and all single letter variables (not foolproof but works well enough)
+function deleteGlobals() {
+	for (let i = 0; i < 26; i++)
+		delete globalThis[String.fromCharCode(65 + i)], globalThis[String.fromCharCode(97 + i)];
+	for (let v in globalThis)
+		if (![ // TODO: get rid of these global variables
+			"currentFrame",
+			"currentTime",
+			"sampleRate",
+		].includes(v))
+			delete globalThis[v];
+}
+// make all existing global properties non-writable, and freeze objects
+function freezeExistingGlobals() {
+	for (const k of Object.getOwnPropertyNames(globalThis)) {
+		if (![
+			"currentFrame",
+			"currentTime",
+			"sampleRate",
+		].includes(k)) {
+			if ((typeof globalThis[k] === "object" || typeof globalThis[k] === "function") && ![
+				"globalThis",
+			].includes(k))
+				Object.freeze(globalThis[k]);
+			if (typeof globalThis[k] === "function" && Object.hasOwnProperty.call(globalThis[k], "prototype"))
+			Object.freeze(globalThis[k].prototype);
+			Object.defineProperty(globalThis, k, {
+				writable: false,
+			});
+		}
+	};
+}
 
 class BytebeatProcessor extends AudioWorkletProcessor {
 	constructor() {
@@ -71,6 +103,8 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 
 		Object.seal(this);
 
+		deleteGlobals();
+		freezeExistingGlobals();
 
 		this.updateSampleRatio();
 
@@ -139,7 +173,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 		params.push("window");
 		values.push(globalThis);
 
-		this.deleteGlobals();
+		deleteGlobals();
 
 		const optimizedCode = jsOptimize(code, true);
 		// test bytebeat
@@ -151,24 +185,13 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 			errType = "runtime";
 			this.func(0);
 		} catch (err) {
+			// TODO: handle arbitrary thrown objects, and modified Errors
 			if (errType === "compile")
 				this.func = oldFunc;
 			this.port.postMessage({ updateUrl: true, errorMessage: { type: errType, err: betterErrorString(err, errType), priority: 1 } });
 			return;
 		}
 		this.port.postMessage({ updateUrl: true, errorMessage: null });
-	}
-	deleteGlobals() {
-		// delete most enumerable variables, and all single letter variables (not foolproof but works well enough)
-		for (let i = 0; i < 26; i++)
-			delete globalThis[String.fromCharCode(65 + i)], globalThis[String.fromCharCode(97 + i)];
-		for (let v in globalThis)
-			if (![ // TODO: get rid of these global variables
-				"currentFrame",
-				"currentTime",
-				"sampleRate",
-			].includes(v))
-				delete globalThis[v];
 	}
 	updateSampleRatio() {
 		let flooredTimeOffset;
