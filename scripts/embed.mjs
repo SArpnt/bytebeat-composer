@@ -7,9 +7,6 @@ function isPlainObject(value) {
 	return false;
 }
 
-globalThis.useLocalStorage = false;
-globalThis.useUrlData = false;
-
 window.addEventListener("message", e => {
 	console.info("recieved message", e.data);
 	if (isPlainObject(e.data)) {
