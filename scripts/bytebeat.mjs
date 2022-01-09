@@ -1,5 +1,6 @@
 import { EditorView } from "./codemirror.min.mjs"; // TODO: remove this
 import "https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.3/pako.min.js";
+import isPlainObject from "./isPlainObject.mjs";
 import domLoaded from "./domLoaded.mjs";
 
 const resolve = globalThis.bytebeat ?? null;
@@ -115,36 +116,45 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.audioWorklet.connect(this.audioGain);
 		},
 		handleMessage(e) {
-			const data = e.data;
-			if (data.clearCanvas)
-				this.clearCanvas();
-			else if (data.clearDrawBuffer)
-				this.clearDrawBuffer();
+			if (isPlainObject(e.data)) {
+				const data = e.data;
+				if (data.clearCanvas)
+					this.clearCanvas();
+				else if (data.clearDrawBuffer)
+					this.clearDrawBuffer();
 
-			if (data.byteSample !== undefined)
-				this.setByteSample(data.byteSample, false);
-			if (data.drawBuffer !== undefined) {
-				this.drawBuffer = this.drawBuffer.concat(data.drawBuffer);
-				// prevent buffer accumulation when tab inactive
-				const maxDrawBufferSize = this.getTimeFromXpos(this.canvasElem.width) - 1;
-				if (this.byteSample - this.drawBuffer[this.drawBuffer.length >> 1].t > maxDrawBufferSize) // reasonable lazy cap
-					this.drawBuffer = this.drawBuffer.slice(this.drawBuffer.length >> 1);
-				else if (this.drawBuffer.length > maxDrawBufferSize) // emergency cap
-					this.drawBuffer = this.drawBuffer.slice(-maxDrawBufferSize);
-			}
+				if (typeof data.byteSample === "number")
+					this.setByteSample(data.byteSample, false);
+				if (Array.isArray(data.drawBuffer)) {
+					this.drawBuffer = this.drawBuffer.concat(data.drawBuffer);
+					// prevent buffer accumulation when tab inactive
+					const maxDrawBufferSize = this.getTimeFromXpos(this.canvasElem.width) - 1;
+					if (this.byteSample - this.drawBuffer[this.drawBuffer.length >> 1].t > maxDrawBufferSize) // reasonable lazy cap
+						this.drawBuffer = this.drawBuffer.slice(this.drawBuffer.length >> 1);
+					else if (this.drawBuffer.length > maxDrawBufferSize) // emergency cap
+						this.drawBuffer = this.drawBuffer.slice(-maxDrawBufferSize);
+				}
 
-			if (data.updateUrl)
-				this.setUrlData();
+				if (data.updateUrl)
+					this.setUrlData();
 
-			if (data.errorMessage !== undefined) {
-				if (data.errorMessage === null)
-					this.hideErrorMessage();
-				else if (this.isPlaying) {
-					this.nextErrType = data.errorMessage.type;
-					this.nextErr = data.errorMessage.err;
-					this.nextErrPriority = data.errorMessage.priority;
-				} else
-					this.showErrorMessage(data.errorMessage.type, data.errorMessage.err, data.errorMessage.priority);
+				if (data.errorMessage !== undefined) {
+					if (isPlainObject(data.errorMessage)) {
+						if (
+							typeof data.errorMessage.type === "string" &&
+							typeof data.errorMessage.err === "string" &&
+							typeof (data.errorMessage.priority ?? 0) === "number"
+						) {
+							if (this.isPlaying) {
+								this.nextErrType = data.errorMessage.type;
+								this.nextErr = data.errorMessage.err;
+								this.nextErrPriority = data.errorMessage.priority;
+							} else
+								this.showErrorMessage(data.errorMessage.type, data.errorMessage.err, data.errorMessage.priority);
+						}
+					} else
+						this.hideErrorMessage();
+				}
 			}
 		},
 		saveData: null,

@@ -1,17 +1,11 @@
-function isPlainObject(value) {
-	if (value && typeof value === "object") {
-		const proto = Object.getPrototypeOf(value);
-		if (proto && !Object.getPrototypeOf(proto))
-			return true;
-	}
-	return false;
-}
+import isPlainObject from "./isPlainObject.mjs";
 
 window.addEventListener("message", e => {
 	console.info("recieved message", e.data);
 	if (isPlainObject(e.data)) {
+		const data = e.data;
 		// show/hide elements
-		if (isPlainObject(e.data.show)) {
+		if (isPlainObject(data.show)) {
 			for (const [name, ...ids] of [
 				["codeEditor", "code-editor-container"],
 				["timeControls", show => document.getElementById("controls").dataset.timeControlsDisabled = !show, "canvas-toggleplay", show => document.getElementById("canvas-container").dataset.disabled = !show],
@@ -21,8 +15,8 @@ window.addEventListener("message", e => {
 				["error", "error"],
 				["scope", "canvas-container"],
 			])
-				if (e.data.show[name] !== undefined) {
-					if (e.data.show[name])
+				if (data.show[name] !== undefined) {
+					if (data.show[name])
 						for (const id of ids) {
 							if (typeof id === "function")
 								id(true);
@@ -39,21 +33,21 @@ window.addEventListener("message", e => {
 				}
 		}
 
-		if (e.data.forceScopeWidth !== undefined && bytebeat.canvasElem) {
-			if (typeof e.data.forceScopeWidth === "number") {
+		if (data.forceScopeWidth !== undefined && bytebeat.canvasElem) {
+			if (typeof data.forceScopeWidth === "number") {
 				bytebeat.canvasElem.dataset.forcedWidth = true;
-				bytebeat.setCanvasWidth(e.data.forceScopeWidth);
+				bytebeat.setCanvasWidth(data.forceScopeWidth);
 			} else {
 				delete bytebeat.canvasElem.dataset.forcedWidth;
 				bytebeat.autoSizeCanvas();
 			}
 		}
 
-		if (e.data.getSong) {
+		if (data.getSong) {
 			window.parent.postMessage({ song: bytebeat.getSong(true) });
 		}
-		if (isPlainObject(e.data.setSong)) {
-			bytebeat.setSong(e.data.setSong, false);
+		if (isPlainObject(data.setSong)) {
+			bytebeat.setSong(data.setSong, false);
 		}
 	}
 }, false);
