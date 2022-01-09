@@ -19,7 +19,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 		errorPriority: -Infinity,
 
 		canvasCtx: null,
-		drawSettings: { mode: null, scale: 5 },
+		drawSettings: { mode: null, scale: null },
 		drawBuffer: [],
 		drawImageData: null,
 		byteSample: 0,
@@ -79,7 +79,6 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.loadSettings();
 
 			await initAudioPromise;
-			this.setVolume(false);
 			await codeEditorPromise;
 			this.setSong(songData, false);
 		},
@@ -684,7 +683,8 @@ Object.defineProperty(globalThis, "bytebeat", {
 					settings = JSON.parse(localStorage.settings);
 				} catch (err) {
 					console.error("Couldn't load settings!", localStorage.settings);
-					this.saveSettings();
+					localStorage.clear();
+					this.loadDefaultSettings();
 					return;
 				}
 				if (Object.hasOwnProperty.call(settings, "drawSettings")) {
@@ -695,8 +695,14 @@ Object.defineProperty(globalThis, "bytebeat", {
 					this.setVolume(false, settings.volume);
 				//if (Object.hasOwnProperty.call(settings, "timeUnit"))
 				//	this.setTimeUnit(settings.timeUnit);
-			}
+			} else
+				this.loadDefaultSettings();
 		},
+		loadDefaultSettings() {
+			this.setDrawMode();
+			this.drawSettings.scale = 5;
+			this.setVolume(false);
+		}
 	})
 });
 
