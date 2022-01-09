@@ -126,11 +126,11 @@ Object.defineProperty(globalThis, "bytebeat", {
 			if (data.drawBuffer !== undefined) {
 				this.drawBuffer = this.drawBuffer.concat(data.drawBuffer);
 				// prevent buffer accumulation when tab inactive
-				const maxDrawBufferSize = this.getTimeFromXpos(this.canvasElem.width);
+				const maxDrawBufferSize = this.getTimeFromXpos(this.canvasElem.width) - 1;
 				if (this.byteSample - this.drawBuffer[this.drawBuffer.length >> 1].t > maxDrawBufferSize) // reasonable lazy cap
 					this.drawBuffer = this.drawBuffer.slice(this.drawBuffer.length >> 1);
 				else if (this.drawBuffer.length > maxDrawBufferSize) // emergency cap
-					this.drawBuffer = this.drawBuffer.slice(this.drawBuffer.length - maxDrawBufferSize);
+					this.drawBuffer = this.drawBuffer.slice(-maxDrawBufferSize);
 			}
 
 			if (data.updateUrl)
@@ -355,7 +355,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 		changeScale(amount) {
 			if (amount) {
 				this.drawSettings.scale = Math.max(this.drawSettings.scale + amount, 0);
-				this.clearCanvas();
+				this.clearCanvas(false);
 				if (this.drawSettings.scale <= 0)
 					this.controlScaleDown.setAttribute("disabled", true);
 				else
@@ -365,6 +365,9 @@ Object.defineProperty(globalThis, "bytebeat", {
 				this.moveTimeCursor();
 				this.saveSettings();
 			}
+		},
+		updateDrawMode() {
+			this.controlDrawMode.value = this.drawSettings.mode;
 		},
 		setDrawMode(drawMode = this.controlDrawMode.value) {
 			this.drawSettings.mode = drawMode;
@@ -384,9 +387,10 @@ Object.defineProperty(globalThis, "bytebeat", {
 				this.saveSettings();
 		},
 
-		clearCanvas() {
+		clearCanvas(clearDrawBuffer = true) {
 			this.canvasCtx.fillRect(0, 0, this.canvasElem.width, this.canvasElem.height);
-			this.clearDrawBuffer();
+			if (clearDrawBuffer)
+				this.clearDrawBuffer();
 		},
 		clearDrawBuffer() {
 			this.drawBuffer = [];
@@ -398,37 +402,36 @@ Object.defineProperty(globalThis, "bytebeat", {
 		drawGraphics() {
 			const { width, height } = this.canvasElem;
 
-			// quick buffer reduction for massive lag spikes (switching tab causes animationFrame to wait)
-			// TODO: move to handleMessage
-			this.drawBuffer = this.drawBuffer.slice(-this.getTimeFromXpos(width));
-
 			const bufferLen = this.drawBuffer.length;
 			if (!bufferLen)
 				return;
 
+			const isWaveform = this.drawSettings.mode === "Waveform";
 			const playingForward = this.playSpeed > 0;
 
 			let
-				startTime = this.drawBuffer[0].t,
+				startTime = this.drawBuffer[0].t + (this.drawBuffer.carry ? 1 : 0),
 				endTime = this.byteSample,
 				lenTime = endTime - startTime,
 				startXPos = this.fmod(this.getXpos(startTime), width),
 				endXPos = startXPos + this.getXpos(lenTime);
 
 			{
-				let drawStartX = Math.floor(startXPos);
-				let drawEndX = Math.floor(endXPos);
-				let drawLenX = Math.abs(drawEndX - drawStartX) + 1;
-				let drawOverflow = false;
+				let
+					drawStartX = Math.floor(startXPos),
+					drawEndX = Math.floor(endXPos),
+					drawLenX = Math.abs(drawEndX - drawStartX) + 1,
+					drawOverflow = false;
 				// clip draw area if too large
 				if (drawLenX > width) { // TODO: put this into a better section so the variables don't all have to be set again
 					startTime = this.getTimeFromXpos(this.getXpos(endTime) - width);
 					let sliceIndex = 0;
 					for (let i in this.drawBuffer) { // TODO: replace this with binary search
-						if ((this.drawBuffer[i + 1]?.t ?? endTime) <= startTime)
+						if ((this.drawBuffer[i + 1]?.t ?? endTime) <= startTime - 1)
 							sliceIndex += 1;
 						else {
-							this.drawBuffer[i].t = startTime;
+							this.drawBuffer[i].t = startTime - 1;
+							this.drawBuffer[i].carry = true;
 							this.drawBuffer = this.drawBuffer.slice(sliceIndex);
 							break;
 						}
@@ -451,6 +454,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 				if (this.drawSettings.scale) { // full zoom can't have multiple samples on one pixel
 					if (this.drawImageData) {
 						if (!drawOverflow) {
+							// fill in starting area of image data with previously drawn samples
 							let x = playingForward ? 0 : drawLenX - 1;
 							for (let y = 0; y < height; y++) {
 								imageData.data[(drawLenX * y + x) << 2] = this.drawImageData.data[y << 2];
@@ -467,29 +471,41 @@ Object.defineProperty(globalThis, "bytebeat", {
 					for (let y = 0; y < height; y++)
 						imageData.data[((drawLenX * y + x) << 2) + 3] = 255;
 				// draw
-				const iterateOverLine = (bufferElem, nextBufferElemTime, callback) => {
+				const iterateOverHorizontalLine = (bufferElem, nextBufferElemTime, callback, initCallback) => {
 					const startX = this.fmod(Math.floor(this.getXpos(playingForward ? bufferElem.t : nextBufferElemTime + 1)) - imagePos, width);
 					const endX = this.fmod(Math.ceil(this.getXpos(playingForward ? nextBufferElemTime : bufferElem.t + 1)) - imagePos, width);
+					if (initCallback)
+						initCallback(startX);
 					for (let xPos = startX; xPos !== endX; xPos = this.fmod(xPos + 1, width))
-						callback(xPos);
+						callback(xPos, false);
 				};
 
-				for (let i = 0; i < bufferLen; i++) {
+				for (let i = this.drawBuffer[0].t < startTime ? 1 : 0; i < bufferLen; i++) {
+					let lastBufferElem = this.drawBuffer[i - 1] ?? null;
 					let bufferElem = this.drawBuffer[i];
 					let nextBufferElemTime = this.drawBuffer[i + 1]?.t ?? endTime;
 					if (isNaN(bufferElem.value)) {
-						iterateOverLine(bufferElem, nextBufferElemTime, xPos => {
+						iterateOverHorizontalLine(bufferElem, nextBufferElemTime, xPos => {
 							for (let h = 0; h < 256; h++) {
 								const pos = (drawLenX * h + xPos) << 2;
 								imageData.data[pos] = 128;
-								imageData.data[pos + 3] = 255;
 							}
 						});
 					} else if (bufferElem.value >= 0 && bufferElem.value < 256) {
-						iterateOverLine(bufferElem, nextBufferElemTime, xPos => {
+						iterateOverHorizontalLine(bufferElem, nextBufferElemTime, xPos => {
 							const pos = (drawLenX * (255 - bufferElem.value) + xPos) << 2;
 							imageData.data[pos] = imageData.data[pos + 1] = imageData.data[pos + 2] = 255;
-						});
+						},
+							// Waveform draw mode
+							isWaveform && lastBufferElem && !isNaN(lastBufferElem.value) &&
+							(xPos => {
+								const dir = lastBufferElem.value < bufferElem.value ? -1 : 1;
+								for (let h = 255 - lastBufferElem.value; h !== 255 - bufferElem.value; h += dir) {
+									const pos = (drawLenX * h + xPos) << 2;
+									if (imageData.data[pos] === 0) // don't overwrite filled cells
+										imageData.data[pos] = imageData.data[pos + 1] = imageData.data[pos + 2] = 150;
+								}
+							}));
 					}
 				}
 				// put imageData
@@ -513,7 +529,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.moveTimeCursor(endTime);
 
 			// clear buffer except last sample
-			this.drawBuffer = [{ t: endTime, value: this.drawBuffer[bufferLen - 1].value }];
+			this.drawBuffer = [{ t: endTime, value: this.drawBuffer[bufferLen - 1].value, carry: true }];
 		},
 		moveTimeCursor(time = this.byteSample) {
 			const width = this.canvasElem.width;
@@ -586,7 +602,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			}
 		},
 		toggleTimeCursor() {
-			this.timeCursorElem.classList.toggle('disabled', !this.timeCursorVisible());
+			this.timeCursorElem.classList.toggle("disabled", !this.timeCursorVisible());
 		},
 		timeCursorVisible() {
 			return this.songData.sampleRate >> this.drawSettings.scale < 3950;
@@ -605,7 +621,6 @@ Object.defineProperty(globalThis, "bytebeat", {
 						this.audioRecorder.stop();
 						this.isRecording = false;
 					}
-					window.cancelAnimationFrame(this.animationFrameId);
 					this.animationFrameId = null;
 				}
 				this.isPlaying = isPlaying;
@@ -615,7 +630,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 
 		/* TODO
 		setTimeUnit() {
-			this.controlTimeUnit.textContent = this.settings.isSeconds ? 'sec' : 't';
+			this.controlTimeUnit.textContent = this.settings.isSeconds ? "sec" : "t";
 			this.setCounterValue(this.byteSample);
 
 			this.saveSettings();
@@ -640,8 +655,10 @@ Object.defineProperty(globalThis, "bytebeat", {
 					this.saveSettings();
 					return;
 				}
-				if (Object.hasOwnProperty.call(settings, "drawSettings"))
+				if (Object.hasOwnProperty.call(settings, "drawSettings")) {
 					this.drawSettings = settings.drawSettings;
+					this.updateDrawMode();
+				}
 				if (Object.hasOwnProperty.call(settings, "volume"))
 					this.setVolume(false, settings.volume);
 				//if (Object.hasOwnProperty.call(settings, "timeUnit"))
