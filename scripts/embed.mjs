@@ -1,7 +1,7 @@
 import isPlainObject from "./isPlainObject.mjs";
 
-window.parent.addEventListener("message", e => {
-	console.info("recieved message", e.data);
+window.addEventListener("message", e => {
+	console.info("recieved message", e);
 	if (isPlainObject(e.data)) {
 		const data = e.data;
 		// show/hide elements
@@ -44,7 +44,7 @@ window.parent.addEventListener("message", e => {
 		}
 
 		if (data.getSong) {
-			window.parent.postMessage({ song: bytebeat.getSong(true) });
+			window.parent.postMessage({ song: bytebeat.getSong(true) }, "*");
 		}
 		if (isPlainObject(data.setSong)) {
 			bytebeat.setSong(data.setSong, false);
