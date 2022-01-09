@@ -27,7 +27,7 @@
 			<div id="controls">
 				<span class="control-group control-time" id="control-time">
 					<button title="Time unit" id="control-time-unit" onclick="bytebeat.changeTimeUnit();"><label for="control-time-value">t</label></button>
-					<input title="Time value" name="control-time-value" id="control-time-value" type="number" placeholder="0" style="width: 8em;" onchange="bytebeat.setByteSample(bytebeat.convertUnit(+this.value)); this.value = '';"></input>
+					<input title="Time value" id="control-time-value" type="number" placeholder="0" style="width: 8em;" onchange="bytebeat.setByteSample(bytebeat.convertUnit(+this.value)); this.value = '';"></input>
 				</span>
 				<span class="control-group control-time buttons buttons-playback">
 					<button title="Pause" id="control-pause" onclick="bytebeat.togglePlay(false);">&#x23f8;</button>
@@ -57,8 +57,8 @@
 					</select>
 				</span>
 				<span class="control-group">
-					<input title="Sample rate" name="control-samplerate" id="control-samplerate" class="control-song control-round-right" type="number" min="0" step="any" list="samplerates" value="8000" style="width: 6em;" onchange="bytebeat.setSampleRate(+this.value); bytebeat.refreshCode();"><span class="text"><label for="control-samplerate" class="control-song">Hz</label>
-					<label for="control-samplerate-divisor" class="control-playback">/</label></span><input title="Sample rate divisor" name="control-samplerate-divisor" id="control-samplerate-divisor" class="control-playback control-round-left control-round-right" type="number" min="1" step="1" value="1" style="width: 3em;" onchange="bytebeat.setSampleRateDivisor(+this.value); bytebeat.refreshCode();">
+					<input title="Sample rate" id="control-samplerate" class="control-song control-round-right" type="number" min="0" step="any" list="samplerates" value="8000" style="width: 6em;" onchange="bytebeat.setSampleRate(+this.value); bytebeat.refreshCode();"><span class="text"><label for="control-samplerate" class="control-song">Hz</label>
+					<label for="control-samplerate-divisor" class="control-playback">/</label></span><input title="Sample rate divisor" id="control-samplerate-divisor" class="control-playback control-round-left control-round-right" type="number" min="1" step="1" value="1" style="width: 3em;" onchange="bytebeat.setSampleRateDivisor(+this.value); bytebeat.refreshCode();">
 					<datalist id="samplerates">
 						<option value="8000">
 						<option value="11025">
@@ -70,7 +70,7 @@
 					</datalist>
 				</span>
 				<span class="control-group control-playback">
-					<label for="control-volume" class="text">Volume:</label><input title="Volume" name="control-volume" id="control-volume" type="range" min="0" max="1" step="any" value="0.35" oninput="bytebeat.setVolume(this);">
+					<label for="control-volume" class="text">Volume:</label><input title="Volume" id="control-volume" type="range" min="0" max="1" step="any" value="0.35" oninput="bytebeat.setVolume(this);">
 				</span>
 			</div>
 			<div id="error"></div>
