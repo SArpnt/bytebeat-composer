@@ -3,6 +3,11 @@ import "https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.3/pako.min.js";
 import isPlainObject from "./isPlainObject.mjs";
 import domLoaded from "./domLoaded.mjs";
 
+const timeUnits = [
+	"t",
+	"s", // sec
+];
+
 const resolve = globalThis.bytebeat ?? null;
 
 Object.defineProperty(globalThis, "bytebeat", {
@@ -31,6 +36,10 @@ Object.defineProperty(globalThis, "bytebeat", {
 		playSpeed: 1,
 		volume: null,
 
+		timeUnit: null,
+
+		animationFrameId: null,
+
 		canvasElem: null,
 		codeEditor: null,
 		errorElem: null,
@@ -38,9 +47,8 @@ Object.defineProperty(globalThis, "bytebeat", {
 
 		contentElem: null,
 
-		animationFrameId: null,
-
 		controlTimeUnit: null,
+		controlTimeUnitLabel: null,
 		controlTimeValue: null,
 		controlScaleUp: null,
 		controlScaleDown: null,
@@ -81,6 +89,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			await initAudioPromise;
 			await codeEditorPromise;
 			this.setSong(songData, false);
+			this.updateCounterValue();
 		},
 
 		async initAudioContext() {
@@ -283,6 +292,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 		},
 		initControls() {
 			this.controlTimeUnit = document.getElementById("control-time-unit");
+			this.controlTimeUnitLabel = document.getElementById("control-time-unit-label");
 			this.controlTimeValue = document.getElementById("control-time-value");
 
 			this.controlScaleDown = document.getElementById("control-scaledown");
@@ -590,9 +600,6 @@ Object.defineProperty(globalThis, "bytebeat", {
 			}
 		},
 
-		convertUnit(value, from, to) {
-			return value; // TODO
-		},
 		resetTime() {
 			this.setByteSample(0, true, true);
 			if (!this.isPlaying)
@@ -600,8 +607,8 @@ Object.defineProperty(globalThis, "bytebeat", {
 		},
 		setByteSample(value, send = true, clear = false) {
 			if (this.audioWorklet && isFinite(value)) {
-				this.controlTimeValue.placeholder = this.convertUnit(value, /* TODO */);
 				this.byteSample = value;
+				this.updateCounterValue();
 				if (send)
 					this.audioWorklet.port.postMessage({ setByteSample: [value, clear] });
 				this.moveTimeCursor();
@@ -659,23 +666,43 @@ Object.defineProperty(globalThis, "bytebeat", {
 			}
 		},
 
-		/* TODO
-		setTimeUnit() {
-			this.controlTimeUnit.textContent = this.settings.isSeconds ? "sec" : "t";
-			this.setCounterValue(this.byteSample);
+		updateCounterValue() {
+			this.controlTimeValue.placeholder = this.convertUnit(this.byteSample);
+		},
+		convertUnit(value, from = "t", to = this.timeUnit) {
+			if (from === to)
+				return value;
+			else if (from === "t") {
+				if (to === "s")
+					return value / this.songData.sampleRate;
+			} else if (from === "s") {
+				if (to === "t")
+					return value * this.songData.sampleRate;
+			}
+		},
+		setTimeUnit(value, updateCounter = true) {
+			if (value !== undefined) {
+				if (typeof value === "number")
+					value = timeUnits[value];
+				this.timeUnit = value;
+				this.controlTimeUnitLabel.innerText = this.timeUnit;
+			} else
+				this.timeUnit = this.controlTimeUnitLabel.innerText;
 
+			if (updateCounter)
+				this.updateCounterValue();
 			this.saveSettings();
 		},
 		changeTimeUnit() {
-			this.settings.isSeconds = !this.settings.isSeconds;
-			
-			this.setCounterUnits();
+			this.timeUnit = timeUnits[(timeUnits.indexOf(this.timeUnit) + 1) % timeUnits.length];
+			this.controlTimeUnitLabel.innerText = this.timeUnit;
 
+			this.updateCounterValue();
 			this.saveSettings();
-		},*/
+		},
 		saveSettings() {
 			if (globalThis.useLocalStorage !== false)
-				localStorage.settings = JSON.stringify({ drawSettings: this.drawSettings, volume: this.volume/*, timeUnit: this.timeUnit*/ });
+				localStorage.settings = JSON.stringify({ drawSettings: this.drawSettings, volume: this.volume, timeUnit: this.timeUnit });
 		},
 		loadSettings() {
 			if (localStorage.settings && globalThis.useLocalStorage !== false) {
@@ -688,14 +715,24 @@ Object.defineProperty(globalThis, "bytebeat", {
 					this.loadDefaultSettings();
 					return;
 				}
+
 				if (Object.hasOwnProperty.call(settings, "drawSettings")) {
 					this.drawSettings = settings.drawSettings;
 					this.updateDrawMode();
+				} else {
+					this.setDrawMode(undefined, false);
+					this.drawSettings.scale = 5;
 				}
+
 				if (Object.hasOwnProperty.call(settings, "volume"))
 					this.setVolume(false, settings.volume);
-				//if (Object.hasOwnProperty.call(settings, "timeUnit"))
-				//	this.setTimeUnit(settings.timeUnit);
+				else
+					this.setVolume(false);
+
+				if (Object.hasOwnProperty.call(settings, "timeUnit"))
+					this.setTimeUnit(settings.timeUnit, false);
+				else
+					this.setTimeUnit(undefined, false);
 			} else
 				this.loadDefaultSettings();
 		},
@@ -703,6 +740,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.setDrawMode(undefined, false);
 			this.drawSettings.scale = 5;
 			this.setVolume(false);
+			this.setTimeUnit(undefined, false);
 		}
 	})
 });

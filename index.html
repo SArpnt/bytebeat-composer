@@ -22,8 +22,8 @@
 			</div>
 			<div id="controls">
 				<span class="control-group" id="control-time">
-					<button title="Time unit" id="control-time-unit" onclick="bytebeat.changeTimeUnit();"><label for="control-time-value">t</label></button>
-					<input title="Time value" id="control-time-value" type="number" placeholder="0" style="width: 8em;" onchange="bytebeat.setByteSample(bytebeat.convertUnit(+this.value)); this.value = '';"></input>
+					<button title="Time unit" id="control-time-unit" onclick="bytebeat.changeTimeUnit();"><label id="control-time-unit-label" for="control-time-value">t</label></button>
+					<input title="Time value" id="control-time-value" type="number" placeholder="0" style="width: 8em;" onchange="bytebeat.setByteSample(bytebeat.convertUnit(+this.value, bytebeat.timeUnit, 't')); this.value = '';"></input>
 				</span>
 				<span class="control-group buttons buttons-playback">
 					<button title="Pause" id="control-pause" onclick="bytebeat.togglePlay(false);">&#x23f8;</button>
