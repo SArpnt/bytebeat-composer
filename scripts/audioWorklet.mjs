@@ -101,8 +101,8 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 
 		this.func = null;
 		this.calcByteValue = null;
-		this.songData = { sampleRate: null, mode: null },
-			this.sampleRateDivisor = 1;
+		this.songData = { sampleRate: null, mode: null };
+		this.sampleRateDivisor = 1;
 		this.playSpeed = 1;
 
 		this.postedErrorPriority = null;
@@ -152,13 +152,13 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 	updatePlaybackMode() {
 		this.calcByteValue = // create function based on mode
 			this.songData.mode === "Bytebeat" ? funcValue => {
-				this.lastByteValue = Number(funcValue) & 255;
+				this.lastByteValue = funcValue & 255;
 				this.lastValue = this.lastByteValue / 127.5 - 1;
 			} : this.songData.mode === "Signed Bytebeat" ? funcValue => {
-				this.lastByteValue = (Number(funcValue) + 128) & 255;
+				this.lastByteValue = (funcValue + 128) & 255;
 				this.lastValue = this.lastByteValue / 127.5 - 1;
 			} : this.songData.mode === "Floatbeat" ? funcValue => {
-				this.lastValue = Math.min(Math.max(Number(funcValue), -1), 1);
+				this.lastValue = Math.min(Math.max(funcValue, -1), 1);
 				this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
 			} : funcValue => {
 				this.lastByteValue = NaN;
@@ -245,6 +245,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 					}
 					funcValue = NaN;
 				}
+				funcValue = Number(funcValue);
 				if (funcValue !== this.lastFuncValue && !(isNaN(funcValue) && isNaN(this.lastFuncValue))) {
 					if (isNaN(funcValue))
 						this.lastByteValue = NaN;
