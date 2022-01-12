@@ -589,7 +589,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			}
 		},
 		showErrorMessage(errType, err, priority = 0) {
-			if (this.errorElem && priority >= this.errorPriority) {
+			if (this.errorElem && (this.errorPriority < 2 || priority > 0)) {
 				this.errorElem.dataset.errType = errType;
 				this.errorElem.innerText = err.toString();
 
@@ -597,6 +597,9 @@ Object.defineProperty(globalThis, "bytebeat", {
 				this.nextErrType = null;
 				this.nextErrPriority = undefined;
 				this.errorPriority = priority;
+
+				if (this.audioWorklet)
+					this.audioWorklet.port.postMessage({ displayedError: true });
 			}
 		},
 

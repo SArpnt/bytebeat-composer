@@ -105,6 +105,8 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 			this.sampleRateDivisor = 1;
 		this.playSpeed = 1;
 
+		this.postedErrorPriority = null;
+
 		Object.seal(this);
 
 		deleteGlobals();
@@ -142,6 +144,9 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 
 		if (data.updateSampleRatio)
 			this.updateSampleRatio();
+
+		if (data.displayedError && this.postedErrorPriority < 2)
+			this.postedErrorPriority = null;
 	}
 
 	updatePlaybackMode() {
@@ -190,11 +195,15 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 			this.func(0);
 		} catch (err) {
 			// TODO: handle arbitrary thrown objects, and modified Errors
-			if (errType === "compile")
+			if (errType === "compile") {
 				this.func = oldFunc;
-			this.port.postMessage({ updateUrl: true, errorMessage: { type: errType, err: betterErrorString(err, 0), priority: 1 } });
+				this.postedErrorPriority = 2;
+			} else
+				this.postedErrorPriority = 1;
+			this.port.postMessage({ updateUrl: true, errorMessage: { type: errType, err: betterErrorString(err, 0), priority: this.postedErrorPriority } });
 			return;
 		}
+		this.postedErrorPriority = null;
 		this.port.postMessage({ updateUrl: true, errorMessage: null });
 	}
 	updateSampleRatio() {
@@ -230,10 +239,13 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 				try {
 					funcValue = this.func(roundSample);
 				} catch (err) {
-					this.port.postMessage({ errorMessage: { type: "runtime", err: betterErrorString(err, roundSample) } });
+					if (this.postedErrorPriority === null) {
+						this.postedErrorPriority = 0;
+						this.port.postMessage({ errorMessage: { type: "runtime", err: betterErrorString(err, roundSample) } });
+					}
 					funcValue = NaN;
 				}
-				if (funcValue !== this.lastFuncValue) {
+				if (funcValue !== this.lastFuncValue && !(isNaN(funcValue) && isNaN(this.lastFuncValue))) {
 					if (isNaN(funcValue))
 						this.lastByteValue = NaN;
 					else
