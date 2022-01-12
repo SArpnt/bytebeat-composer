@@ -35,15 +35,15 @@ function jsOptimize(script, isExpression = true) {
 	return script;
 };
 
-function betterErrorString(err, errTime) {
+function betterErrorString(err, time) {
 	if (err instanceof Error) {
-		if (errTime !== undefined)
-			return `${err.message} (at line ${err.lineNumber - 3}, character ${err.columnNumber}, t=${errTime})`;
+		if (time !== undefined)
+			return `${err.message} (at line ${err.lineNumber - 3}, character ${err.columnNumber}, t=${time})`;
 		else
 			return `${err.message} (at line ${err.lineNumber - 3}, character ${err.columnNumber})`;
 	} else {
-		if (errTime !== undefined)
-			return `Thrown: ${JSON.stringify(err)} (at t=${errTime})`;
+		if (time !== undefined)
+			return `Thrown: ${JSON.stringify(err)} (at t=${time})`;
 		else
 			return `Thrown: ${JSON.stringify(err)}`;
 	}
