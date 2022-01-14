@@ -1,7 +1,9 @@
 import { EditorView } from "./codemirror.min.mjs"; // TODO: remove this
-import "https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.3/pako.min.js";
+import { inflateRaw, deflateRaw } from "https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.esm.mjs";
 import isPlainObject from "./isPlainObject.mjs";
 import domLoaded from "./domLoaded.mjs";
+globalThis.inflateRaw = inflateRaw;
+globalThis.deflateRaw = deflateRaw;
 
 const timeUnits = [
 	"t",
@@ -267,18 +269,33 @@ Object.defineProperty(globalThis, "bytebeat", {
 
 		getUrlData() {
 			if (window.location.hash && globalThis.useUrlData !== false) {
-				if (window.location.hash.startsWith("#v3b64")) {
-					let songData;
+				const hash = window.location.hash;
+				const version =
+					hash.startsWith("#v4") ? 4 :
+						hash.startsWith("#v3b64") ? 3 :
+							null;
+				if (version === 4 || version === 3) {
+					let dataString;
 					try {
-						songData = JSON.parse(
-							pako.inflateRaw(
-								atob(decodeURIComponent(window.location.hash.substr(6))), { to: "string" }
-							)
-						);
+						dataString = atob(hash.substring(version === 4 ? 3 : 6));
 					} catch (err) {
 						console.error("Couldn't load data from url:", err);
-						songData = null;
+						return null;
 					}
+
+					const dataBuffer = new Uint8Array(dataString.length);
+					for (const i in dataString)
+						dataBuffer[i] = dataString.charCodeAt(i);
+
+					let songData;
+					try {
+						const songDataString = inflateRaw(dataBuffer, { to: "string" });
+						songData = JSON.parse(songDataString);
+					} catch (err) {
+						console.error("Couldn't load data from url:", err);
+						return null;
+					}
+
 					return songData;
 				} else
 					console.error("Unrecognized url data");
@@ -287,7 +304,9 @@ Object.defineProperty(globalThis, "bytebeat", {
 		},
 		setUrlData() {
 			if (globalThis.useUrlData !== false) {
-				window.location.hash = "#v3b64" + btoa(pako.deflateRaw(JSON.stringify(this.getSong()), { to: "string" }));
+				const dataBuffer = deflateRaw(JSON.stringify(this.getSong()));
+				const dataString = String.fromCharCode.apply(undefined, dataBuffer);
+				window.location.hash = `#v4${btoa(dataString).replaceAll("=", "")}`;
 			}
 		},
 		initControls() {

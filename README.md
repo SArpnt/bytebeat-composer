@@ -67,3 +67,16 @@ any messages recieved will be in this format:
 	},
 }
 ```
+
+## dead links
+
+if any previously working links stop working, LET ME KNOW. link compatibility is supposed to stay permenantly.  
+if i'm unavalible or you're in a hurry, you can decode the links manually:
+
+- links prefixed with `#v3b64` are the oldest, to decode:
+	1. remove the prefix
+	2. convert from base 64 with atob
+	3. (if using pako) get the codepoint of each character and place in a Uint8Array
+	4. inflateRaw to string with zlib or pako (not sure quite how zlib works in this case, pako is preferable)
+	5. parse with JSON
+- links prefixed with `#v4` have essentially the same process. the only differences are the prefix and the absence of base64 padding.
