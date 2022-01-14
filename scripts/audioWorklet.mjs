@@ -245,7 +245,11 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 					}
 					funcValue = NaN;
 				}
-				funcValue = Number(funcValue);
+				try {
+					funcValue = Number(funcValue);
+				} catch (err) {
+					funcValue = NaN;
+				}
 				if (funcValue !== this.lastFuncValue && !(isNaN(funcValue) && isNaN(this.lastFuncValue))) {
 					if (isNaN(funcValue))
 						this.lastByteValue = NaN;
