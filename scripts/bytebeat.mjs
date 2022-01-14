@@ -2,8 +2,6 @@ import { EditorView } from "./codemirror.min.mjs"; // TODO: remove this
 import { inflateRaw, deflateRaw } from "https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.esm.mjs";
 import isPlainObject from "./isPlainObject.mjs";
 import domLoaded from "./domLoaded.mjs";
-globalThis.inflateRaw = inflateRaw;
-globalThis.deflateRaw = deflateRaw;
 
 const timeUnits = [
 	"t",
