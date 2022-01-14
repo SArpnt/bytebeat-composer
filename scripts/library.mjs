@@ -118,11 +118,9 @@ function createEntryElem(entry) {
 				remixElem.append(urlElem);
 			}
 		} else {
-			if (entry.description) {
-				const descriptionElem = document.createElement("span");
-				descriptionElem.innerHTML = entry.remixed.description;
-				remixElem.append("remix of ", description);
-			} else if (entry.author)
+			if (entry.remixed.description)
+				remixElem.append("remix of ", entry.remixed.description);
+			else if (entry.author)
 				remixElem.append("remix of song");
 			else
 				remixElem.append("remix");
