@@ -127,6 +127,7 @@ html[data-embed] #code-editor-container {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
+	justify-content: center;
 	column-gap: .5em;
 
 	margin: 2px 0;
