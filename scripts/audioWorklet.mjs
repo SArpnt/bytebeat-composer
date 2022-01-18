@@ -35,17 +35,30 @@ function jsOptimize(script, isExpression = true) {
 	return script;
 };
 
-function betterErrorString(err, time) {
-	if (err instanceof Error) {
+function safeStringify(value, quoteString) {
+	if (!quoteString && typeof value === "string")
+		return value;
+	else
+		return JSON.stringify(value);
+}
+
+function getErrorMessage(err, time) {
+	if (
+		err instanceof Error &&
+		typeof err.lineNumber === "number" &&
+		typeof err.columnNumber === "number"
+	) {
+		const message = safeStringify(err.message, false);
+
 		if (time !== undefined)
-			return `${err.message} (at line ${err.lineNumber - 3}, character ${err.columnNumber}, t=${time})`;
+			return `${message} (at line ${err.lineNumber - 3}, character ${err.columnNumber}, t=${time})`;
 		else
-			return `${err.message} (at line ${err.lineNumber - 3}, character ${err.columnNumber})`;
+			return `${message} (at line ${err.lineNumber - 3}, character ${err.columnNumber})`;
 	} else {
 		if (time !== undefined)
-			return `Thrown: ${JSON.stringify(err)} (at t=${time})`;
+			return `Thrown: ${safeStringify(err, true)} (at t=${time})`;
 		else
-			return `Thrown: ${JSON.stringify(err)}`;
+			return `Thrown: ${safeStringify(err, true)}`;
 	}
 }
 
@@ -200,7 +213,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 				this.postedErrorPriority = 2;
 			} else
 				this.postedErrorPriority = 1;
-			this.port.postMessage({ updateUrl: true, errorMessage: { type: errType, err: betterErrorString(err, 0), priority: this.postedErrorPriority } });
+			this.port.postMessage({ updateUrl: true, errorMessage: { type: errType, err: getErrorMessage(err, 0), priority: this.postedErrorPriority } });
 			return;
 		}
 		this.postedErrorPriority = null;
@@ -241,7 +254,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 				} catch (err) {
 					if (this.postedErrorPriority === null) {
 						this.postedErrorPriority = 0;
-						this.port.postMessage({ errorMessage: { type: "runtime", err: betterErrorString(err, roundSample) } });
+						this.port.postMessage({ errorMessage: { type: "runtime", err: getErrorMessage(err, roundSample) } });
 					}
 					funcValue = NaN;
 				}
