@@ -21,6 +21,7 @@ const codeEditor = new EditorView({
 			highlightSpecialChars(),
 			history(),
 			indentUnit.of("\t"),
+			EditorState.tabSize.of(3),
 			classHighlightStyle,
 			bracketMatching(),
 			highlightSelectionMatches(),

@@ -72,7 +72,7 @@ html[data-embed] #code-editor-container {
 	margin: 0;
 	white-space: break-spaces;
 	font: 14px/14px Monospace;
-	tab-size: 4;
+	tab-size: 3;
 	color: inherit;
 	background-color: inherit;
 	border: none;
@@ -95,7 +95,6 @@ html[data-embed] #code-editor-container {
 }
 #code-editor.cm-editor .cm-line {
 	padding: 0;
-	tab-size: 4;
 }
 #code-editor.cm-editor .cm-matchingBracket {
 	background-color: transparent;
