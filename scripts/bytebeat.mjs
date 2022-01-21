@@ -84,10 +84,9 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.handleWindowResize(true);
 			document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
 
-			this.loadSettings();
-
 			await initAudioPromise;
 			await codeEditorPromise;
+			this.loadSettings();
 			this.setSong(songData, false);
 			this.updateCounterValue();
 		},
