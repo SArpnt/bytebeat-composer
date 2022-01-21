@@ -1,6 +1,6 @@
 import {
 	EditorState, EditorView,
-	keymap, insertTab, indentLess, defaultKeymap, insertNewline, highlightSpecialChars, history, classHighlightStyle, bracketMatching, highlightSelectionMatches, searchKeymap, commentKeymap,
+	keymap, insertTab, indentLess, defaultKeymap, insertNewline, highlightSpecialChars, history, historyKeymap, classHighlightStyle, bracketMatching, highlightSelectionMatches, searchKeymap, commentKeymap,
 	javascript,
 } from "./codemirror.min.mjs";
 import domLoaded from "./domLoaded.mjs";
@@ -15,6 +15,7 @@ const codeEditor = new EditorView({
 				{ key: "Shift-Tab", run: indentLess },
 				...searchKeymap,
 				...commentKeymap,
+				...historyKeymap,
 				...defaultKeymap,
 			]),
 			EditorView.lineWrapping,
