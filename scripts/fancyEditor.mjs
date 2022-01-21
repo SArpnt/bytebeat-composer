@@ -1,6 +1,6 @@
 import {
 	EditorState, EditorView,
-	keymap, insertTab, indentLess, defaultKeymap, insertNewline, highlightSpecialChars, history, historyKeymap, classHighlightStyle, bracketMatching, highlightSelectionMatches, searchKeymap, commentKeymap,
+	indentUnit, keymap, indentLess, defaultKeymap, insertNewline, highlightSpecialChars, history, historyKeymap, classHighlightStyle, bracketMatching, highlightSelectionMatches, searchKeymap, commentKeymap,
 	javascript,
 } from "./codemirror.min.mjs";
 import domLoaded from "./domLoaded.mjs";
@@ -11,8 +11,7 @@ const codeEditor = new EditorView({
 		extensions: [
 			keymap.of([
 				{ key: "Enter", run: insertNewline },
-				{ key: "Tab", run: insertTab },
-				{ key: "Shift-Tab", run: indentLess },
+				{ key: "Tab", run: ({ state, dispatch }) => (dispatch(state.replaceSelection("\t")), true), shift: indentLess },
 				...searchKeymap,
 				...commentKeymap,
 				...historyKeymap,
@@ -21,6 +20,7 @@ const codeEditor = new EditorView({
 			EditorView.lineWrapping,
 			highlightSpecialChars(),
 			history(),
+			indentUnit.of("\t"),
 			classHighlightStyle,
 			bracketMatching(),
 			highlightSelectionMatches(),

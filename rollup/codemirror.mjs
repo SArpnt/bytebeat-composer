@@ -1,9 +1,10 @@
-export { defaultKeymap, insertNewline, insertTab, indentLess } from "@codemirror/commands";
-export { EditorView, keymap, highlightSpecialChars } from "@codemirror/view";
-export { EditorState } from "@codemirror/state";
-export { history, historyKeymap } from "@codemirror/history";
+export { defaultKeymap, insertNewline, indentLess } from "@codemirror/commands";
+export { commentKeymap } from "@codemirror/comment";
 export { classHighlightStyle } from "@codemirror/highlight";
+export { history, historyKeymap } from "@codemirror/history";
+export { javascript } from "@codemirror/lang-javascript";
+export { indentUnit } from "@codemirror/language";
 export { bracketMatching } from "@codemirror/matchbrackets";
 export { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
-export { commentKeymap } from "@codemirror/comment";
-export { javascript } from "@codemirror/lang-javascript";
+export { EditorState } from "@codemirror/state";
+export { EditorView, keymap, highlightSpecialChars } from "@codemirror/view";
