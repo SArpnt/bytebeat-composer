@@ -17,8 +17,8 @@
 	<script type="module" async src="./scripts/embed.mjs"></script>
 	<script type="module" async src="./scripts/bytebeat.mjs"></script>
 	<script type="module">
-		import lateLoad from "./scripts/lateLoadScript.mjs";
-		lateLoad("./scripts/fancyEditor.mjs");
+		import { loadScriptLate } from "./scripts/common.mjs";
+		loadScriptLate("./scripts/fancyEditor.mjs");
 	</script>
 </head>
 <body>

@@ -1,6 +1,5 @@
 import { inflateRaw, deflateRaw } from "./pako.esm.min.mjs"; // TODO: load this later, this is a massive network bottleneck
-import isPlainObject from "./isPlainObject.mjs";
-import domLoaded from "./domLoaded.mjs";
+import { domLoaded, isPlainObject } from "./common.mjs";
 
 const timeUnits = [
 	"t",

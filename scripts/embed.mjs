@@ -1,4 +1,4 @@
-import isPlainObject from "./isPlainObject.mjs";
+import { isPlainObject } from "./common.mjs";
 
 window.addEventListener("message", e => {
 	console.info("recieved message", e);

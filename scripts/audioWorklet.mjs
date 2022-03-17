@@ -1,5 +1,5 @@
 // TODO: use import when fixed: https://bugzilla.mozilla.org/show_bug.cgi?id=1636121
-//import jsOptimize from "./jsOptimize.mjs";
+//import { jsOptimize } from "./common.mjs";
 function jsOptimize(script, isExpression = true) {
 	script = script.trim();
 	{ // detect eval(unescape(escape(<const string>).replace(/u(..)/g, "$1%")))

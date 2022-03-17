@@ -1,4 +1,4 @@
-import domLoaded from "./domLoaded.mjs";
+import { domLoaded } from "./common.mjs";
 
 function parseEntry(entry) {
 	if (Array.isArray(entry.codeOriginal))

@@ -3,7 +3,7 @@ import {
 	indentUnit, keymap, indentLess, defaultKeymap, insertNewline, highlightSpecialChars, history, historyKeymap, classHighlightStyle, bracketMatching, highlightSelectionMatches, searchKeymap, commentKeymap,
 	javascript,
 } from "./codemirror.min.mjs";
-import domLoaded from "./domLoaded.mjs";
+import { domLoaded } from "./common.mjs";
 
 let inputListener = null;
 const codeEditor = new EditorView({
