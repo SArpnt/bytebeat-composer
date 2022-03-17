@@ -71,8 +71,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 				};
 			}
 
-			//const initAudioPromise = this.initAudioContext();
-			await this.initAudioContext(); // better performance because of controlled load order
+			await this.initAudioContext();
 
 			await domLoaded;
 
@@ -84,7 +83,6 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.handleWindowResize(true);
 			document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
 
-			//await initAudioPromise;
 			this.loadSettings();
 			this.setSong(songData, false);
 			this.updateCounterValue();
@@ -93,11 +91,15 @@ Object.defineProperty(globalThis, "bytebeat", {
 		async initAudioContext() {
 			this.audioCtx = new AudioContext();
 
-			const addModulePromise = await this.audioCtx.audioWorklet.addModule("scripts/audioWorklet.mjs");
-
 			this.audioGain = new GainNode(this.audioCtx);
 			this.audioGain.connect(this.audioCtx.destination);
 
+			await this.audioCtx.audioWorklet.addModule("scripts/audioWorklet.mjs");
+			this.audioWorklet = new AudioWorkletNode(this.audioCtx, "bytebeatProcessor");
+			this.audioWorklet.port.addEventListener("message", this.handleMessage.bind(this));
+			this.audioWorklet.port.start();
+			this.audioWorklet.connect(this.audioGain);
+			
 			const mediaDest = this.audioCtx.createMediaStreamDestination();
 			this.audioRecorder = new MediaRecorder(mediaDest.stream);
 			this.audioRecorder.ondataavailable = e => this.recordChunks.push(e.data);
@@ -114,12 +116,6 @@ Object.defineProperty(globalThis, "bytebeat", {
 				this.saveData(new Blob(this.recordChunks, { type }), file);
 			});
 			this.audioGain.connect(mediaDest);
-
-			await addModulePromise;
-			this.audioWorklet = new AudioWorkletNode(this.audioCtx, "bytebeatProcessor");
-			this.audioWorklet.port.addEventListener("message", this.handleMessage.bind(this));
-			this.audioWorklet.port.start();
-			this.audioWorklet.connect(this.audioGain);
 		},
 		handleMessage(e) {
 			if (isPlainObject(e.data)) {
@@ -169,6 +165,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			return function initCodeEditor(codeEditor) {
 				if (codeEditor instanceof Element) {
 					if (codeEditor.tagName === "TEXTAREA") {
+						// textarea
 						codeEditor.addEventListener("input", this.refreshCode.bind(this));
 						{
 							let keyTrap = true;
@@ -226,10 +223,13 @@ Object.defineProperty(globalThis, "bytebeat", {
 						}
 						this.codeEditor = codeEditor;
 					} else if (codeEditor.classList.contains("cm-editor")) {
-						if (!codeEditor.hasOwnProperty("dom") || codeEditor !== this.codeEditor.dom)
+						// codemirror element
+						// ignore and wait until proper codemirror has been sent
+						if (!this.codeEditor.hasOwnProperty("dom") || codeEditor !== this.codeEditor.dom)
 							return new Promise(r => resolve = r);
 					}
-				} else if (codeEditor.hasOwnProperty("dom")) { // codemirror
+				} else if (codeEditor.hasOwnProperty("dom")) {
+					// codemirror from fancyeditor.mjs
 					let selection = null;
 					if (this.codeEditor) {
 						codeEditor.dispatch({ changes: { from: 0, insert: this.codeEditor.value } });
@@ -246,7 +246,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 						resolve();
 						resolve = null;
 					}
-					return this.refreshCode.bind(this);
+					return this.refreshCode();
 				}
 			};
 		})(),
