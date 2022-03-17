@@ -3,7 +3,6 @@ import {
 	indentUnit, keymap, indentLess, defaultKeymap, insertNewline, highlightSpecialChars, history, historyKeymap, classHighlightStyle, bracketMatching, highlightSelectionMatches, searchKeymap, commentKeymap,
 	javascript,
 } from "./codemirror.min.mjs";
-import { domLoaded } from "./common.mjs";
 
 let inputListener = null;
 const codeEditor = new EditorView({
@@ -36,9 +35,5 @@ const codeEditor = new EditorView({
 
 codeEditor.dom.id = "code-editor";
 
-domLoaded.then(async () => {
-	if (!globalThis.hasOwnProperty("bytebeat")) // TODO: all the resolve stuff is a horrible hack
-		await new Promise(resolve => globalThis.bytebeat = resolve);
-
-	inputListener = globalThis.bytebeat.initCodeEditor(codeEditor);
-});
+// bytebeat should already exist when this script is ran
+inputListener = globalThis.bytebeat.initCodeEditor(codeEditor);

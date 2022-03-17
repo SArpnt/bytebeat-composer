@@ -1,5 +1,5 @@
 import { inflateRaw, deflateRaw } from "./pako.esm.min.mjs"; // TODO: load this later, this is a massive network bottleneck
-import { domLoaded, isPlainObject } from "./common.mjs";
+import { domLoaded, isPlainObject, loadScriptLate } from "./common.mjs";
 
 const timeUnits = [
 	"t",
@@ -78,6 +78,9 @@ Object.defineProperty(globalThis, "bytebeat", {
 			let songData = this.getUrlData();
 			this.initControls();
 			await this.initCodeEditor(document.getElementById("code-editor"));
+			loadScriptLate("./scripts/fancyEditor.mjs");
+			if (globalThis.loadLibrary !== false)
+				loadScriptLate("./scripts/library.mjs");
 
 			this.handleWindowResize(true);
 			document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
@@ -221,11 +224,8 @@ Object.defineProperty(globalThis, "bytebeat", {
 							});
 						}
 						this.codeEditor = codeEditor;
-					} else if (codeEditor.classList.contains("cm-editor")) {
-						// codemirror element
-						// ignore and wait until proper codemirror has been sent
-						if (!this.codeEditor.hasOwnProperty("dom") || codeEditor !== this.codeEditor.dom)
-							return new Promise(r => resolve = r);
+					} else {
+						throw new Error("code editor is element but not textarea");
 					}
 				} else if (codeEditor.hasOwnProperty("dom")) {
 					// codemirror from fancyeditor.mjs
@@ -246,6 +246,8 @@ Object.defineProperty(globalThis, "bytebeat", {
 						resolve = null;
 					}
 					return this.refreshCode();
+				} else {
+					throw new Error("code editor isn't element or codemirror");
 				}
 			};
 		})(),

@@ -1,5 +1,3 @@
-import { domLoaded } from "./common.mjs";
-
 function parseEntry(entry) {
 	if (Array.isArray(entry.codeOriginal))
 		entry.codeOriginal = entry.codeOriginal.join("\n");
@@ -266,9 +264,7 @@ function addLibrary(library) {
 		addPlaylist(library, p);
 }
 
-// TODO: lower priority of library.json to prevent it from loading before player
-domLoaded.then(() =>
-	fetch("library/library.json", { cache: "no-cache" })
-		.then(response => response.json())
-		.then(library => addLibrary(library)),
-);
+// note: dom is already loaded when this script is ran
+fetch("library/library.json", { cache: "no-cache" })
+	.then(response => response.json())
+	.then(library => addLibrary(library))
