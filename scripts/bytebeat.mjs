@@ -1,4 +1,5 @@
-import { inflateRaw, deflateRaw } from "./pako.esm.min.mjs"; // TODO: load this later, this is a massive network bottleneck
+import { EditorView } from "./codemirror.min.mjs"; // TODO: remove this
+import { inflateRaw, deflateRaw } from "https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.esm.mjs";
 import isPlainObject from "./isPlainObject.mjs";
 import domLoaded from "./domLoaded.mjs";
 
@@ -71,20 +72,20 @@ Object.defineProperty(globalThis, "bytebeat", {
 				};
 			}
 
-			//const initAudioPromise = this.initAudioContext();
-			await this.initAudioContext(); // better performance because of controlled load order
+			const initAudioPromise = this.initAudioContext();
 
 			await domLoaded;
 
 			this.contentElem = document.getElementById("content");
 			let songData = this.getUrlData();
 			this.initControls();
-			await this.initCodeEditor(document.getElementById("code-editor"));
+			const codeEditorPromise = this.initCodeEditor(document.getElementById("code-editor"));
 
 			this.handleWindowResize(true);
 			document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
 
-			//await initAudioPromise;
+			await initAudioPromise;
+			await codeEditorPromise;
 			this.loadSettings();
 			this.setSong(songData, false);
 			this.updateCounterValue();
@@ -226,10 +227,10 @@ Object.defineProperty(globalThis, "bytebeat", {
 						}
 						this.codeEditor = codeEditor;
 					} else if (codeEditor.classList.contains("cm-editor")) {
-						if (!codeEditor.hasOwnProperty("dom") || codeEditor !== this.codeEditor.dom)
+						if (!(this.codeEditor instanceof EditorView) || codeEditor !== this.codeEditor.dom)
 							return new Promise(r => resolve = r);
 					}
-				} else if (codeEditor.hasOwnProperty("dom")) { // codemirror
+				} else if (codeEditor instanceof EditorView) {
 					let selection = null;
 					if (this.codeEditor) {
 						codeEditor.dispatch({ changes: { from: 0, insert: this.codeEditor.value } });

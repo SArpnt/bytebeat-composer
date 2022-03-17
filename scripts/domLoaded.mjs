@@ -1,6 +1,6 @@
 export default new Promise(resolve => {
-	if (document.readyState === "loading")
-		document.addEventListener("DOMContentLoaded", () => resolve());
-	else
+	if (["interactive", "loaded", "complete"].includes(document.readyState))
 		resolve();
+	else
+		document.addEventListener("DOMContentLoaded", () => resolve());
 });

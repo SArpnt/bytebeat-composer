@@ -266,9 +266,8 @@ function addLibrary(library) {
 		addPlaylist(library, p);
 }
 
-// TODO: lower priority of library.json to prevent it from loading before player
-domLoaded.then(() =>
-	fetch("library/library.json", { cache: "no-cache" })
-		.then(response => response.json())
-		.then(library => addLibrary(library)),
-);
+fetch("library/library.json", { cache: "no-cache" })
+	.then(response => response.json())
+	.then(library =>
+		domLoaded.then(() => addLibrary(library))
+	);
