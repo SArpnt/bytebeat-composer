@@ -1,12 +1,10 @@
-import { inflateRaw, deflateRaw } from "./pako.esm.min.mjs"; // TODO: load this later, this is a massive network bottleneck
+import { inflateRaw, deflateRaw } from "./pako.esm.min.mjs";
 import { domLoaded, isPlainObject, loadScriptLate } from "./common.mjs";
 
 const timeUnits = [
 	"t",
 	"s", // sec
 ];
-
-const resolve = globalThis.bytebeat ?? null;
 
 Object.defineProperty(globalThis, "bytebeat", {
 	value: Object.seal({
@@ -60,7 +58,6 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.animationFrame = this.animationFrame.bind(this);
 			{
 				const a = document.createElement("a");
-				//document.head.appendChild(a); // TODO: is this needed on any browser? doesn't seem neccecary on chrome or firefox
 				this.saveData = function saveData(blob, fileName) {
 					const url = URL.createObjectURL(blob);
 					a.href = url;
@@ -78,6 +75,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			let songData = this.getUrlData();
 			this.initControls();
 			await this.initCodeEditor(document.getElementById("code-editor"));
+
 			loadScriptLate("./scripts/fancyEditor.mjs");
 			if (globalThis.loadLibrary !== false)
 				loadScriptLate("./scripts/library.mjs");
@@ -162,95 +160,88 @@ Object.defineProperty(globalThis, "bytebeat", {
 			}
 		},
 		saveData: null,
-		initCodeEditor: (function () {
-			let resolve = null; // TODO: all the resolve stuff is a horrible hack
-			return function initCodeEditor(codeEditor) {
-				if (codeEditor instanceof Element) {
-					if (codeEditor.tagName === "TEXTAREA") {
-						// textarea
-						codeEditor.addEventListener("input", this.refreshCode.bind(this));
-						{
-							let keyTrap = true;
-							codeEditor.addEventListener("keydown", e => {
-								if (!e.altKey && !e.ctrlKey) {
-									if (e.key === "Escape") {
-										if (keyTrap) {
-											e.preventDefault();
-											keyTrap = false;
-										}
-									} else if (e.key === "Tab" && keyTrap) {
-										// TODO: undo/redo text
+		initCodeEditor(codeEditor) {
+			if (codeEditor instanceof Element) {
+				if (codeEditor.tagName === "TEXTAREA") {
+					// textarea
+					codeEditor.addEventListener("input", this.refreshCode.bind(this));
+					{
+						let keyTrap = true;
+						codeEditor.addEventListener("keydown", e => {
+							if (!e.altKey && !e.ctrlKey) {
+								if (e.key === "Escape") {
+									if (keyTrap) {
 										e.preventDefault();
-										const el = e.target;
-										const { selectionStart, selectionEnd } = el;
-										if (e.shiftKey) {
-											// remove indentation on all selected lines
-											let lines = el.value.split("\n");
-
-											let getLine = char => {
-												let line = 0;
-												for (let c = 0; ; line++) {
-													c += lines[line].length;
-													if (c > char) 1;
-													break;
-												}
-												return line;
-											};
-											let
-												startLine = getLine(selectionStart),
-												endLine = getLine(selectionEnd),
-												newSelectionStart = selectionStart,
-												newSelectionEnd = selectionEnd;
-											for (let i = startLine; i <= endLine; i++) {
-												if (lines[i][0] === "\t") {
-													lines[i] = lines[i].slice(1);
-													if (i === startLine)
-														newSelectionStart--;
-													newSelectionEnd--;
-												}
-											}
-
-											el.value = lines.join("\n");
-											el.setSelectionRange(newSelectionStart, newSelectionEnd);
-										} else {
-											// add tab character
-											el.value = `${el.value.slice(0, selectionStart)}\t${el.value.slice(selectionEnd)}`;
-											el.setSelectionRange(selectionStart + 1, selectionStart + 1);
-										}
-										this.refreshCode();
-									} else
 										keyTrap = false;
-								}
-							});
-						}
-						this.codeEditor = codeEditor;
-					} else {
-						throw new Error("code editor is element but not textarea");
-					}
-				} else if (codeEditor.hasOwnProperty("dom")) {
-					// codemirror from fancyeditor.mjs
-					let selection = null;
-					if (this.codeEditor) {
-						codeEditor.dispatch({ changes: { from: 0, insert: this.codeEditor.value } });
-						if (document.activeElement === this.codeEditor)
-							selection = { anchor: this.codeEditor.selectionStart, head: this.codeEditor.selectionEnd };
-					}
-					(this.codeEditor ?? document.getElementById("code-editor")).replaceWith(codeEditor.dom);
-					if (selection) {
-						codeEditor.focus();
-						codeEditor.dispatch({ selection });
+									}
+								} else if (e.key === "Tab" && keyTrap) {
+									// TODO: undo/redo text
+									e.preventDefault();
+									const el = e.target;
+									const { selectionStart, selectionEnd } = el;
+									if (e.shiftKey) {
+										// remove indentation on all selected lines
+										let lines = el.value.split("\n");
+
+										let getLine = char => {
+											let line = 0;
+											for (let c = 0; ; line++) {
+												c += lines[line].length;
+												if (c > char) 1;
+												break;
+											}
+											return line;
+										};
+										let
+											startLine = getLine(selectionStart),
+											endLine = getLine(selectionEnd),
+											newSelectionStart = selectionStart,
+											newSelectionEnd = selectionEnd;
+										for (let i = startLine; i <= endLine; i++) {
+											if (lines[i][0] === "\t") {
+												lines[i] = lines[i].slice(1);
+												if (i === startLine)
+													newSelectionStart--;
+												newSelectionEnd--;
+											}
+										}
+
+										el.value = lines.join("\n");
+										el.setSelectionRange(newSelectionStart, newSelectionEnd);
+									} else {
+										// add tab character
+										el.value = `${el.value.slice(0, selectionStart)}\t${el.value.slice(selectionEnd)}`;
+										el.setSelectionRange(selectionStart + 1, selectionStart + 1);
+									}
+									this.refreshCode();
+								} else
+									keyTrap = false;
+							}
+						});
 					}
 					this.codeEditor = codeEditor;
-					if (resolve) {
-						resolve();
-						resolve = null;
-					}
-					return this.refreshCode();
 				} else {
-					throw new Error("code editor isn't element or codemirror");
+					throw new Error("code editor is element but not textarea");
 				}
-			};
-		})(),
+			} else if (codeEditor.hasOwnProperty("dom")) {
+				// codemirror from fancyeditor.mjs
+				let selection = null;
+				if (this.codeEditor) {
+					codeEditor.dispatch({ changes: { from: 0, insert: this.codeEditor.value } });
+					if (document.activeElement === this.codeEditor)
+						selection = { anchor: this.codeEditor.selectionStart, head: this.codeEditor.selectionEnd };
+				}
+				(this.codeEditor ?? document.getElementById("code-editor")).replaceWith(codeEditor.dom);
+				if (selection) {
+					codeEditor.focus();
+					codeEditor.dispatch({ selection });
+				}
+				this.codeEditor = codeEditor;
+				return this.refreshCode();
+			} else {
+				throw new Error("code editor isn't element or codemirror");
+			}
+		},
 		get codeEditorText() {
 			if (this.codeEditor instanceof Element)
 				return this.codeEditor.value;
@@ -767,5 +758,3 @@ Object.defineProperty(globalThis, "bytebeat", {
 });
 
 bytebeat.init();
-if (resolve)
-	resolve();
