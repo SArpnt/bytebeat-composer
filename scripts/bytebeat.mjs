@@ -686,17 +686,19 @@ Object.defineProperty(globalThis, "bytebeat", {
 		},
 
 		updateCounterValue() {
-			this.controlTimeValue.placeholder = this.convertUnit(this.byteSample);
+			this.controlTimeValue.placeholder = this.convertToUnit(this.byteSample);
 		},
-		convertUnit(value, from = "t", to = this.timeUnit) {
-			if (from === to)
-				return value;
-			else if (from === "t") {
-				if (to === "s")
-					return value / this.songData.sampleRate;
-			} else if (from === "s") {
-				if (to === "t")
-					return value * this.songData.sampleRate;
+		convertFromUnit(value, unit = this.timeUnit) {
+			switch (unit) {
+				case "t": return value;
+				case "s": return value * this.songData.sampleRate;
+			}
+		},
+		// IMPORTANT: this function is ONLY used for text formatting, does not work for many conversions, and is inaccurate.
+		convertToUnit(value, unit = this.timeUnit) {
+			switch (unit) {
+				case "t": return value;
+				case "s": return (value / this.songData.sampleRate).toFixed(3);
 			}
 		},
 		setTimeUnit(value, updateCounter = true) {
