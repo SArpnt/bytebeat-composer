@@ -237,7 +237,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 					codeEditor.dispatch({ selection });
 				}
 				this.codeEditor = codeEditor;
-				return this.refreshCode();
+				return this.refreshCode.bind(this);
 			} else {
 				throw new Error("code editor isn't element or codemirror");
 			}
