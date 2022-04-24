@@ -31,7 +31,6 @@ function jsOptimize(script, isExpression = true) {
 			}
 		}
 	}
-	console.debug("optimized script:", script);
 	return script;
 };
 
