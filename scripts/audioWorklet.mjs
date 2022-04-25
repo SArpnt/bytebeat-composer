@@ -104,6 +104,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 		this.byteSample = 0;
 
 		this.sampleRatio = NaN;
+		this.superSample = true; // TODO: add setting for this
 
 		this.lastByteValue = null;
 		this.lastValue = 0;
@@ -245,25 +246,30 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 		}
 
 		let time = this.sampleRatio * this.audioSample;
-		let byteSample = this.byteSample;
+		let byteSample = this.byteSample; // t
 		const drawBuffer = [];
 		for (let i = 0; i < chDataLen; i++) {
 			time += this.sampleRatio;
-			const flooredTime = Math.floor(time / this.sampleRateDivisor) * this.sampleRateDivisor;
+			const flooredTime = Math.floor(time / this.sampleRateDivisor) * this.sampleRateDivisor; // kinda like new bytesample (t) but doesnt match after timescrubbing or changing samplerate
 			if (this.lastFlooredTime !== flooredTime) {
-				const roundSample = Math.floor(byteSample / this.sampleRateDivisor) * this.sampleRateDivisor;
-				let funcValue;
-				try {
-					if (this.songData.mode === "Funcbeat")
-						funcValue = this.func(roundSample / this.songData.sampleRate);
-					else
-						funcValue = this.func(roundSample);
-				} catch (err) {
-					if (this.postedErrorPriority === null) {
-						this.postedErrorPriority = 0;
-						this.port.postMessage({ errorMessage: { type: "runtime", err: getErrorMessage(err, roundSample) } });
+				const roundSample = Math.floor(byteSample / this.sampleRateDivisor) * this.sampleRateDivisor; // t after samplerate divisor
+				let funcValue; // sample value from bytebeat, could be any type
+				console.debug(byteSample, flooredTime);
+				for (let j = this.lastFlooredTime; j < flooredTime; j++) { // TODO untested
+					try {
+						if (this.songData.mode === "Funcbeat")
+							funcValue = this.func(roundSample / this.songData.sampleRate); // TODO set roundsample properly for supersampling
+						else
+							funcValue = this.func(roundSample);
+					} catch (err) {
+						if (this.postedErrorPriority === null) {
+							this.postedErrorPriority = 0;
+							this.port.postMessage({ errorMessage: { type: "runtime", err: getErrorMessage(err, roundSample) } });
+						}
+						funcValue = NaN;
 					}
-					funcValue = NaN;
+					if (!this.superSample)
+						break;
 				}
 				try {
 					funcValue = Number(funcValue);
