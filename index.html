@@ -48,6 +48,7 @@
 						<option value="Bytebeat" selected>Bytebeat</option>
 						<option value="Signed Bytebeat">Signed Bytebeat</option>
 						<option value="Floatbeat">Floatbeat</option>
+						<option value="Funcbeat">Funcbeat</option>
 					</select>
 				</span>
 				<span class="control-group">
@@ -84,8 +85,8 @@
 					<section>
 						<p>
 							Bytebeat music (or one-liner music) was invented in September 2011.
-							They're generally a piece of rhythmic and somewhat melodic music with no score, no instruments, and no real oscillators.
-							It's simply a single-line formula that defines a waveform as a function of time, processed (usually) 8000 times per second, resulting in an audible waveform with a 256-step resolution from silence (0) to full amplitude (256).
+							Simple bytebeats are often a piece of rhythmic and somewhat melodic music with no score, no instruments, and no real oscillators.
+							It's simply an expression that defines a waveform as a function of time, processed (usually) 8000 times per second, resulting in an audible waveform with a 256-step resolution from silence (0) to full amplitude (256).
 							If you put that formula into a program with a loop that increments time variable (t), you can generate the headerless unsigned 8 bit mono 8kHz audio stream on output, like in this application.
 							Since these directly output a waveform, they have great performance in compiled languages and can often be ran on even the weakest embedded devices.
 						</p>
@@ -122,6 +123,7 @@
 								<li>Bytebeat &mdash; expected output is 0 to 255, values outside this are wrapped, and non-integers are floored.</li>
 								<li>Signed Bytebeat &mdash; expected output is -128 to 127, values outside this are wrapped, and non-integers are floored. This is an uncommon format, which comes from c allowing char to be signed or unsigned depending on the compiler.</li>
 								<li>Floatbeat &mdash; expected output is -1.0 to 1.0, values outside this are clipped. This allows higher quality audio, and is common for other generative music.</li>
+								<li>Funcbeat &mdash; based on TinyRave, code is not an expression, and is only ran once. The returned function is ran with time in seconds.</li>
 							<ul>
 						</p>
 						<p>
@@ -150,6 +152,10 @@
 					<details>
 						<summary>Floatbeat &mdash; assumes output is -1.0 to 1.0</summary>
 						<div id="library-floatbeat" class="text-section"></div>
+					</details>
+					<details>
+						<summary>Funcbeat &mdash; statement based</summary>
+						<div id="library-funcbeat" class="text-section"></div>
 					</details>
 					<details>
 						<summary>SthephanShi &mdash; code SthephanShi discovered</summary>

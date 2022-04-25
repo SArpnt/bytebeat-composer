@@ -169,7 +169,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 			} : this.songData.mode === "Signed Bytebeat" ? funcValue => {
 				this.lastByteValue = (funcValue + 128) & 255;
 				this.lastValue = this.lastByteValue / 127.5 - 1;
-			} : this.songData.mode === "Floatbeat" ? funcValue => {
+			} : this.songData.mode === "Floatbeat" || this.songData.mode === "Funcbeat" ? funcValue => {
 				this.lastValue = Math.min(Math.max(funcValue, -1), 1);
 				this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
 			} : funcValue => {
@@ -202,8 +202,13 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 		let errType;
 		try {
 			errType = "compile";
-			this.func = new Function(...params, "t", `return 0,\n${optimizedCode || "undefined"}\n;`).bind(globalThis, ...values);
+			if (this.songData.mode === "Funcbeat")
+				this.func = new Function(...params, optimizedCode).bind(globalThis, ...values);
+			else
+				this.func = new Function(...params, "t", `return 0,\n${optimizedCode || "undefined"}\n;`).bind(globalThis, ...values);
 			errType = "runtime";
+			if (this.songData.mode === "Funcbeat")
+				this.func = this.func();
 			this.func(0);
 		} catch (err) {
 			// TODO: handle arbitrary thrown objects, and modified Errors
@@ -249,7 +254,10 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 				const roundSample = Math.floor(byteSample / this.sampleRateDivisor) * this.sampleRateDivisor;
 				let funcValue;
 				try {
-					funcValue = this.func(roundSample);
+					if (this.songData.mode === "Funcbeat")
+						funcValue = this.func(roundSample / this.songData.sampleRate);
+					else
+						funcValue = this.func(roundSample);
 				} catch (err) {
 					if (this.postedErrorPriority === null) {
 						this.postedErrorPriority = 0;
