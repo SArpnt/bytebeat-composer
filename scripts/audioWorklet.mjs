@@ -102,6 +102,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 		this.audioSample = 0; // TODO: is this needed? might be better to use currentTime
 		this.lastFlooredTime = -1;
 		this.byteSample = 0;
+		this.nextRoundSample = 0;
 
 		this.sampleRatio = NaN;
 		this.superSample = true; // TODO: add setting for this
@@ -179,6 +180,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 	}
 	setByteSample(value, clear = false) {
 		this.byteSample = value;
+		this.nextRoundSample = this.byteSample; // TODO not round
 		this.port.postMessage({ [clear ? "clearCanvas" : "clearDrawBuffer"]: true });
 		this.audioSample = 0;
 		this.lastFlooredTime = -1;
@@ -252,15 +254,19 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 			time += this.sampleRatio;
 			const flooredTime = Math.floor(time / this.sampleRateDivisor) * this.sampleRateDivisor; // kinda like new bytesample (t) but doesnt match after timescrubbing or changing samplerate
 			if (this.lastFlooredTime !== flooredTime) {
+				// TODO: all these values and such seem unoptimized and the code is confusing, this should probably be redone with proper commenting
 				const roundSample = Math.floor(byteSample / this.sampleRateDivisor) * this.sampleRateDivisor; // t after samplerate divisor
 				let funcValue; // sample value from bytebeat, could be any type
-				console.debug(byteSample, flooredTime);
-				for (let j = this.lastFlooredTime; j < flooredTime; j++) { // TODO untested
+				for (
+					let t = (this.superSample && this.playSpeed > 0) ? this.nextRoundSample : roundSample;
+					(this.superSample && this.playSpeed < 0) ? t > this.nextRoundSample : t <= roundSample;
+					t += this.sampleRateDivisor * Math.sign(this.playSpeed)
+				) {
 					try {
 						if (this.songData.mode === "Funcbeat")
-							funcValue = this.func(roundSample / this.songData.sampleRate); // TODO set roundsample properly for supersampling
+							funcValue = this.func(t / this.songData.sampleRate, this.songData.sampleRate / this.songData.sampleRateDivisor);
 						else
-							funcValue = this.func(roundSample);
+							funcValue = this.func(t);
 					} catch (err) {
 						if (this.postedErrorPriority === null) {
 							this.postedErrorPriority = 0;
@@ -268,8 +274,6 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 						}
 						funcValue = NaN;
 					}
-					if (!this.superSample)
-						break;
 				}
 				try {
 					funcValue = Number(funcValue);
@@ -283,6 +287,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 						this.calcByteValue(funcValue);
 					drawBuffer.push({ t: roundSample, value: this.lastByteValue });
 				}
+				this.nextRoundSample = roundSample + this.sampleRateDivisor * Math.sign(this.playSpeed); // doesn't update immediately which misaligns an audio block when samplerate is changed
 				byteSample += flooredTime - this.lastFlooredTime;
 				this.lastFuncValue = funcValue;
 				this.lastFlooredTime = flooredTime;
