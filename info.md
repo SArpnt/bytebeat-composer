@@ -136,6 +136,14 @@ a sample is a value returned from the expression, you can see it as each fully w
 note that lower and higher sample rates don't just change the song speed, they change the quality of the audio too.
 lower sample rates have more aliasing, for example `t*9*4` at 4000 hz sounds awful while `t*9` at 16000 hz sounds much better.
 
+### phase
+
+phase is the time position of a sound.
+
+to use the vinyl analogy from before, phase is just where you are in the song, while pitch/speed is the rate that phase changes.
+
+you can use a physics analogy, phase is like displacement while pitch/speed is like velocity (this physics analogy will be useful later, hint #2, wink nudge and other various attention grabbing actions)
+
 ### waveforms
 
 #### sawtooth
@@ -165,7 +173,7 @@ here we take advantage of javascripts type leniancy, when we do math on `true` a
 (t%128>64)*128
 ```
 
-same as a square wave, but asymmetrical. `64` can be replaced with any value or expression.
+same as a square wave, but asymmetrical. `64` can be replaced with any value to control the pulse width.
 
 square waves are a type of pulse wave, just like squares are a type of rectangle.
 
@@ -212,13 +220,13 @@ there are also other variations of noise that are used less often, but they can 
 
 sequencing means setting up things like volumes and pitches at specific times, this is when it moves away from just being sounds to actual music.
 
-the first way we'll do this is an array. which is just the term for an ordered list in javascript.
+the way we'll do this for now is an array. which is just the term for an ordered list in javascript.
 
 ```js
 [0, 1, 2, 3, 4]
 ```
 
-an array is written like this, note that the first item is item 0, not item 1. this might seem strange but it makes lots or math FAR easier.
+an array is written like this, note that the first item is item 0, not item 1. this might seem strange but it makes most math much simpler.
 
 ```js
 [2,4,3,4][int(t/800)%4]
@@ -229,19 +237,158 @@ the `int` function here just rounds the number down.
 
 item 0 is already making things easier, if the list started at 1, we would need to awkwardly add 1 to the index.
 
-here's a simple sequenced tune:
+here's a somewhat simple sequenced tune:
 
 ```js
-[]
+t*3.5/
+[
+	[7,14,6,12,5,10,4,8],
+	[7.5,15,7,14,6,12,4.45,8.9],
+][int(t/32000)%2][int(t/1000)%8]
+%32*[7,5,8,6][int(t/1000)%4]
 ```
+
+yes, those are arrays inside an array.
+the first index (`int(t/32000)%2`) indexes the outer array to get one of the inner arrays,
+then the second index (`int(t/1000)%8`) gets a number from that inner array.
+
+the second array indexing pair controls volume.
 
 ### multiple instruments
 
-### complex synthesis
+just add them and make sure not to accidentally wrap around
+
+```js
+t%64+
+t*2%64+
+t*3.001%64+
+t*4.01%64
+```
+
+note that if multiple instruments are exactly in sync it will often just sound like one.
+this is especially the case if the higher pitched instruments are quieter.
+
+```js
+t%64+
+t%32
+```
+
+the only thing that seperates different instruments is context.
+
+at this point you should have everything you need to make simple tunes, but there's plenty more interesting things to learn.
+
+### modulation and complex synthesis
+
+let's redeem that hint from earlier with modulation.
+
+```js
+(t*2+sin(t/300)*4)%128
+```
+
+here we're modulating the phase of the sawtooth with a sine wave.
+increasing the volume of the sine wave increases the vibrato and increasing the pitch of the sine wave makes it faster.
+
+something to note here is that the pitch of the sine wave is so low you can't even hear it, it's just rhythm.
+
+something you might be wondering is why we're changing the phase and not the pitch, this is for two reasons:
+
+1. changing the phase changes the pitch
+
+	pitch is just change of phase, so every part of the sin wave with a steep slope is an increase or decrease in pitch
+
+2. trying to change the pitch doesn't even work
+
+	```js
+	(t*2*(1+sin(t/300)/64))%128
+	```
+
+	reset the time to 0 and listen to this formula, the vibrato just keeps getting stronger as time goes on.
+	this is because trying to change the pitch like this does change the speed, but it doesn't keep the phase.
+
+	to change the pitch correctly here we would need to either store the phase (annoying and can cause various issues),
+	or use an infinite series of terms to manage rate of change of pitch, rate of change of rate of change of pitch, and so on (literally impossible) (hint #2 again).
+
+just modulate the phase, not only does it work but it allows doing more than modulating pitch can.
+
+anyways, if you remember from before that the sine wave is an incredibly low pitch, what happens if we increase the pitch?
+
+```js
+(t*2+sin(t*PI/128)*50)%128
+```
+
+we get a new waveform. this is called pm synthesis or sometimes (and in some cases incorrectly) fm synthesis.
+pm is short for phase modulation, fm is short for frequency modulation, and yes that's exactly what that means on a radio.
+
+some terminology: here the sine wave is the modulator, and the sawtooth wave is the carrier.
+
+we can use any volume for the modulator here. any pitch is possible but values close to simple ratios generally sound better.
+
+when the values aren't quite simple ratios the carrier and modulator will drift out of sync
+
+```js
+sin(t*PI/64+sin(t*PI/64.2)*7)*64+64
+```
+
+fm synthesis works very well with sine waves.
+
+we can also do things like modulate the volume of the modulator.
+
+```js
+sin(t*PI/64+sin(t*PI/64)*sin(t/8000)*8)*64+64
+```
+
+speaking of volume, let's go back for a second.
+
+tremolo:
+
+```js
+
+```
+
+am synthesis (amplitude modulation, amplitude just being a more technical term for volume/strength)
+
+```js
+((t*2%128-64)*(1+sin(t*PI/64)*3)+128)
+```
+
+rm synthesis (ring modulation)
+
+```js
+((t*2%128-64)*(sin(t*PI/64)*2)+128)
+```
+
+note that with ring modulation the volume goes negative, here's an example with a slower modulator to make it clearer:
+
+```js
+((t*2%128-64)*(sin(t/300))+128)
+```
+
+last kind of modulation is pwm (pulse width modulation)
+
+```js
+(t%128 > 64+sin(t/5000)*30)*128
+```
+
+doing this one faster usually isn't very interesting.
+
+anyways stack as many as you like, you can put multiple modulators on one carrier, nest, etc.
+
+```js
+(
+	sin(t*PI/64 * 3 +
+		sin(t*PI/64.1 +
+			sin(t*PI/16) * sin(t/3000) +
+			sin(t*PI/64) * sin(t/30000) * 4
+		) * sin(t/80000) * 4
+	)
+)*64+64
+```
 
 # stop here everything below this line is incomplete garbage and notes ============================
 
+sync with sawtooth fm
 
+inverted sawtooth pulse
 
 
 wrapping with & operator always wraps in positive range and truncates,
