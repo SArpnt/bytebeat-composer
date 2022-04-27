@@ -47,7 +47,7 @@ think of it like how the time on a clock goes back down to 0
 you can remove `t` and just type numbers directly like `60`, note that no numbers create any sound and the only sounds are from changing numbers
 this is because we only hear changes in air pressure, not air pressure directly
 
-``js
+```js
 t/8
 ```
 
@@ -342,7 +342,7 @@ speaking of volume, let's go back for a second.
 tremolo:
 
 ```js
-
+((t*2%128-64)*(1+sin(t/300)/4)+128)
 ```
 
 am synthesis (amplitude modulation, amplitude just being a more technical term for volume/strength)
