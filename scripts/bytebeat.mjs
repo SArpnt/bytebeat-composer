@@ -1,6 +1,8 @@
 import { inflateRaw, deflateRaw } from "./pako.esm.min.mjs";
 import { domLoaded, isPlainObject, loadScriptLate } from "./common.mjs";
 
+const searchParams = new URLSearchParams(location.search);
+
 const timeUnits = [
 	"t",
 	"s", // sec
@@ -89,7 +91,14 @@ Object.defineProperty(globalThis, "bytebeat", {
 		},
 
 		async initAudioContext() {
-			this.audioCtx = new AudioContext();
+			let audioContextSampleRate = Number(searchParams.get("audioContextSampleRate"));
+			if (!(audioContextSampleRate > 0)) // also grabs NaN
+				audioContextSampleRate = 48000; // forced samplerate is a hack for 48000 bytebeats since supersampling won't be ready for a while
+
+			this.audioCtx = new AudioContext({
+				latencyHint: searchParams.get("audioContextLatencyHint") ?? "balanced",
+				sampleRate: audioContextSampleRate },
+			);
 
 			this.audioGain = new GainNode(this.audioCtx);
 			this.audioGain.connect(this.audioCtx.destination);
@@ -109,13 +118,15 @@ Object.defineProperty(globalThis, "bytebeat", {
 				const files = ["track.webm", "track.ogg"];
 				while ((file = files.pop()) && !MediaRecorder.isTypeSupported(type = types.pop())) {
 					if (types.length === 0) {
-						console.error("Saving not supported in this browser!");
+						alert("Recording not supported in this browser!");
 						break;
 					}
 				}
 				this.saveData(new Blob(this.recordChunks, { type }), file);
 			});
 			this.audioGain.connect(mediaDest);
+
+			console.info(`started audio with latency ${this.audioCtx.baseLatency * this.audioCtx.sampleRate} at ${this.audioCtx.sampleRate}Hz`);
 		},
 		handleMessage(e) {
 			if (isPlainObject(e.data)) {

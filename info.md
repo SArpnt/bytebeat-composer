@@ -20,7 +20,7 @@ left to right on the settings bar is:
 
 sample rate and playback mode are part of the song itself, others are user preference
 
-note that time skipping, reversing, and sample rates higher than 44100 can cause inaccurate audio for some songs, settings to help with this are being worked on
+note that time skipping, reversing, and sample rates higher than 48000 can cause inaccurate audio for some songs due to some bugs currently in the audio system, this is being worked on.
 
 ## create a bytebeat
 
