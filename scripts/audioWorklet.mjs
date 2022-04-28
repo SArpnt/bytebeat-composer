@@ -255,7 +255,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 				let funcValue;
 				try {
 					if (this.songData.mode === "Funcbeat")
-						funcValue = this.func(roundSample / this.songData.sampleRate);
+						funcValue = this.func(roundSample / this.songData.sampleRate, this.songData.sampleRate / this.sampleRateDivisor);
 					else
 						funcValue = this.func(roundSample);
 				} catch (err) {
