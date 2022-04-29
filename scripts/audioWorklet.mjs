@@ -1,5 +1,7 @@
 // note: imports don't work: https://bugzilla.mozilla.org/show_bug.cgi?id=1636121
 
+// this audio worklet isn't used for the audio node, it's used for performance and the minimal scope. this prevents bytebeat code from doing anything malicious.
+
 function jsOptimize(script, isExpression = true) {
 	script = script.trim();
 	{ // detect eval(unescape(escape(<const string>).replace(/u(..)/g, "$1%")))
@@ -41,91 +43,54 @@ function safeStringify(value, quoteString) {
 		return JSON.stringify(value);
 }
 
-function getErrorMessage(err, time) {
-	if (
-		err instanceof Error &&
-		typeof err.lineNumber === "number" &&
-		typeof err.columnNumber === "number"
-	) {
-		const message = safeStringify(err.message, false);
 
-		if (time !== undefined)
-			return `${message} (at line ${err.lineNumber - 3}, character ${err.columnNumber}, t=${time})`;
-		else
-			return `${message} (at line ${err.lineNumber - 3}, character ${err.columnNumber})`;
-	} else {
-		if (time !== undefined)
-			return `Thrown: ${safeStringify(err, true)} (at t=${time})`;
-		else
-			return `Thrown: ${safeStringify(err, true)}`;
-	}
-}
-
-// delete most enumerable variables, and all single letter variables (not foolproof but works well enough)
 function deleteGlobals() {
-	for (let i = 0; i < 26; i++)
-		delete globalThis[String.fromCharCode(65 + i)], globalThis[String.fromCharCode(97 + i)];
+	// TODO: delete non enumerables
 	for (let v in globalThis)
-		if (![ // TODO: get rid of these global variables
-			"currentFrame",
-			"currentTime",
-			"sampleRate",
-		].includes(v))
-			delete globalThis[v];
+		delete globalThis[v];
 }
-// make all existing global properties non-writable, and freeze objects
-function freezeExistingGlobals() {
+
+
+function setupGlobalScope() {
+	// make all existing global properties non-writable, and freeze objects
 	for (const k of Object.getOwnPropertyNames(globalThis)) {
-		if (![
-			"currentFrame",
-			"currentTime",
-			"sampleRate",
-		].includes(k)) {
-			if ((typeof globalThis[k] === "object" || typeof globalThis[k] === "function") && ![
-				"globalThis",
-			].includes(k))
-				Object.freeze(globalThis[k]);
-			if (typeof globalThis[k] === "function" && Object.hasOwnProperty.call(globalThis[k], "prototype"))
-				Object.freeze(globalThis[k].prototype);
-			Object.defineProperty(globalThis, k, {
-				writable: false,
-				configurable: false,
-			});
-		}
+		if ((typeof globalThis[k] === "object" || typeof globalThis[k] === "function") && k !== "globalThis")
+			Object.freeze(globalThis[k]);
+
+		if (typeof globalThis[k] === "function" && Object.hasOwnProperty.call(globalThis[k], "prototype"))
+			Object.freeze(globalThis[k].prototype);
+
+		Object.defineProperty(globalThis, k, {
+			writable: false,
+			configurable: false,
+		});
 	};
+
+	// create variables
+	Object.defineProperty(globalThis, "window", { value: globalThis });
 }
+
 
 class BytebeatProcessor extends AudioWorkletProcessor {
 	constructor() {
 		super({ numberOfInputs: 0 });
 
-		this.audioSample = 0; // TODO: is this needed? might be better to use currentTime
 		this.lastFlooredTime = -1;
 		this.byteSample = 0;
 
-		this.sampleRatio = NaN;
 		this.superSample = true; // TODO: add setting for this
 
-		this.lastByteValue = null;
-		this.lastValue = 0;
-		this.lastFuncValue = null;
-
-		this.isPlaying = false;
-
 		this.func = null;
-		this.calcByteValue = null;
+		this.calcOutValues = null;
 		this.songData = { sampleRate: null, mode: null };
 		this.sampleRateDivisor = 1;
-		this.playSpeed = 1;
 
 		this.postedErrorPriority = null;
 
 		Object.seal(this);
 
 		deleteGlobals();
-		freezeExistingGlobals();
-
-		this.updateSampleRatio();
+		setupGlobalScope();
 
 		this.port.addEventListener("message", this.handleMessage.bind(this));
 		this.port.start();
@@ -136,10 +101,8 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 
 		// set vars
 		for (let v of [
-			"isPlaying",
 			"songData",
 			"sampleRateDivisor",
-			"playSpeed",
 		])
 			if (data[v] !== undefined)
 				this[v] = data[v];
@@ -148,43 +111,47 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 		if (data.songData !== undefined)
 			this.updatePlaybackMode();
 
-		if (data.setByteSample !== undefined)
-			this.setByteSample(...data.setByteSample);
-
 		// other
 		if (data.code !== undefined)
 			this.refreshCode(data.code); // code is already trimmed
 
-		if (data.updateSampleRatio)
-			this.updateSampleRatio();
-
 		if (data.displayedError && this.postedErrorPriority < 2)
 			this.postedErrorPriority = null;
 	}
+	getErrorMessage(err, time) {
+		if (
+			err instanceof Error &&
+			typeof err.lineNumber === "number" &&
+			typeof err.columnNumber === "number"
+		) {
+			const message = safeStringify(err.message, false);
+
+			if (time !== undefined)
+				return `${message} (at line ${err.lineNumber - 3 * (this.songData.mode !== "Funcbeat")}, character ${err.columnNumber}, t=${time})`;
+			else
+				return `${message} (at line ${err.lineNumber - 3 * (this.songData.mode !== "Funcbeat")}, character ${err.columnNumber})`;
+		} else {
+			if (time !== undefined)
+				return `Thrown: ${safeStringify(err, true)} (at t=${time})`;
+			else
+				return `Thrown: ${safeStringify(err, true)}`;
+		}
+	}
 
 	updatePlaybackMode() {
-		this.calcByteValue = // create function based on mode
+		this.calcOutValues = // create function based on mode
 			this.songData.mode === "Bytebeat" ? funcValue => {
-				this.lastByteValue = funcValue & 255;
-				this.lastValue = this.lastByteValue / 127.5 - 1;
+				this.lastByteOut = funcValue & 255;
+				this.lastAudioOut = this.lastByteOut / 127.5 - 1;
 			} : this.songData.mode === "Signed Bytebeat" ? funcValue => {
-				this.lastByteValue = (funcValue + 128) & 255;
-				this.lastValue = this.lastByteValue / 127.5 - 1;
+				this.lastByteOut = (funcValue + 128) & 255;
+				this.lastAudioOut = this.lastByteOut / 127.5 - 1;
 			} : this.songData.mode === "Floatbeat" || this.songData.mode === "Funcbeat" ? funcValue => {
-				this.lastValue = Math.min(Math.max(funcValue, -1), 1);
-				this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
+				this.lastAudioOut = Math.min(Math.max(funcValue, -1), 1);
+				this.lastByteOut = Math.round((this.lastAudioOut + 1) * 127.5);
 			} : funcValue => {
-				this.lastByteValue = NaN;
+				this.lastByteOut = NaN;
 			};
-	}
-	setByteSample(value, clear = false) {
-		this.byteSample = value;
-		this.port.postMessage({ [clear ? "clearCanvas" : "clearDrawBuffer"]: true });
-		this.audioSample = 0;
-		this.lastFlooredTime = -1;
-		this.lastValue = 0;
-		this.lastByteValue = null;
-		this.lastFuncValue = null;
 	}
 	refreshCode(code) { // code is already trimmed
 		// create shortened functions
@@ -192,8 +159,6 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 		const values = params.map(k => Math[k]);
 		params.push("int");
 		values.push(Math.floor);
-		params.push("window");
-		values.push(globalThis);
 
 		deleteGlobals();
 
@@ -210,84 +175,40 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 			errType = "runtime";
 			if (this.songData.mode === "Funcbeat")
 				this.func = this.func();
-			this.func(0);
+			else
+				this.func(0);
 		} catch (err) {
-			// TODO: handle arbitrary thrown objects, and modified Errors
 			if (errType === "compile") {
 				this.func = oldFunc;
 				this.postedErrorPriority = 2;
 			} else
 				this.postedErrorPriority = 1;
-			this.port.postMessage({ updateUrl: true, errorMessage: { type: errType, err: getErrorMessage(err, 0), priority: this.postedErrorPriority } });
+			this.port.postMessage({ updateUrl: true, errorMessage: { type: errType, err: this.getErrorMessage(err, 0), priority: this.postedErrorPriority } });
 			return;
 		}
 		this.postedErrorPriority = null;
 		this.port.postMessage({ updateUrl: true, errorMessage: null });
 	}
-	updateSampleRatio() {
-		let flooredTimeOffset;
-		if (isNaN(this.sampleRatio))
-			flooredTimeOffset = 0;
-		else
-			flooredTimeOffset = this.lastFlooredTime - Math.floor(this.sampleRatio * this.audioSample);
-		this.sampleRatio = this.songData.sampleRate * this.playSpeed / sampleRate; // TODO: this is the only use of global sampleRate, can it be removed?
-		this.lastFlooredTime = Math.floor(this.sampleRatio * this.audioSample) - flooredTimeOffset;
-		return this.sampleRatio;
-	}
 
 	process(inputs, outputs, parameters) {
-		const chData = outputs[0][0];
-		const chDataLen = chData.length; // for performance
-		if (!chDataLen)
-			return true;
-		if (!this.isPlaying || !this.func) {
-			chData.fill(0);
-			return true;
-		}
-
-		let time = this.sampleRatio * this.audioSample;
-		let byteSample = this.byteSample; // t
-		const drawBuffer = [];
-		for (let i = 0; i < chDataLen; i++) {
-			time += this.sampleRatio;
-			const flooredTime = Math.floor(time / this.sampleRateDivisor) * this.sampleRateDivisor; // kinda like new bytesample (t) but doesnt match after timescrubbing or changing samplerate
-			if (this.lastFlooredTime !== flooredTime) {
-				const roundSample = Math.floor(byteSample / this.sampleRateDivisor) * this.sampleRateDivisor; // t after samplerate divisor
-				let funcValue; // sample value from bytebeat, could be any type
-				console.debug(byteSample, flooredTime);
-				for (let j = this.lastFlooredTime; j < flooredTime; j++) { // TODO untested
-					try {
-						if (this.songData.mode === "Funcbeat")
-							funcValue = this.func(roundSample / this.songData.sampleRate); // TODO set roundsample properly for supersampling
-						else
-							funcValue = this.func(roundSample);
-					} catch (err) {
-						if (this.postedErrorPriority === null) {
-							this.postedErrorPriority = 0;
-							this.port.postMessage({ errorMessage: { type: "runtime", err: getErrorMessage(err, roundSample) } });
-						}
-						funcValue = NaN;
-					}
-					if (!this.superSample)
-						break;
-				}
+/*
 				try {
 					funcValue = Number(funcValue);
 				} catch (err) {
 					funcValue = NaN;
 				}
-				if (funcValue !== this.lastFuncValue && !(isNaN(funcValue) && isNaN(this.lastFuncValue))) {
+				if (funcValue !== this.lastFuncOut && !(isNaN(funcValue) && isNaN(this.lastFuncOut))) {
 					if (isNaN(funcValue))
-						this.lastByteValue = NaN;
+						this.lastByteOut = NaN;
 					else
-						this.calcByteValue(funcValue);
-					drawBuffer.push({ t: roundSample, value: this.lastByteValue });
+						this.calcOutValues(funcValue);
+					drawBuffer.push({ t: roundSample, value: this.lastByteOut });
 				}
 				byteSample += flooredTime - this.lastFlooredTime;
-				this.lastFuncValue = funcValue;
+				this.lastFuncOut = funcValue;
 				this.lastFlooredTime = flooredTime;
 			}
-			chData[i] = this.lastValue;
+			chData[i] = this.lastAudioOut;
 		}
 		this.audioSample += chDataLen;
 
@@ -298,8 +219,22 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 			message.drawBuffer = drawBuffer;
 		this.port.postMessage(message);
 
-		this.byteSample = byteSample;
+		this.byteSample = byteSample;*/
 		return true;
+	}
+	getRawByteValue(t, sampleRate, sampleRateDivisor) {
+		try {
+			if (this.songData.mode === "Funcbeat")
+				return this.func(t, sampleRate / sampleRateDivisor); // TODO set roundsample properly for supersampling
+			else
+				return this.func(t);
+		} catch (err) {
+			if (this.postedErrorPriority === null) {
+				this.postedErrorPriority = 0;
+				this.port.postMessage({ errorMessage: { type: "runtime", err: this.getErrorMessage(err, roundSample) } });
+			}
+			return NaN;
+		}
 	}
 }
 
