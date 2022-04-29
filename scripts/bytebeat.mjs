@@ -337,9 +337,13 @@ Object.defineProperty(globalThis, "bytebeat", {
 		},
 		autoSizeCanvas(force) {
 			if (!this.canvasElem.dataset.forcedWidth) {
-				if (window.innerWidth >= 768 + 4) // 768 is halfway between 512 and 1024
-					this.setCanvasWidth(1024, force);
-				else
+				const innerWidth = window.innerWidth;
+				if (innerWidth >= 768 + 4) { // 768 is halfway between 512 and 1024
+					let width = 1024;
+					while (innerWidth >= width * 2 + 4)
+						width *= 2;
+					this.setCanvasWidth(width, force);
+				} else
 					this.setCanvasWidth(512, force);
 			}
 		},
