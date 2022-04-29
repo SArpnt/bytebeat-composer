@@ -105,9 +105,9 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 
 		this.sampleRatio = NaN;
 
-		this.lastByteValue = null;
-		this.lastValue = 0;
-		this.lastFuncValue = null;
+		this.lastByteValue = [null, null];
+		this.lastValue = [0, 0];
+		this.lastFuncValue = [null, null];
 
 		this.isPlaying = false;
 
@@ -163,17 +163,17 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 
 	updatePlaybackMode() {
 		this.calcByteValue = // create function based on mode
-			this.songData.mode === "Bytebeat" ? funcValue => {
-				this.lastByteValue = funcValue & 255;
-				this.lastValue = this.lastByteValue / 127.5 - 1;
-			} : this.songData.mode === "Signed Bytebeat" ? funcValue => {
-				this.lastByteValue = (funcValue + 128) & 255;
-				this.lastValue = this.lastByteValue / 127.5 - 1;
-			} : this.songData.mode === "Floatbeat" || this.songData.mode === "Funcbeat" ? funcValue => {
-				this.lastValue = Math.min(Math.max(funcValue, -1), 1);
-				this.lastByteValue = Math.round((this.lastValue + 1) * 127.5);
-			} : funcValue => {
-				this.lastByteValue = NaN;
+			this.songData.mode === "Bytebeat" ? (funcValueC, c) => {
+				this.lastByteValue[c] = funcValueC & 255;
+				this.lastValue[c] = this.lastByteValue[c] / 127.5 - 1;
+			} : this.songData.mode === "Signed Bytebeat" ? (funcValueC, c) => {
+				this.lastByteValue[c] = (funcValueC + 128) & 255;
+				this.lastValue[c] = this.lastByteValue[c] / 127.5 - 1;
+			} : this.songData.mode === "Floatbeat" || this.songData.mode === "Funcbeat" ? (funcValueC, c) => {
+				this.lastValue[c] = Math.min(Math.max(funcValueC, -1), 1);
+				this.lastByteValue[c] = Math.round((this.lastValue[c] + 1) * 127.5);
+			} : (funcValueC, c) => {
+				this.lastByteValue[c] = NaN;
 			};
 	}
 	setByteSample(value, clear = false) {
@@ -181,9 +181,11 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 		this.port.postMessage({ [clear ? "clearCanvas" : "clearDrawBuffer"]: true });
 		this.audioSample = 0;
 		this.lastFlooredTime = -1;
-		this.lastValue = 0;
-		this.lastByteValue = null;
-		this.lastFuncValue = null;
+		for (let c = 0; c < 2; c++) {
+			this.lastValue[c] = 0;
+			this.lastByteValue[c] = null;
+			this.lastFuncValue[c] = null;
+		}
 	}
 	refreshCode(code) { // code is already trimmed
 		// create shortened functions
@@ -235,12 +237,9 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 	}
 
 	process(inputs, outputs, parameters) {
-		const chData = outputs[0][0];
-		const chDataLen = chData.length; // for performance
-		if (!chDataLen)
-			return true;
-		if (!this.isPlaying || !this.func) {
-			chData.fill(0);
+		const chData = outputs[0];
+		const chDataLen = chData[0].length; // for performance
+		if (!chDataLen || !this.isPlaying || !this.func) {
 			return true;
 		}
 
@@ -265,23 +264,36 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 					}
 					funcValue = NaN;
 				}
-				try {
-					funcValue = Number(funcValue);
-				} catch (err) {
-					funcValue = NaN;
+
+				if (Array.isArray(funcValue))
+					funcValue = [funcValue[0], funcValue[1]]; // replace array for safety, arrays could have modified functions
+				else
+					funcValue = [funcValue, funcValue];
+
+				let changedSample = false;
+				for (const c in funcValue) {
+					try {
+						funcValue[c] = Number(funcValue[c]);
+					} catch (err) {
+						funcValue[c] = NaN;
+					}
+					if (funcValue[c] !== this.lastFuncValue[c] && !(isNaN(funcValue[c]) && isNaN(this.lastFuncValue[c]))) {
+						changedSample = true;
+						if (isNaN(funcValue[c]))
+							this.lastByteValue[c] = NaN;
+						else
+							this.calcByteValue(funcValue[c], c);
+					}
+					this.lastFuncValue[c] = funcValue[c];
 				}
-				if (funcValue !== this.lastFuncValue && !(isNaN(funcValue) && isNaN(this.lastFuncValue))) {
-					if (isNaN(funcValue))
-						this.lastByteValue = NaN;
-					else
-						this.calcByteValue(funcValue);
-					drawBuffer.push({ t: roundSample, value: this.lastByteValue });
-				}
+				if (changedSample)
+					drawBuffer.push({ t: roundSample, value: [this.lastByteValue[0], this.lastByteValue[1]] });
+
 				byteSample += flooredTime - this.lastFlooredTime;
-				this.lastFuncValue = funcValue;
 				this.lastFlooredTime = flooredTime;
 			}
-			chData[i] = this.lastValue;
+			chData[0][i] = this.lastValue[0];
+			chData[1][i] = this.lastValue[1];
 		}
 		this.audioSample += chDataLen;
 
