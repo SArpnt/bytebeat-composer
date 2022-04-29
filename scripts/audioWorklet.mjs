@@ -75,11 +75,6 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 	constructor() {
 		super({ numberOfInputs: 0 });
 
-		this.lastFlooredTime = -1;
-		this.byteSample = 0;
-
-		this.superSample = true; // TODO: add setting for this
-
 		this.func = null;
 		this.calcOutValues = null;
 		this.songData = { sampleRate: null, mode: null };
