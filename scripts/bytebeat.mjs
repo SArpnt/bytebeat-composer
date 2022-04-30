@@ -189,7 +189,6 @@ Object.defineProperty(globalThis, "bytebeat", {
 										keyTrap = false;
 									}
 								} else if (e.key === "Tab" && keyTrap) {
-									// TODO: undo/redo text
 									e.preventDefault();
 									const el = e.target;
 									const { selectionStart, selectionEnd } = el;
