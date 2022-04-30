@@ -44,6 +44,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 		timeCursorElem: null,
 
 		contentElem: null,
+		containerFixedElem: null,
 
 		controlTimeUnit: null,
 		controlTimeUnitLabel: null,
@@ -74,7 +75,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			await domLoaded;
 
 			this.contentElem = document.getElementById("content");
-			let songData = this.getUrlData();
+			this.containerFixedElem = document.getElementsByClassName("container-fixed")[0]; // TODO: id
 			this.initControls();
 			await this.initCodeEditor(document.getElementById("code-editor"));
 
@@ -86,6 +87,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
 
 			this.loadSettings();
+			const songData = this.getUrlData();
 			this.setSong(songData, false);
 			this.updateCounterValue();
 		},
@@ -338,21 +340,29 @@ Object.defineProperty(globalThis, "bytebeat", {
 		autoSizeCanvas(force) {
 			if (!this.canvasElem.dataset.forcedWidth) {
 				const innerWidth = window.innerWidth;
-				if (innerWidth >= 768 + 4) { // 768 is halfway between 512 and 1024
+				if (innerWidth >= 772) { // 768 is halfway between 512 and 1024, 3 added for outline
 					let width = 1024;
-					while (innerWidth >= width * 2 + 4)
+					while (innerWidth - 516 >= width * 2) // 516px = 4px (outline) + 512px (library)
 						width *= 2;
-					this.setCanvasWidth(width, force);
+					this.setCanvasWidth(width, innerWidth >= 1540, force); // see media queries in css
 				} else
-					this.setCanvasWidth(512, force);
+					this.setCanvasWidth(512, false, force);
 			}
 		},
-		setCanvasWidth(width, force = false) {
+		setCanvasWidth(width, horiz, force = false) {
 			if (this.canvasElem) {
+				const w = `${width + 4}px`;
 				if (width !== this.canvasElem.width || force) {
 					this.canvasElem.width = width;
-					this.contentElem.style.maxWidth = `${width + 4}px`; // TODO: see if it's possible to get rid of this
+					// TODO: see if it's possible to get rid of this
+					
+					this.contentElem.style.maxWidth = w;
+					this.containerFixedElem.style.maxWidth = w;
 				}
+				if (horiz) // TODO: prevent constant reflows
+					this.containerFixedElem.style.minWidth = w;
+				else
+					this.containerFixedElem.style.minWidth = "";
 			}
 		},
 		animationFrame() {
