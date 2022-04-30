@@ -351,18 +351,11 @@ Object.defineProperty(globalThis, "bytebeat", {
 		},
 		setCanvasWidth(width, horiz, force = false) {
 			if (this.canvasElem) {
-				const w = `${width + 4}px`;
 				if (width !== this.canvasElem.width || force) {
 					this.canvasElem.width = width;
 					// TODO: see if it's possible to get rid of this
-					
-					this.contentElem.style.maxWidth = w;
-					this.containerFixedElem.style.maxWidth = w;
+					this.contentElem.style.maxWidth = `${width + 4}px`;
 				}
-				if (horiz) // TODO: prevent constant reflows
-					this.containerFixedElem.style.minWidth = w;
-				else
-					this.containerFixedElem.style.minWidth = "";
 			}
 		},
 		animationFrame() {
