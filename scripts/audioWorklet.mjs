@@ -47,7 +47,8 @@ function safeStringify(value, quoteString) {
 function deleteGlobals() {
 	// TODO: delete non enumerables
 	for (let v in globalThis)
-		delete globalThis[v];
+		if (v !== "currentFrame")
+			delete globalThis[v];
 }
 
 
@@ -76,7 +77,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 		super({ numberOfInputs: 0 });
 
 		this.func = null;
-		this.calcOutValues = null;
+		this.calcOutValue = null;
 		this.songData = { sampleRate: null, mode: null };
 		this.sampleRateDivisor = 1;
 
@@ -134,19 +135,15 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 	}
 
 	updatePlaybackMode() {
-		this.calcOutValues = // create function based on mode
-			this.songData.mode === "Bytebeat" ? funcValue => {
-				this.lastByteOut = funcValue & 255;
-				this.lastAudioOut = this.lastByteOut / 127.5 - 1;
-			} : this.songData.mode === "Signed Bytebeat" ? funcValue => {
-				this.lastByteOut = (funcValue + 128) & 255;
-				this.lastAudioOut = this.lastByteOut / 127.5 - 1;
-			} : this.songData.mode === "Floatbeat" || this.songData.mode === "Funcbeat" ? funcValue => {
-				this.lastAudioOut = Math.min(Math.max(funcValue, -1), 1);
-				this.lastByteOut = Math.round((this.lastAudioOut + 1) * 127.5);
-			} : funcValue => {
-				this.lastByteOut = NaN;
-			};
+		this.calcOutValue = // create function based on mode
+			this.songData.mode === "Bytebeat" ?
+				funcValueC => (funcValueC & 255) / 127.5 - 1
+			: this.songData.mode === "Signed Bytebeat" ?
+				funcValueC => ((funcValueC + 128) & 255) / 127.5 - 1
+			: this.songData.mode === "Floatbeat" || this.songData.mode === "Funcbeat" ?
+				funcValueC => Math.min(Math.max(funcValueC, -1), 1)
+			:
+				() => NaN;
 	}
 	refreshCode(code) { // code is already trimmed
 		// create shortened functions
@@ -186,50 +183,45 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 	}
 
 	process(inputs, outputs, parameters) {
-/*
-				try {
-					funcValue = Number(funcValue);
-				} catch (err) {
-					funcValue = NaN;
+		const chData = outputs[0];
+		const chDataLen = chData[0].length; // for performance
+		if (!chDataLen || !this.func)
+			return true;
+
+		for (let t = 0; t < chDataLen; t++) {
+			const roundSample = Math.floor((t + currentFrame) / this.sampleRateDivisor) * this.sampleRateDivisor; // TODO: remove currentFrame
+			let funcValue;
+			try {
+				if (this.songData.mode === "Funcbeat")
+					funcValue = this.func(roundSample / this.songData.sampleRate, this.songData.sampleRate / this.sampleRateDivisor);
+				else
+					funcValue = this.func(roundSample);
+			} catch (err) {
+				if (this.postedErrorPriority === null) {
+					this.postedErrorPriority = 0;
+					this.port.postMessage({ errorMessage: { type: "runtime", err: getErrorMessage(err, roundSample) } });
 				}
-				if (funcValue !== this.lastFuncOut && !(isNaN(funcValue) && isNaN(this.lastFuncOut))) {
-					if (isNaN(funcValue))
-						this.lastByteOut = NaN;
-					else
-						this.calcOutValues(funcValue);
-					drawBuffer.push({ t: roundSample, value: this.lastByteOut });
-				}
-				byteSample += flooredTime - this.lastFlooredTime;
-				this.lastFuncOut = funcValue;
-				this.lastFlooredTime = flooredTime;
+				funcValue = NaN;
 			}
-			chData[i] = this.lastAudioOut;
-		}
-		this.audioSample += chDataLen;
 
-		const message = {};
-		if (byteSample !== this.byteSample)
-			message.byteSample = byteSample;
-		if (drawBuffer.length)
-			message.drawBuffer = drawBuffer;
-		this.port.postMessage(message);
-
-		this.byteSample = byteSample;*/
-		return true;
-	}
-	getRawByteValue(t, sampleRate, sampleRateDivisor) {
-		try {
-			if (this.songData.mode === "Funcbeat")
-				return this.func(t, sampleRate / sampleRateDivisor); // TODO set roundsample properly for supersampling
+			if (Array.isArray(funcValue))
+				funcValue = [funcValue[0], funcValue[1]]; // replace array for safety, arrays could have modified functions
 			else
-				return this.func(t);
-		} catch (err) {
-			if (this.postedErrorPriority === null) {
-				this.postedErrorPriority = 0;
-				this.port.postMessage({ errorMessage: { type: "runtime", err: this.getErrorMessage(err, roundSample) } });
+				funcValue = [funcValue, funcValue];
+
+			for (const c in funcValue) {
+				try {
+					funcValue[c] = Number(funcValue[c]);
+				} catch (err) {
+					funcValue[c] = NaN;
+				}
+				if (isNaN(funcValue[c]))
+					chData[c][t] = NaN;
+				else
+					chData[c][t] = this.calcOutValue(funcValue[c]);
 			}
-			return NaN;
 		}
+		return true;
 	}
 }
 

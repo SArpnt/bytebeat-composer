@@ -44,6 +44,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 		timeCursorElem: null,
 
 		contentElem: null,
+		containerFixedElem: null,
 
 		controlTimeUnit: null,
 		controlTimeUnitLabel: null,
@@ -74,7 +75,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			await domLoaded;
 
 			this.contentElem = document.getElementById("content");
-			let songData = this.getUrlData();
+			this.containerFixedElem = document.getElementsByClassName("container-fixed")[0]; // TODO: id
 			this.initControls();
 			await this.initCodeEditor(document.getElementById("code-editor"));
 
@@ -86,6 +87,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
 
 			this.loadSettings();
+			const songData = this.getUrlData();
 			this.setSong(songData, false);
 			this.updateCounterValue();
 		},
@@ -104,7 +106,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.audioGain.connect(this.audioCtx.destination);
 
 			await this.audioCtx.audioWorklet.addModule("scripts/audioWorklet.mjs");
-			this.audioWorklet = new AudioWorkletNode(this.audioCtx, "bytebeatProcessor");
+			this.audioWorklet = new AudioWorkletNode(this.audioCtx, "bytebeatProcessor", { outputChannelCount: [2] });
 			this.audioWorklet.port.addEventListener("message", this.handleMessage.bind(this));
 			this.audioWorklet.port.start();
 			this.audioWorklet.connect(this.audioGain);
@@ -186,7 +188,6 @@ Object.defineProperty(globalThis, "bytebeat", {
 										keyTrap = false;
 									}
 								} else if (e.key === "Tab" && keyTrap) {
-									// TODO: undo/redo text
 									e.preventDefault();
 									const el = e.target;
 									const { selectionStart, selectionEnd } = el;
@@ -336,17 +337,22 @@ Object.defineProperty(globalThis, "bytebeat", {
 		},
 		autoSizeCanvas(force) {
 			if (!this.canvasElem.dataset.forcedWidth) {
-				if (window.innerWidth >= 768 + 4) // 768 is halfway between 512 and 1024
-					this.setCanvasWidth(1024, force);
-				else
-					this.setCanvasWidth(512, force);
+				const innerWidth = window.innerWidth;
+				if (innerWidth >= 772) { // 768 is halfway between 512 and 1024, 3 added for outline
+					let width = 1024;
+					while (innerWidth - 516 >= width * 2) // 516px = 4px (outline) + 512px (library)
+						width *= 2;
+					this.setCanvasWidth(width, innerWidth >= 1540, force); // see media queries in css
+				} else
+					this.setCanvasWidth(512, false, force);
 			}
 		},
-		setCanvasWidth(width, force = false) {
+		setCanvasWidth(width, horiz, force = false) {
 			if (this.canvasElem) {
 				if (width !== this.canvasElem.width || force) {
 					this.canvasElem.width = width;
-					this.contentElem.style.maxWidth = `${width + 4}px`; // TODO: see if it's possible to get rid of this
+					// TODO: see if it's possible to get rid of this
+					this.contentElem.style.maxWidth = `${width + 4}px`;
 				}
 			}
 		},
@@ -537,29 +543,45 @@ Object.defineProperty(globalThis, "bytebeat", {
 					let lastBufferElem = this.drawBuffer[i - 1] ?? null;
 					let bufferElem = this.drawBuffer[i];
 					let nextBufferElemTime = this.drawBuffer[i + 1]?.t ?? endTime;
-					if (isNaN(bufferElem.value)) {
+					if (isNaN(bufferElem.value[0]) || isNaN(bufferElem.value[1]))
 						iterateOverHorizontalLine(bufferElem, nextBufferElemTime, xPos => {
 							for (let h = 0; h < 256; h++) {
 								const pos = (drawLenX * h + xPos) << 2;
-								imageData.data[pos] = 128;
+								imageData.data[pos] = 96;
 							}
 						});
-					} else if (bufferElem.value >= 0 && bufferElem.value < 256) {
-						iterateOverHorizontalLine(bufferElem, nextBufferElemTime, xPos => {
-							const pos = (drawLenX * (255 - bufferElem.value) + xPos) << 2;
-							imageData.data[pos] = imageData.data[pos + 1] = imageData.data[pos + 2] = 255;
-						},
-							// Waveform draw mode
-							isWaveform && lastBufferElem && !isNaN(lastBufferElem.value) &&
-							(xPos => {
-								const dir = lastBufferElem.value < bufferElem.value ? -1 : 1;
-								for (let h = 255 - lastBufferElem.value; h !== 255 - bufferElem.value; h += dir) {
-									const pos = (drawLenX * h + xPos) << 2;
-									if (imageData.data[pos] === 0) // don't overwrite filled cells
-										imageData.data[pos] = imageData.data[pos + 1] = imageData.data[pos + 2] = 150;
-								}
-							}));
-					}
+					for (let c = 0; c < 2; c++)
+						if (bufferElem.value[c] >= 0 && bufferElem.value[c] < 256) { // NaN check is implicit here
+							iterateOverHorizontalLine(
+								bufferElem,
+								nextBufferElemTime,
+								xPos => {
+									const pos = (drawLenX * (255 - bufferElem.value[c]) + xPos) << 2;
+									if (c)
+										imageData.data[pos] = imageData.data[pos + 2] = 255;
+									else {
+										imageData.data[pos] = 0; // clear out NaN red
+										imageData.data[pos + 1] = 255;
+									}
+								},
+								// Waveform draw mode connectors
+								isWaveform && lastBufferElem && !isNaN(lastBufferElem.value[c]) &&
+								(xPos => {
+									const dir = lastBufferElem.value[c] < bufferElem.value[c] ? -1 : 1;
+									for (let h = 255 - lastBufferElem.value[c]; h !== 255 - bufferElem.value[c]; h += dir) {
+										const pos = (drawLenX * h + xPos) << 2;
+										if (imageData.data[pos] === 0) { // don't overwrite filled cells
+											if (c)
+												imageData.data[pos] = imageData.data[pos + 2] = 150;
+											else {
+												imageData.data[pos] = 0; // clear out NaN red
+												imageData.data[pos + 1] = 150;
+											}
+										}
+									}
+								})
+							);
+						}
 				}
 				// put imageData
 				this.canvasCtx.putImageData(imageData, imagePos, 0);
