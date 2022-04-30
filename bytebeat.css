@@ -35,10 +35,10 @@ body {
 	height: 100%;
 }
 @media (min-width: 1540px) { /* 1024 (canvas) + 4 (outline) + 512 (library) */
-	#content {
+	html:not([data-embed]) #content {
 		flex-direction: row;
 		width: 100%;
-		max-width: none !important; /* override js resize handling */
+		max-width: none !important; /* override js window resize event */
 	}
 }
 
@@ -67,8 +67,8 @@ html[data-embed] .container-fixed {
 }
 @media (min-width: 1540px) { /* 1024 (canvas) + 4 (outline) + 512 (library) */
 	#code-editor-container {
-		height: 100% !important; /* override resize handle */
 		resize: none;
+		height: 100% !important; /* override resize handle */
 	}
 }
 html[data-embed] #code-editor-container {
