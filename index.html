@@ -19,11 +19,11 @@
 				<textarea id="code-editor" spellcheck="false">(t*(1+(5&t>>10))*(3+(t>>17&1?(2^2&t>>14)/3:3&(t>>13)+1))>>(3&t>>9))&(t&4096?(t*(t^t%9)|t>>3)>>1:255)</textarea>
 			</div>
 			<div id="controls">
-				<span class="control-group" id="control-time">
+				<span class="control-group control-time" id="control-time">
 					<button title="Time unit" id="control-time-unit" onclick="bytebeat.changeTimeUnit();"><label id="control-time-unit-label" for="control-time-value">t</label></button>
 					<input title="Time value" id="control-time-value" type="number" placeholder="0" style="width: 8em;" onchange="bytebeat.setByteSample(bytebeat.convertFromUnit(+this.value)); this.value = '';"></input>
 				</span>
-				<span class="control-group buttons buttons-playback">
+				<span class="control-group control-time buttons buttons-playback">
 					<button title="Pause" id="control-pause" onclick="bytebeat.togglePlay(false);">&#x23f8;</button>
 					<button title="Stop" id="control-stop" onclick="bytebeat.togglePlay(false); bytebeat.resetTime();">&#x23f9;</button>
 					<button title="Restart" id="control-restart" onclick="bytebeat.resetTime();">&#x23ee;</button>
@@ -33,17 +33,17 @@
 					<button title="Fast Forward" id="control-ff" onclick="bytebeat.setPlaySpeed(4); bytebeat.togglePlay(true);">&#x23e9;</button>
 					<button title="Record" onclick="bytebeat.rec()">&#x23fa;</button> <!-- TODO: record doesn't really fit into any control category-->
 				</span>
-				<span class="control-group buttons buttons-zoom">
+				<span class="control-group control-view buttons buttons-zoom">
 					<button title="Zoom in" id="control-scaledown" onclick="bytebeat.changeScale(-1);">+</button>
 					<button title="Zoom out" id="control-scaleup" onclick="bytebeat.changeScale(1);">-</button>
 				</span>
-				<span class="control-group">
+				<span class="control-group control-view">
 					<select title="Draw mode" id="control-draw-mode" onchange="bytebeat.setDrawMode(this.value);">
 						<option value="Points">Points</option>
 						<option value="Waveform" selected>Waveform</option>
 					</select>
 				</span>
-				<span class="control-group">
+				<span class="control-group control-song">
 					<select title="Playback mode" id="control-song-mode" onchange="bytebeat.setPlaybackMode(this.value);">
 						<option value="Bytebeat" selected>Bytebeat</option>
 						<option value="Signed Bytebeat">Signed Bytebeat</option>
@@ -52,8 +52,8 @@
 					</select>
 				</span>
 				<span class="control-group">
-					<input title="Sample rate" id="control-samplerate" class="control-round-right" type="number" min="0" step="any" list="samplerates" value="8000" style="width: 6em;" onchange="bytebeat.setSampleRate(+this.value); bytebeat.refreshCode();"><span class="text"><label for="control-samplerate">Hz</label>
-					/ </span><input id="control-samplerate-divisor" class="control-round-left control-round-right" type="number" min="1" step="1" value="1" style="width: 3em;" onchange="bytebeat.setSampleRateDivisor(+this.value); bytebeat.refreshCode();">
+					<input title="Sample rate" id="control-samplerate" class="control-song control-round-right" type="number" min="0" step="any" list="samplerates" value="8000" style="width: 6em;" onchange="bytebeat.setSampleRate(+this.value); bytebeat.refreshCode();"><span class="text"><label for="control-samplerate" class="control-song">Hz</label>
+					<label for="control-samplerate-divisor" class="control-playback">/</label></span><input title="Sample rate divisor" id="control-samplerate-divisor" class="control-playback control-round-left control-round-right" type="number" min="1" step="1" value="1" style="width: 3em;" onchange="bytebeat.setSampleRateDivisor(+this.value); bytebeat.refreshCode();">
 					<datalist id="samplerates">
 						<option value="8000">
 						<option value="11025">
@@ -64,7 +64,7 @@
 						<option value="48000">
 					</datalist>
 				</span>
-				<span class="control-group">
+				<span class="control-group control-playback">
 					<label for="control-volume" class="text">Volume:</label><input title="Volume" id="control-volume" type="range" min="0" max="1" step="any" value="0.6" oninput="bytebeat.setVolume(this);">
 				</span>
 			</div>
