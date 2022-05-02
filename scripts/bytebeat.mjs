@@ -44,7 +44,6 @@ Object.defineProperty(globalThis, "bytebeat", {
 		timeCursorElem: null,
 
 		contentElem: null,
-		containerFixedElem: null,
 
 		controlTimeUnit: null,
 		controlTimeUnitLabel: null,
@@ -75,7 +74,6 @@ Object.defineProperty(globalThis, "bytebeat", {
 			await domLoaded;
 
 			this.contentElem = document.getElementById("content");
-			this.containerFixedElem = document.getElementsByClassName("container-fixed")[0]; // TODO: id
 			this.initControls();
 			await this.initCodeEditor(document.getElementById("code-editor"));
 

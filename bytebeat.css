@@ -37,8 +37,7 @@ body {
 @media (min-width: 1540px) { /* 1024 (canvas) + 4 (outline) + 512 (library) */
 	html:not([data-embed]) #content {
 		flex-direction: row;
-		width: 100%;
-		max-width: none !important; /* override js window resize event */
+		min-width: 100%; /* override js window resize event while still letting .container-fixed inherit max-width */ 
 	}
 }
 
@@ -48,6 +47,7 @@ body {
 	box-sizing: border-box;
 	max-height: 100%;
 	flex-shrink: 0;
+	max-width: inherit;
 }
 html[data-embed] .container-fixed {
 	height: 100%;
