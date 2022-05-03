@@ -14,12 +14,4 @@ function isPlainObject(value) {
 	return false;
 }
 
-function loadScriptLate(src) {
-	const e = document.createElement("script");
-	e.type = "module";
-	e.async = "";
-	e.src = src;
-	domLoaded.then(() => document.head.append(e));
-}
-
-export { domLoaded, isPlainObject, loadScriptLate };
+export { domLoaded, isPlainObject };

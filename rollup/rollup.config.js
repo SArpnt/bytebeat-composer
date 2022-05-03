@@ -1,11 +1,17 @@
+import json from "@rollup/plugin-json";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import { terser } from "rollup-plugin-terser";
 
 export default {
-	input: "./codemirror.mjs",
+	input: [
+		"./src/scripts/bytebeat.mjs",
+		"./src/scripts/audioWorklet.mjs",
+		"./src/scripts/embed.mjs",
+	],
 	output: {
-		file: "../scripts/codemirror.min.mjs",
+		dir: "../dist/",
+		entryFileNames: "[name].mjs",
 		format: "es",
 	},
-	plugins: [nodeResolve(), terser()],
+	plugins: [json(), nodeResolve(), terser()],
 };

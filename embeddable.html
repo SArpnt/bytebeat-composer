@@ -9,14 +9,14 @@
 	<link rel="shortcut icon" href="favicon.png">
 	<link rel="stylesheet" type="text/css" href="bytebeat.css">
 
-	<link rel="modulepreload" href="./scripts/audioWorklet.mjs">
+	<link rel="modulepreload" href="./dist/audioWorklet.mjs">
 	<script>
 		globalThis.loadLibrary = false;
 		globalThis.useLocalStorage = false;
 		globalThis.useUrlData = false;
 	</script>
-	<script type="module" async src="./scripts/embed.mjs"></script>
-	<script type="module" async src="./scripts/bytebeat.mjs"></script>
+	<script type="module" async src="./dist/embed.mjs"></script>
+	<script type="module" async src="./dist/bytebeat.mjs"></script>
 </head>
 <body>
 	<main id="content">

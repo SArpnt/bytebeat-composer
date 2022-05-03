@@ -1,3 +1,5 @@
+import libraryJson from "./library.json";
+
 function parseEntry(entry) {
 	if (Array.isArray(entry.codeOriginal))
 		entry.codeOriginal = entry.codeOriginal.join("\n");
@@ -262,6 +264,4 @@ function addLibrary(library) {
 }
 
 // note: dom is already loaded when this script is ran
-fetch("library/library.json", { cache: "no-cache" })
-	.then(response => response.json())
-	.then(library => addLibrary(library))
+addLibrary(libraryJson);

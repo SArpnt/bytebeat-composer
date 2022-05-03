@@ -1,8 +1,13 @@
-import {
-	EditorState, EditorView,
-	indentUnit, keymap, indentLess, defaultKeymap, insertNewline, highlightSpecialChars, history, historyKeymap, classHighlightStyle, bracketMatching, highlightSelectionMatches, searchKeymap, commentKeymap,
-	javascript,
-} from "./codemirror.min.mjs";
+import { defaultKeymap, insertNewline, indentLess } from "@codemirror/commands";
+import { commentKeymap } from "@codemirror/comment";
+import { classHighlightStyle } from "@codemirror/highlight";
+import { history, historyKeymap } from "@codemirror/history";
+import { javascript } from "@codemirror/lang-javascript";
+import { indentUnit } from "@codemirror/language";
+import { bracketMatching } from "@codemirror/matchbrackets";
+import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
+import { EditorState } from "@codemirror/state";
+import { EditorView, keymap, highlightSpecialChars } from "@codemirror/view";
 
 let inputListener = null;
 const codeEditor = new EditorView({

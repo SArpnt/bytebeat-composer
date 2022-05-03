@@ -1,5 +1,5 @@
-import { inflateRaw, deflateRaw } from "./pako.esm.min.mjs";
-import { domLoaded, isPlainObject, loadScriptLate } from "./common.mjs";
+import { inflateRaw, deflateRaw } from "pako";
+import { domLoaded, isPlainObject } from "./common.mjs";
 
 const searchParams = new URLSearchParams(location.search);
 
@@ -77,9 +77,9 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.initControls();
 			await this.initCodeEditor(document.getElementById("code-editor"));
 
-			loadScriptLate("./scripts/fancyEditor.mjs");
+			import("./fancyEditor.mjs");
 			if (globalThis.loadLibrary !== false)
-				loadScriptLate("./scripts/library.mjs");
+				import("./library.mjs");
 
 			this.handleWindowResize(true);
 			document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
@@ -104,7 +104,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.audioGain = new GainNode(this.audioCtx);
 			this.audioGain.connect(this.audioCtx.destination);
 
-			await this.audioCtx.audioWorklet.addModule("scripts/audioWorklet.mjs");
+			await this.audioCtx.audioWorklet.addModule("dist/audioWorklet.mjs");
 			this.audioWorklet = new AudioWorkletNode(this.audioCtx, "bytebeatProcessor", { outputChannelCount: [2] });
 			this.audioWorklet.port.addEventListener("message", this.handleMessage.bind(this));
 			this.audioWorklet.port.start();

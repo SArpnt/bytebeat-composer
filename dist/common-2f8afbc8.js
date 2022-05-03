@@ -1,0 +1,1 @@
+const t=new Promise((t=>{"loading"===document.readyState?document.addEventListener("DOMContentLoaded",(()=>t())):t()}));function e(t){if(t&&"object"==typeof t){const e=Object.getPrototypeOf(t);if(e&&!Object.getPrototypeOf(e))return!0}return!1}export{t as d,e as i};
