@@ -16,6 +16,27 @@ function stripEntryToSong(entry, codeType = undefined) {
 	else
 		return { sampleRate, mode };
 }
+function createCodeTypeElem(entry, name) {
+	const codeTypeElem = document.createElement("span");
+	codeTypeElem.className = `library-song-${name}`;
+
+	const interactElem = document.createElement("button");
+	const codeElem = document.createElement("code");
+	interactElem.title = "Click to play this code";
+	interactElem.classList = "code-button";
+	codeElem.innerText = entry[name];
+	const fullSongData = stripEntryToSong(entry, name);
+	interactElem.addEventListener("click", () => bytebeat.setSong(fullSongData));
+	interactElem.append(codeElem);
+	codeTypeElem.append(interactElem);
+
+	const codeLengthElem = document.createElement("span");
+	codeLengthElem.className = "library-song-info";
+	codeLengthElem.innerText = `${entry[name].length}C`;
+	codeTypeElem.append(" ", codeLengthElem);
+
+	return codeTypeElem;
+}
 function createEntryElem(entry) {
 	const entryElem = document.createElement("li");
 
@@ -182,31 +203,13 @@ function createEntryElem(entry) {
 	}
 
 	{
-		function createCodeTypeElem(name) {
-			const codeTypeElem = document.createElement("span");
-			codeTypeElem.className = `library-song-${name}`;
-
-			const codeElem = document.createElement("code");
-			codeElem.title = "Click to play this code";
-			codeElem.innerText = entry[name];
-			const fullSongData = stripEntryToSong(entry, name);
-			codeElem.addEventListener("click", () => bytebeat.setSong(fullSongData));
-			codeTypeElem.append(codeElem);
-
-			const codeLengthElem = document.createElement("span");
-			codeLengthElem.className = "library-song-info";
-			codeLengthElem.innerText = `${entry[name].length}C`;
-			codeTypeElem.append(" ", codeLengthElem);
-
-			return codeTypeElem;
-		}
 		let codeOriginalElem = null;
 		if (entry.codeOriginal) {
-			codeOriginalElem = createCodeTypeElem("codeOriginal");
+			codeOriginalElem = createCodeTypeElem(entry, "codeOriginal");
 			entryElem.append(codeOriginalElem);
 		}
 		if (entry.codeMinified) {
-			const codeMinifiedElem = createCodeTypeElem("codeMinified");
+			const codeMinifiedElem = createCodeTypeElem(entry, "codeMinified");
 			entryElem.append(codeMinifiedElem);
 
 			const codeTypeToggleElem = document.createElement("button");

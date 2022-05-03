@@ -284,12 +284,25 @@ ul {
 	margin-block-end: .6em;
 }
 
-code {
-	font-size: 1rem;
+button.code-button {
+	background: none;
+	border: none;
+	padding: 0;
+	font: inherit;
+	outline: inherit;
+	text-align: inherit;
+	display: inline;
+
 	color: #fc4;
+	cursor: pointer;
+}
+button.code-button:focus-visible {
+	outline: 1px dotted;
+}
+button.code-button > code {
+	font-size: 1rem;
 	word-break: break-all;
 	white-space: break-spaces;
-	cursor: pointer;
 }
 .library-song-info {
 	color: grey;
@@ -334,6 +347,6 @@ h2 {
 a, a:visited {
 	color: #88d2fb;
 }
-a:hover, summary:hover, code:hover {
-	color: #ed88fb !important;
+a:hover, button.code-button:hover, summary:hover {
+	color: #ed88fb;
 }

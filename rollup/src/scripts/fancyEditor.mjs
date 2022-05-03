@@ -39,6 +39,7 @@ const codeEditor = new EditorView({
 });
 
 codeEditor.dom.id = "code-editor";
+codeEditor.dom.ariaLabel = "Code editor";
 
 // bytebeat should already exist when this script is ran
 inputListener = globalThis.bytebeat.initCodeEditor(codeEditor);
