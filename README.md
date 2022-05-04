@@ -1,7 +1,7 @@
 # bytebeat-composer
-Bytebeat player with playlists that contains many interesting formulas from the internet.
+modern bytebeat player with a library of many formulas from around the internet.
 
-Forked from StephanShi to fix bugs and add features
+originally forked from [StephanShi's website](https://github.com/SthephanShinkufag/bytebeat-composer) to fix bugs and add features, now maintained independently with different codebases.
 
 afaik this was the first bytebeat program that didn't have any bugs (the two common ones are being unable to access functions like `escape`, and editing strings like `"sin"`)  
 this program also works well with storing persistent variables, in this example `b` is used to store persistent variables
@@ -11,22 +11,32 @@ w=((t/(+"8654"[t>>11&3]+(t>>15&1))/10%1>.5)+1.5)*64,
 c=sin(t/2e3)/6+.3,
 b.b+=c*((b.a+=c*(w-b.a+(b.a-b.b)/.7))-b.b)
 ```
-all iterable and single letter variables are deleted when the bytebeat is input, so most variables between bytebeats don't conflict
+all iterable variables are deleted when the bytebeat is input, so variables between bytebeats don't conflict
 
 Longline Theory and Information Theory are played correctly since a signed bytebeat mode has been added
 
-Syntax highlighting has been added, with a good amount of useful settings but nothing intrusive
+syntax highlighting has been added, with a good amount of useful settings but nothing intrusive
+
+stereo is supported by returning an array
 
 ## warning
 
-The only security measure in place is only running the function in an AudioWorklet, on the global scope.
-As far as i can tell, this should be mostly secure, but this doesn't prevent:
+this website runs arbitrary code!
+
+i've taken many security measures, but i can't guarantee what i've done is foolproof.
+As far as i can tell, this website should be secure, but this doesn't prevent:
 - taking advantage of browser security vulnerabilities
 - sending data to other webpages (not sure about this, XMLHttpRequest isn't avalible, but i don't know if there are other ways)
 - locking up the audio thread, making controls not work (volume still works, and the page can be refreshed)
-- anything else an AudioWorklet could do that i don't know about (i know barely anything about security)
+- anything else an AudioWorklet could do that i don't know about (i really don't know that much about security)
 on a secure browser the website _should_ be safe, but i can't guarantee anything.
 If i've messed up anywhere then results could be much worse
+
+to judge yourself, these are the security measures i've taken:
+- input code is ran in an audio worklet (note that the code has access to the global scope)
+- most iterable global variables have been deleted
+- objects and prototypes of objects on the global scope have been frozen
+- variables remaining on the global scope are made unwritable and unconfigurable 
 
 ## embedding
 
