@@ -7,22 +7,22 @@
 	<meta name="description" content="JS algorithmic music generator, created by SArpnt">
 	<title>Bytebeat composer (embeddable)</title>
 	<link rel="shortcut icon" href="favicon.png">
-	<link rel="stylesheet" type="text/css" href="bytebeat.css">
+	<link rel="stylesheet" type="text/css" href="./assets/style.css">
 
-	<link rel="modulepreload" href="./dist/audioWorklet.mjs">
+	<link rel="modulepreload" href="./assets/audioWorklet.mjs">
 	<script>
 		globalThis.loadLibrary = false;
 		globalThis.useLocalStorage = false;
 		globalThis.useUrlData = false;
 	</script>
-	<script type="module" async src="./dist/embed.mjs"></script>
-	<script type="module" async src="./dist/bytebeat.mjs"></script>
+	<script type="module" async src="./assets/embed.mjs"></script>
+	<script type="module" async src="./assets/bytebeat.mjs"></script>
 </head>
 <body>
 	<main id="content">
 		<section class="container-fixed">
 			<div id="code-editor-container">
-				<textarea id="code-editor" spellcheck="false"></textarea>
+				<textarea id="code-editor" aria-label="Code editor" spellcheck="false"></textarea>
 			</div>
 			<div id="controls">
 				<span class="control-group control-time" id="control-time">

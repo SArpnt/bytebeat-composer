@@ -1,5 +1,6 @@
 import { inflateRaw, deflateRaw } from "pako";
 import { domLoaded, isPlainObject } from "./common.mjs";
+import registerAudioWorklet from "web-worker:./audioWorklet.mjs";
 
 const searchParams = new URLSearchParams(location.search);
 
@@ -104,8 +105,14 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.audioGain = new GainNode(this.audioCtx);
 			this.audioGain.connect(this.audioCtx.destination);
 
-			await this.audioCtx.audioWorklet.addModule("dist/audioWorklet.mjs");
-			this.audioWorklet = new AudioWorkletNode(this.audioCtx, "bytebeatProcessor", { outputChannelCount: [2] });
+			registerAudioWorklet(this.audioCtx);
+			class BytebeatProcessor extends AudioWorkletNode {
+				constructor(audioContext) {
+					super(audioContext, "bytebeatProcessor");
+				}
+			}
+			//await this.audioCtx.audioWorklet.addModule("assets/audioWorklet.mjs");
+			//this.audioWorklet = new AudioWorkletNode(this.audioCtx, "bytebeatProcessor", { outputChannelCount: [2] });
 			this.audioWorklet.port.addEventListener("message", this.handleMessage.bind(this));
 			this.audioWorklet.port.start();
 			this.audioWorklet.connect(this.audioGain);
