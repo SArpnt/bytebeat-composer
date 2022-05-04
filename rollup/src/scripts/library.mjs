@@ -16,19 +16,22 @@ function stripEntryToSong(entry, codeType = undefined) {
 	else
 		return { sampleRate, mode };
 }
-function createCodeTypeElem(entry, name) {
-	const codeTypeElem = document.createElement("span");
-	codeTypeElem.className = `library-song-${name}`;
-
+function createByteSnippet(text, onclick) {
 	const interactElem = document.createElement("button");
 	const codeElem = document.createElement("code");
 	interactElem.title = "Click to play this code";
 	interactElem.classList = "code-button";
-	codeElem.innerText = entry[name];
-	const fullSongData = stripEntryToSong(entry, name);
-	interactElem.addEventListener("click", () => bytebeat.setSong(fullSongData));
+	codeElem.innerText = text;
+	interactElem.addEventListener("click", onclick);
 	interactElem.append(codeElem);
-	codeTypeElem.append(interactElem);
+	return interactElem;
+}
+function createCodeTypeElem(entry, name) {
+	const codeTypeElem = document.createElement("span");
+	codeTypeElem.className = `library-song-${name}`;
+
+	const fullSongData = stripEntryToSong(entry, name);
+	codeTypeElem.append(createByteSnippet(entry[name], () => bytebeat.setSong(fullSongData)));
 
 	const codeLengthElem = document.createElement("span");
 	codeLengthElem.className = "library-song-info";
@@ -56,27 +59,29 @@ function createEntryElem(entry) {
 		} else
 			descriptionElem = document.createElement("span");
 		descriptionElem.innerHTML = entry.description;
-		const songElems = Array.from(descriptionElem.querySelectorAll("code, [data-code-file], [data-song-data]"));
+		const songElems = Array.from(descriptionElem.getElementsByTagName("byte-snippet"));
 		if (songElems.length) {
-			for (let elem of songElems) {
+			for (const elem of songElems) {
 				const songData = elem.dataset.songData ? JSON.parse(elem.dataset.songData) : {};
-				if (elem.dataset.hasOwnProperty("codeFile")) {
-					elem.addEventListener("click", () =>
-						fetch(`library/${elem.dataset.codeFile}`, { cache: "no-cache" })
-							.then(response => response.text())
-							.then(code => bytebeat.setSong(Object.assign(
+				
+				const onclick =
+					elem.dataset.hasOwnProperty("codeFile") ?
+						() =>
+							fetch(`library/${elem.dataset.codeFile}`)
+								.then(response => response.text())
+								.then(code => bytebeat.setSong(Object.assign(
+									songData,
+									{ code },
+								)))
+					:
+						() =>
+							bytebeat.setSong(Object.assign(
+								{ code: elem.innerText },
 								songData,
-								{ code },
-							)))
-					);
-				} else {
-					elem.addEventListener("click", () =>
-						bytebeat.setSong(Object.assign(
-							{ code: elem.innerText },
-							songData,
-						))
-					);
-				}
+							));
+
+				const snippetElem = createByteSnippet(elem.innerText, onclick);
+				elem.replaceWith(snippetElem);
 			}
 		}
 		entryElem.append(descriptionElem);
@@ -192,7 +197,7 @@ function createEntryElem(entry) {
 				codeFileElem.innerText = `\u25b6 ${fileType.name}`;
 				const songData = stripEntryToSong(entry);
 				codeFileElem.addEventListener("click", () =>
-					fetch(`library/${fileType.name}/${entry.file}`, { cache: "no-cache" })
+					fetch(`library/${fileType.name}/${entry.file}`)
 						.then(response => response.text())
 						.then(code => bytebeat.setSong(Object.assign(songData, { code })))
 				);

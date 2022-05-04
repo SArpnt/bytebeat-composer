@@ -299,7 +299,7 @@ button.code-button {
 button.code-button:focus-visible {
 	outline: 1px dotted;
 }
-button.code-button > code {
+code {
 	font-size: 1rem;
 	word-break: break-all;
 	white-space: break-spaces;

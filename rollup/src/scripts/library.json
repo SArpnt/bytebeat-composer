@@ -2643,7 +2643,7 @@
 	],
 	"sthephanshi": [
 		{
-			"description": "\"Explosive beat\". Formulas family discovered by experimenting with \"Explosions\" [<code>(t>>2)*(t>>5)|t>>5</code>]",
+			"description": "\"Explosive beat\". Formulas family discovered by experimenting with \"Explosions\" [<byte-snippet>(t>>2)*(t>>5)|t>>5</byte-snippet>]",
 			"children": [{
 				"codeOriginal": "(t>>4)*(t>>3)|t>>2"
 			}, {
@@ -2662,7 +2662,7 @@
 				"codeOriginal": "(t>>5)*(t>>5)|t>>2"
 			}]
 		}, {
-			"description": "\"Robocop\". Cool beat discovered by experimenting with [<code>(t>>2)*(t&16)|t>>2</code>]",
+			"description": "\"Robocop\". Cool beat discovered by experimenting with [<byte-snippet>(t>>2)*(t&16)|t>>2</byte-snippet>]",
 			"children": [{
 				"description": "Very cool sound with biting blows",
 				"codeOriginal": "(t>>2)*(t&(t&32768?16:24)|t>>(t>>8&28))|t>>2",
@@ -2742,7 +2742,7 @@
 				"codeOriginal": "t%((t&-16|t>>11)&42)<<2|t>>4"
 			}]
 		}, {
-			"description": "\"Game levels\"<br>Series of formulas discovered by experimenting with <a href='http://www.pouet.net/topic.php?which=8357&page=9#c388930' target='_blank'>viznut's code</a> [<code>t*(3+(1^5&t>>10))*(5+(3&t>>14))>>(3&t>>8)</code>]<br>Allows to get different interesting chiptune sounds!<br>",
+			"description": "\"Game levels\"<br>Series of formulas discovered by experimenting with <a href='http://www.pouet.net/topic.php?which=8357&page=9#c388930' target='_blank'>viznut's code</a> [<byte-snippet>t*(3+(1^5&t>>10))*(5+(3&t>>14))>>(3&t>>8)</byte-snippet>]<br>Allows to get different interesting chiptune sounds!<br>",
 			"children": [{
 				"description": "Let replace (3+(1^5&t>>10)) with (2-(1&-t>>11))",
 				"codeOriginal": "t*(2-(1&-t>>11))*(5+(3&t>>14))>>(3&t>>8)"
@@ -3031,7 +3031,7 @@
 			"date": "2021-06-04",
 			"codeOriginal": "(t*3&t>>6)%76"
 		}, {
-			"description": "Experiment with Running man [<code>t*(3+(1^5&t>>10))*(5+(3&t>>14))>>(3&t>>8)</code>] and Street Surfer [<code>t&4096?(t*(t^t%255)|t>>4)>>1:t>>3|(t&8192?t<<2:t)</code>]",
+			"description": "Experiment with Running man [<byte-snippet>t*(3+(1^5&t>>10))*(5+(3&t>>14))>>(3&t>>8)</byte-snippet>] and Street Surfer [<byte-snippet>t&4096?(t*(t^t%255)|t>>4)>>1:t>>3|(t&8192?t<<2:t)</byte-snippet>]",
 			"date": "2021-10-07",
 			"children": [{
 				"description": "Isolated and edited drums",
