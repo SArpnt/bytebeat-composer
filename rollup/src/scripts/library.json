@@ -257,8 +257,8 @@
 			"url": "http://www.pouet.net/topic.php?which=8357&page=8#c388898",
 			"date": "2011-10-04",
 			"sampleRate": 44100,
-			"codeMinified": "(((t>>1)*(15&(0x234568a0>>((t>>8)&28))))|((t>>1)>>(t>>11))^(t>>12))+((t>>4)&(t&24))",
 			"codeOriginal": "((t>>1)*(15&0x234568a0>>(t>>8&28))|t>>1>>(t>>11)^t>>12)+(t>>4&t&24)",
+			"codeMinified": "(((t>>1)*(15&(0x234568a0>>((t>>8)&28))))|((t>>1)>>(t>>11))^(t>>12))+((t>>4)&(t&24))",
 			"starred": 1
 		}, {
 			"description": "CA98",
@@ -2079,6 +2079,14 @@
 				"fileFormatted": true,
 				"fileOriginal": true,
 				"starred": 2
+			}, {
+				"description": "The Flower Festival",
+				"url": "https://battleofthebits.org/arena/Entry/The+Flower+Festival/17736/",
+				"date": "2015-05-09",
+				"sampleRate": 44100,
+				"file": "Jimmyoshi - The Flower Festival.js",
+				"fileOptimized": true,
+				"starred": 0
 			}, {
 				"description": "Spring Fever",
 				"url": "https://battleofthebits.org/arena/Entry/Spring+Fever/21648/",
