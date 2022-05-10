@@ -31,7 +31,7 @@ function createCodeTypeElem(entry, name) {
 	codeTypeElem.className = `library-song-${name}`;
 
 	const fullSongData = stripEntryToSong(entry, name);
-	codeTypeElem.append(createByteSnippet(entry[name], () => bytebeat.setSong(fullSongData)));
+	codeTypeElem.append(createByteSnippet(entry[name], () => globalThis.bytebeat.setSong(fullSongData)));
 
 	const codeLengthElem = document.createElement("span");
 	codeLengthElem.className = "library-song-info";
@@ -69,13 +69,13 @@ function createEntryElem(entry) {
 						() =>
 							fetch(`library/${elem.dataset.codeFile}`)
 								.then(response => response.text())
-								.then(code => bytebeat.setSong(Object.assign(
+								.then(code => globalThis.bytebeat.setSong(Object.assign(
 									songData,
 									{ code },
 								)))
 					:
 						() =>
-							bytebeat.setSong(Object.assign(
+							globalThis.bytebeat.setSong(Object.assign(
 								{ code: elem.innerText },
 								songData,
 							));
@@ -199,7 +199,7 @@ function createEntryElem(entry) {
 				codeFileElem.addEventListener("click", () =>
 					fetch(`library/${fileType.name}/${entry.file}`)
 						.then(response => response.text())
-						.then(code => bytebeat.setSong(Object.assign(songData, { code })))
+						.then(code => globalThis.bytebeat.setSong(Object.assign(songData, { code })))
 				);
 				entryElem.append(codeFileElem, " ");
 			}

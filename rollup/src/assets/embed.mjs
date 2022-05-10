@@ -33,21 +33,21 @@ window.addEventListener("message", e => {
 				}
 		}
 
-		if (data.forceScopeWidth !== undefined && bytebeat.canvasElem) {
+		if (data.forceScopeWidth !== undefined && globalThis.bytebeat.canvasElem) {
 			if (typeof data.forceScopeWidth === "number") {
-				bytebeat.canvasElem.dataset.forcedWidth = true;
-				bytebeat.setCanvasWidth(data.forceScopeWidth);
+				globalThis.bytebeat.canvasElem.dataset.forcedWidth = true;
+				globalThis.bytebeat.setCanvasWidth(data.forceScopeWidth);
 			} else {
 				delete bytebeat.canvasElem.dataset.forcedWidth;
-				bytebeat.autoSizeCanvas();
+				globalThis.bytebeat.autoSizeCanvas();
 			}
 		}
 
 		if (data.getSong) {
-			window.parent.postMessage({ song: bytebeat.getSong(true) }, "*");
+			window.parent.postMessage({ song: globalThis.bytebeat.getSong(true) }, "*");
 		}
 		if (isPlainObject(data.setSong)) {
-			bytebeat.setSong(data.setSong, false);
+			globalThis.bytebeat.setSong(data.setSong, false);
 		}
 	}
 }, false);

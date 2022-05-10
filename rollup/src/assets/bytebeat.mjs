@@ -75,9 +75,9 @@ Object.defineProperty(globalThis, "bytebeat", {
 
 			this.contentElem = document.getElementById("content");
 			this.initControls();
-			await this.initCodeEditor(document.getElementById("code-editor"));
+			await this.initTextarea(document.getElementById("code-editor"));
 
-			import("./fancyEditor.mjs");
+			import("./fancyEditor.mjs").then(this.initCodemirror.bind(this));
 			if (globalThis.loadLibrary !== false)
 				import("./library.mjs");
 
@@ -172,86 +172,77 @@ Object.defineProperty(globalThis, "bytebeat", {
 			}
 		},
 		saveData: null,
-		initCodeEditor(codeEditor) {
-			if (codeEditor instanceof Element) {
-				if (codeEditor.tagName === "TEXTAREA") {
-					// textarea
-					codeEditor.addEventListener("input", this.refreshCode.bind(this));
-					{
-						let keyTrap = true;
-						codeEditor.addEventListener("keydown", e => {
-							if (!e.altKey && !e.ctrlKey) {
-								if (e.key === "Escape") {
-									if (keyTrap) {
-										e.preventDefault();
-										keyTrap = false;
-									}
-								} else if (e.key === "Tab" && keyTrap) {
-									e.preventDefault();
-									const el = e.target;
-									const { selectionStart, selectionEnd } = el;
-									if (e.shiftKey) {
-										// remove indentation on all selected lines
-										let lines = el.value.split("\n");
-
-										let getLine = char => {
-											let line = 0;
-											for (let c = 0; ; line++) {
-												c += lines[line].length;
-												if (c > char) 1;
-												break;
-											}
-											return line;
-										};
-										let
-											startLine = getLine(selectionStart),
-											endLine = getLine(selectionEnd),
-											newSelectionStart = selectionStart,
-											newSelectionEnd = selectionEnd;
-										for (let i = startLine; i <= endLine; i++) {
-											if (lines[i][0] === "\t") {
-												lines[i] = lines[i].slice(1);
-												if (i === startLine)
-													newSelectionStart--;
-												newSelectionEnd--;
-											}
-										}
-
-										el.value = lines.join("\n");
-										el.setSelectionRange(newSelectionStart, newSelectionEnd);
-									} else {
-										// add tab character
-										el.value = `${el.value.slice(0, selectionStart)}\t${el.value.slice(selectionEnd)}`;
-										el.setSelectionRange(selectionStart + 1, selectionStart + 1);
-									}
-									this.refreshCode();
-								} else
-									keyTrap = false;
+		initTextarea(textarea) {
+			textarea.addEventListener("input", this.refreshCode.bind(this));
+			{
+				let keyTrap = true;
+				textarea.addEventListener("keydown", e => {
+					if (!e.altKey && !e.ctrlKey) {
+						if (e.key === "Escape") {
+							if (keyTrap) {
+								e.preventDefault();
+								keyTrap = false;
 							}
-						});
+						} else if (e.key === "Tab" && keyTrap) {
+							e.preventDefault();
+							const el = e.target;
+							const { selectionStart, selectionEnd } = el;
+							if (e.shiftKey) {
+								// remove indentation on all selected lines
+								let lines = el.value.split("\n");
+
+								let getLine = char => {
+									let line = 0;
+									for (let c = 0; ; line++) {
+										c += lines[line].length;
+										if (c > char) 1;
+										break;
+									}
+									return line;
+								};
+								let
+									startLine = getLine(selectionStart),
+									endLine = getLine(selectionEnd),
+									newSelectionStart = selectionStart,
+									newSelectionEnd = selectionEnd;
+								for (let i = startLine; i <= endLine; i++) {
+									if (lines[i][0] === "\t") {
+										lines[i] = lines[i].slice(1);
+										if (i === startLine)
+											newSelectionStart--;
+										newSelectionEnd--;
+									}
+								}
+
+								el.value = lines.join("\n");
+								el.setSelectionRange(newSelectionStart, newSelectionEnd);
+							} else {
+								// add tab character
+								el.value = `${el.value.slice(0, selectionStart)}\t${el.value.slice(selectionEnd)}`;
+								el.setSelectionRange(selectionStart + 1, selectionStart + 1);
+							}
+							this.refreshCode();
+						} else
+							keyTrap = false;
 					}
-					this.codeEditor = codeEditor;
-				} else {
-					throw new Error("code editor is element but not textarea");
-				}
-			} else if (codeEditor.hasOwnProperty("dom")) {
-				// codemirror from fancyeditor.mjs
-				let selection = null;
-				if (this.codeEditor) {
-					codeEditor.dispatch({ changes: { from: 0, insert: this.codeEditor.value } });
-					if (document.activeElement === this.codeEditor)
-						selection = { anchor: this.codeEditor.selectionStart, head: this.codeEditor.selectionEnd };
-				}
-				(this.codeEditor ?? document.getElementById("code-editor")).replaceWith(codeEditor.dom);
-				if (selection) {
-					codeEditor.focus();
-					codeEditor.dispatch({ selection });
-				}
-				this.codeEditor = codeEditor;
-				return this.refreshCode.bind(this);
-			} else {
-				throw new Error("code editor isn't element or codemirror");
+				});
 			}
+			this.codeEditor = textarea;
+		},
+		initCodemirror(createCodemirrorEditor) {
+			const codemirror = createCodemirrorEditor(this.refreshCode.bind(this));
+			let selection = null;
+			if (this.codeEditor) {
+				codemirror.dispatch({ changes: { from: 0, insert: this.codeEditor.value } });
+				if (document.activeElement === this.codeEditor)
+					selection = { anchor: this.codeEditor.selectionStart, head: this.codeEditor.selectionEnd };
+			}
+			(this.codeEditor ?? document.getElementById("code-editor")).replaceWith(codemirror.dom);
+			if (selection) {
+				codemirror.focus();
+				codemirror.dispatch({ selection });
+			}
+			this.codeEditor = codemirror;
 		},
 		get codeEditorText() {
 			if (this.codeEditor instanceof Element)

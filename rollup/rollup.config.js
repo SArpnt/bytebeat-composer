@@ -5,6 +5,10 @@ import worker from "rollup-plugin-workers";
 import hot_css from "rollup-plugin-hot-css";
 import { terser } from "rollup-plugin-terser";
 
+// rollup-plugin-modulepreload makes preload tags for everything and doesn't replace existing tags
+// it can't glob input files
+// it replaces the source html instead of modifying the output like it should
+
 const config = {
 	//input: [
 		//"./src/index.html",
@@ -31,7 +35,7 @@ const config = {
 		//}),
 		json(),
 		nodeResolve(),
-		worker(), // breaks json when used before it, breaks noderesolve entirely
+		//worker(), // breaks json when used before it, breaks noderesolve entirely
 	],
 };
 
