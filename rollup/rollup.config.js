@@ -1,7 +1,7 @@
 import json from "@rollup/plugin-json";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import html from "@web/rollup-plugin-html";
-import webWorkerLoader from "rollup-plugin-web-worker-loader";
+import worker from "rollup-plugin-workers";
 import hot_css from "rollup-plugin-hot-css";
 import { terser } from "rollup-plugin-terser";
 
@@ -26,22 +26,12 @@ const config = {
 			rootDir: "./src/",
 			flattenOutput: false,
 		}),
-		webWorkerLoader({
-			targetPlatform: "browser",
-			inline: false,
-			extensions: [],
-
-			webWorkerPattern: /a/,
-		}),
-		/*html({
-			rootDir: "src",
-			flatten: false,
-		}),*/
 		//hot_css({
 		//	file: "style.css",
 		//}),
 		json(),
 		nodeResolve(),
+		worker(), // breaks json when used before it, breaks noderesolve entirely
 	],
 };
 
