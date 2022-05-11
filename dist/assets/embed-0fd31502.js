@@ -1,5 +1,4 @@
-import { isPlainObject } from "./common.mjs";
-import bytebeat from "./bytebeat.mjs";
+import { i as isPlainObject, b as bytebeat } from './bytebeat-6010ed35.js';
 
 window.addEventListener("message", e => {
 	console.info("recieved message", e);

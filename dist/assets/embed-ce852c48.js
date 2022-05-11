@@ -1,4 +1,4 @@
-import { i as isPlainObject } from './common-aa272e82.js';
+import { i as isPlainObject, b as bytebeat } from './bytebeat-494ffa8a.js';
 
 window.addEventListener("message", e => {
 	console.info("recieved message", e);
@@ -33,21 +33,19 @@ window.addEventListener("message", e => {
 				}
 		}
 
-		if (data.forceScopeWidth !== undefined && globalThis.bytebeat.canvasElem) {
+		if (data.forceScopeWidth !== undefined && bytebeat.canvasElem) {
 			if (typeof data.forceScopeWidth === "number") {
-				globalThis.bytebeat.canvasElem.dataset.forcedWidth = true;
-				globalThis.bytebeat.setCanvasWidth(data.forceScopeWidth);
+				bytebeat.canvasElem.dataset.forcedWidth = true;
+				bytebeat.setCanvasWidth(data.forceScopeWidth);
 			} else {
 				delete bytebeat.canvasElem.dataset.forcedWidth;
-				globalThis.bytebeat.autoSizeCanvas();
+				bytebeat.autoSizeCanvas();
 			}
 		}
 
-		if (data.getSong) {
-			window.parent.postMessage({ song: globalThis.bytebeat.getSong(true) }, "*");
-		}
-		if (isPlainObject(data.setSong)) {
-			globalThis.bytebeat.setSong(data.setSong, false);
-		}
+		if (data.getSong)
+			window.parent.postMessage({ song: bytebeat.getSong(true) }, "*");
+		if (isPlainObject(data.setSong))
+			bytebeat.setSong(data.setSong, false);
 	}
 }, false);

@@ -124,7 +124,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 
 		this.updateSampleRatio();
 
-		this.port.addEventListener("message", this.handleMessage.bind(this));
+		this.port.addEventListener("message", () => this.handleMessage());
 		this.port.start();
 	}
 

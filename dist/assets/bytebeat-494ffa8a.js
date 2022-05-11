@@ -1,4 +1,18 @@
-import { d as domLoaded, i as isPlainObject } from './common-aa272e82.js';
+const domLoaded = new Promise(resolve => {
+	if (document.readyState === "loading")
+		document.addEventListener("DOMContentLoaded", () => resolve());
+	else
+		resolve();
+});
+
+function isPlainObject(value) {
+	if (value && typeof value === "object") {
+		const proto = Object.getPrototypeOf(value);
+		if (proto && !Object.getPrototypeOf(proto))
+			return true;
+	}
+	return false;
+}
 
 /*! pako 2.0.4 https://github.com/nodeca/pako @license (MIT AND Zlib) */
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -6691,7 +6705,7 @@ const timeUnits = [
 	"s", // sec
 ];
 
-Object.defineProperty(globalThis, "bytebeat", {
+const bytebeat = {
 	value: Object.seal({
 		audioCtx: null,
 		audioWorklet: null,
@@ -6740,7 +6754,6 @@ Object.defineProperty(globalThis, "bytebeat", {
 		canvasTogglePlay: null,
 
 		async init() {
-			this.animationFrame = this.animationFrame.bind(this);
 			{
 				const a = document.createElement("a");
 				this.saveData = function saveData(blob, fileName) {
@@ -6760,12 +6773,12 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.initControls();
 			await this.initTextarea(document.getElementById("code-editor"));
 
-			import('./fancyEditor-d8c6d344.js').then(this.initCodemirror.bind(this));
+			import('./fancyEditor-d8c6d344.js').then(o => this.initCodemirror(o.default));
 			if (globalThis.loadLibrary !== false)
-				import('./library-f9588496.js');
+				import('./library-3c2110f8.js');
 
 			this.handleWindowResize(true);
-			document.defaultView.addEventListener("resize", this.handleWindowResize.bind(this, false));
+			document.defaultView.addEventListener("resize", () => this.handleWindowResize(false));
 
 			this.loadSettings();
 			const songData = this.getUrlData();
@@ -6787,9 +6800,9 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.audioGain = new GainNode(this.audioCtx);
 			this.audioGain.connect(this.audioCtx.destination);
 
-			await this.audioCtx.audioWorklet.addModule(new URL('audioWorklet-c1394464.js', import.meta.url).href);
+			await this.audioCtx.audioWorklet.addModule(new URL('audioWorklet-fb2d6186.js', import.meta.url).href);
 			this.audioWorklet = new AudioWorkletNode(this.audioCtx, "bytebeatProcessor", { outputChannelCount: [2] });
-			this.audioWorklet.port.addEventListener("message", this.handleMessage.bind(this));
+			this.audioWorklet.port.addEventListener("message", () => this.handleMessage());
 			this.audioWorklet.port.start();
 			this.audioWorklet.connect(this.audioGain);
 			
@@ -6856,7 +6869,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 		},
 		saveData: null,
 		initTextarea(textarea) {
-			textarea.addEventListener("input", this.refreshCode.bind(this));
+			textarea.addEventListener("input", () => this.refreshCode());
 			{
 				let keyTrap = true;
 				textarea.addEventListener("keydown", e => {
@@ -6912,8 +6925,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.codeEditor = textarea;
 		},
 		initCodemirror(createCodemirrorEditor) {
-			console.log(createCodemirrorEditor);
-			const codemirror = createCodemirrorEditor(this.refreshCode.bind(this));
+			const codemirror = createCodemirrorEditor(() => this.refreshCode());
 			let selection = null;
 			if (this.codeEditor) {
 				codemirror.dispatch({ changes: { from: 0, insert: this.codeEditor.value } });
@@ -7035,7 +7047,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 				this.showErrorMessage(this.nextErrType, this.nextErr, this.nextErrPriority);
 
 			if (this.isPlaying)
-				this.animationFrameId = window.requestAnimationFrame(this.animationFrame);
+				this.animationFrameId = window.requestAnimationFrame(() => this.animationFrame());
 			else
 				this.animationFrameId = null;
 		},
@@ -7461,6 +7473,8 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.setTimeUnit(undefined, false);
 		}
 	})
-});
+};
 
 bytebeat.init();
+
+export { bytebeat as b, isPlainObject as i };
