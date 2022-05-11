@@ -77,7 +77,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.initControls();
 			await this.initTextarea(document.getElementById("code-editor"));
 
-			import("./fancyEditor.mjs").then(this.initCodemirror.bind(this));
+			import("./fancyEditor.mjs").then(o => this.initCodemirror(o.default));
 			if (globalThis.loadLibrary !== false)
 				import("./library.mjs");
 
@@ -230,6 +230,7 @@ Object.defineProperty(globalThis, "bytebeat", {
 			this.codeEditor = textarea;
 		},
 		initCodemirror(createCodemirrorEditor) {
+			console.log(createCodemirrorEditor)
 			const codemirror = createCodemirrorEditor(this.refreshCode.bind(this));
 			let selection = null;
 			if (this.codeEditor) {

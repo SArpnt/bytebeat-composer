@@ -35,7 +35,7 @@ const config = {
 		//}),
 		json(),
 		nodeResolve(),
-		//worker(), // breaks json when used before it, breaks noderesolve entirely
+		worker(),
 	],
 };
 
