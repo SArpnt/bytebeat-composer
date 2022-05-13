@@ -32,8 +32,7 @@ function jsOptimize(script, isExpression = true) {
 		}
 	}
 	return script;
-};
-
+}
 function safeStringify(value, quoteString) {
 	if (!quoteString && typeof value === "string")
 		return value;
@@ -64,7 +63,7 @@ function getErrorMessage(err, time) {
 // delete most enumerable variables, and all single letter variables (not foolproof but works well enough)
 function deleteGlobals() {
 	for (let i = 0; i < 26; i++)
-		delete globalThis[String.fromCharCode(65 + i)], globalThis[String.fromCharCode(97 + i)];
+		delete globalThis[String.fromCharCode(65 + i)];
 	for (let v in globalThis)
 		if (![ // TODO: get rid of these global variables
 			"currentFrame",
@@ -92,8 +91,7 @@ function freezeExistingGlobals() {
 				configurable: false,
 			});
 		}
-	};
-}
+	}}
 
 class BytebeatProcessor extends AudioWorkletProcessor {
 	constructor() {
@@ -126,7 +124,7 @@ class BytebeatProcessor extends AudioWorkletProcessor {
 
 		this.updateSampleRatio();
 
-		this.port.addEventListener("message", () => this.handleMessage());
+		this.port.addEventListener("message", e => this.handleMessage(e));
 		this.port.start();
 	}
 

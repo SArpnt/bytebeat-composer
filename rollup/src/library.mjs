@@ -198,7 +198,7 @@ function createEntryElem(entry) {
 				codeFileElem.innerText = `\u25b6 ${fileType.name}`;
 				const songData = stripEntryToSong(entry);
 				codeFileElem.addEventListener("click", () =>
-					fetch(`library/${fileType.name}/${entry.file}`)
+					fetch(`assets/library/${fileType.name}/${entry.file}`)
 						.then(response => response.text())
 						.then(code => bytebeat.setSong(Object.assign(songData, { code })))
 				);

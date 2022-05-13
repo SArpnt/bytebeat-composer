@@ -104,7 +104,7 @@ const bytebeat = Object.seal({
 
 		await this.audioCtx.audioWorklet.addModule("./audioWorklet.mjs");
 		this.audioWorklet = new AudioWorkletNode(this.audioCtx, "bytebeatProcessor", { outputChannelCount: [2] });
-		this.audioWorklet.port.addEventListener("message", () => this.handleMessage());
+		this.audioWorklet.port.addEventListener("message", e => this.handleMessage(e));
 		this.audioWorklet.port.start();
 		this.audioWorklet.connect(this.audioGain);
 
@@ -684,7 +684,7 @@ const bytebeat = Object.seal({
 				this.canvasTogglePlay.classList.remove("canvas-toggleplay-show");
 				if (this.audioCtx?.resume)
 					this.audioCtx.resume();
-				this.animationFrameId = window.requestAnimationFrame(this.animationFrame);
+				this.animationFrameId = window.requestAnimationFrame(() => this.animationFrame());
 			} else {
 				if (this.isRecording) {
 					this.audioRecorder.stop();
@@ -778,5 +778,7 @@ const bytebeat = Object.seal({
 });
 
 bytebeat.init();
+
+Object.defineProperty(globalThis, "bytebeat", { value: bytebeat });
 
 export default bytebeat;

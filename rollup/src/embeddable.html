@@ -6,17 +6,17 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="JS algorithmic music generator, created by SArpnt">
 	<title>Bytebeat composer (embeddable)</title>
-	<link rel="shortcut icon" href="favicon.png">
-	<link rel="stylesheet" type="text/css" href="./assets/style.css">
+	<link rel="shortcut icon" href="./assets/favicon.png">
+	<link rel="stylesheet" type="text/css" href="./style.css">
 
-	<link rel="modulepreload" href="./assets/audioWorklet.mjs">
+	<link rel="modulepreload" href="./audioWorklet.mjs">
 	<script>
 		globalThis.loadLibrary = false;
 		globalThis.useLocalStorage = false;
 		globalThis.useUrlData = false;
 	</script>
-	<script type="module" async src="./assets/embed.mjs"></script>
-	<script type="module" async src="./assets/bytebeat.mjs"></script>
+	<script type="module" async src="./embed.mjs"></script>
+	<script type="module" async src="./bytebeat.mjs"></script>
 </head>
 <body>
 	<main id="content">

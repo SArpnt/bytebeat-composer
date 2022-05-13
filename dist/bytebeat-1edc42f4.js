@@ -6772,9 +6772,9 @@ const bytebeat = Object.seal({
 		this.initControls();
 		await this.initTextarea(document.getElementById("code-editor"));
 
-		import('./fancyEditor-d8c6d344.js').then(o => this.initCodemirror(o.default));
+		import('./fancyEditor-b79151aa.js').then(o => this.initCodemirror(o.default));
 		if (globalThis.loadLibrary !== false)
-			import('./library-a4171c44.js');
+			import('./library-b976ad5b.js');
 
 		this.handleWindowResize(true);
 		document.defaultView.addEventListener("resize", () => this.handleWindowResize(false));
@@ -6799,9 +6799,9 @@ const bytebeat = Object.seal({
 		this.audioGain = new GainNode(this.audioCtx);
 		this.audioGain.connect(this.audioCtx.destination);
 
-		await this.audioCtx.audioWorklet.addModule(new URL('audioWorklet-fb2d6186.js', import.meta.url).href);
+		await this.audioCtx.audioWorklet.addModule(new URL('audioWorklet-5e279ce8.js', import.meta.url).href);
 		this.audioWorklet = new AudioWorkletNode(this.audioCtx, "bytebeatProcessor", { outputChannelCount: [2] });
-		this.audioWorklet.port.addEventListener("message", () => this.handleMessage());
+		this.audioWorklet.port.addEventListener("message", e => this.handleMessage(e));
 		this.audioWorklet.port.start();
 		this.audioWorklet.connect(this.audioGain);
 
