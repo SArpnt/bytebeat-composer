@@ -9,6 +9,8 @@ import CleanCSS from "clean-css";
 // TODO prevent moving script tag to end of body
 // TODO prevent generating file just to export to html (this does nothing)
 // TODO html plugin doesnt grab css file
+// TODO minify css ids and classes
+// TODO minify html inline code properties
 
 // rollup-plugin-modulepreload makes preload tags for everything and doesn't replace existing tags
 // it can't glob input files

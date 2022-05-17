@@ -9,7 +9,7 @@
 	<link rel="shortcut icon" href="./assets/favicon.png">
 	<link rel="stylesheet" type="text/css" href="./style.css">
 
-	<link rel="modulepreload" href="./audioWorklet.mjs">
+	<!--<link rel="modulepreload" href="./audioWorklet.mjs">-->
 	<script type="module" async src="./bytebeat.mjs"></script>
 </head>
 <body>
@@ -23,17 +23,19 @@
 					<button title="Time unit" id="control-time-unit" onclick="bytebeat.changeTimeUnit();"><label id="control-time-unit-label" for="control-time-value">t</label></button>
 					<input title="Time value" id="control-time-value" type="number" placeholder="0" style="width: 8em;" onchange="bytebeat.setByteSample(bytebeat.convertFromUnit(+this.value)); this.value = '';"></input>
 				</span>
-				<span class="control-group control-time buttons buttons-playback">
-					<button title="Pause" id="control-pause" onclick="bytebeat.togglePlay(false);">&#x23f8;</button>
-					<button title="Stop" id="control-stop" onclick="bytebeat.togglePlay(false); bytebeat.resetTime();">&#x23f9;</button>
-					<button title="Restart" id="control-restart" onclick="bytebeat.resetTime();">&#x23ee;</button>
-					<button title="Fast reverse" id="control-fr" onclick="bytebeat.setPlaySpeed(-4); bytebeat.togglePlay(true);">&#x23ea;</button>
-					<button title="Reverse" id="control-reverse" onclick="bytebeat.setPlaySpeed(-1); bytebeat.togglePlay(true);">&#x25c0;</button>
-					<button title="Play" id="control-play" onclick="bytebeat.setPlaySpeed(1); bytebeat.togglePlay(true);">&#x25b6;</button>
-					<button title="Fast Forward" id="control-ff" onclick="bytebeat.setPlaySpeed(4); bytebeat.togglePlay(true);">&#x23e9;</button>
-					<button title="Record" onclick="bytebeat.rec()">&#x23fa;</button> <!-- TODO: record doesn't really fit into any control category-->
+				<span class="control-group control-time buttons">
+					<button title="Stop" id="control-stop" onclick="bytebeat.togglePlay(false); bytebeat.resetTime();">&#x23f9;&#xfe0e;</button>
+					<button title="Restart" id="control-restart" onclick="bytebeat.resetTime();">&#x23ee;&#xfe0e;</button>
+					<button title="Fast reverse" id="control-fr" onclick="bytebeat.setPlaySpeed(-4); bytebeat.togglePlay(true);">&#x23ea;&#xfe0e;</button>
+					<button title="Reverse" id="control-reverse" onclick="bytebeat.setPlaySpeed(-1); bytebeat.togglePlay(true);">&#x23f4;&#xfe0e;</button>
+					<button title="Pause" id="control-pause" onclick="bytebeat.togglePlay(false);">&#x23f8;&#xfe0e;</button>
+					<button title="Play" id="control-play" onclick="bytebeat.setPlaySpeed(1); bytebeat.togglePlay(true);">&#x23f5;&#xfe0e;</button>
+					<button title="Fast Forward" id="control-ff" onclick="bytebeat.setPlaySpeed(4); bytebeat.togglePlay(true);">&#x23e9;&#xfe0e;</button>
 				</span>
-				<span class="control-group control-view buttons buttons-zoom">
+				<span class="control-group control-playback">
+					<input title="Volume" id="control-volume" type="range" min="0" max="1" step="any" value="0.6" oninput="bytebeat.setVolume(this);">
+				</span>
+				<span class="control-group control-view buttons">
 					<button title="Zoom in" id="control-scaledown" onclick="bytebeat.changeScale(-1);">+</button>
 					<button title="Zoom out" id="control-scaleup" onclick="bytebeat.changeScale(1);">-</button>
 				</span>
@@ -43,6 +45,12 @@
 						<option value="Waveform" selected>Waveform</option>
 					</select>
 				</span>
+				<!--<span class="control-group control-record buttons">
+					<button title="Share" onclick="">&#x1f517;&#xfe0e;</button>
+					<button title="Download" onclick="">&#x1f4e5;&#xfe0e;</button>
+					<button title="Upload" onclick="">&#x1f4e4;&#xfe0e;</button>
+					<button title="Record" onclick="">&#x23fa;&#xfe0e;</button>
+				</span>-->
 				<span class="control-group control-song">
 					<select title="Playback mode" id="control-song-mode" onchange="bytebeat.setPlaybackMode(this.value);">
 						<option value="Bytebeat" selected>Bytebeat</option>
@@ -63,9 +71,6 @@
 						<option value="44100">
 						<option value="48000">
 					</datalist>
-				</span>
-				<span class="control-group control-playback">
-					<label for="control-volume" class="text">Volume:</label><input title="Volume" id="control-volume" type="range" min="0" max="1" step="any" value="0.6" oninput="bytebeat.setVolume(this);">
 				</span>
 			</div>
 			<div id="error"></div>

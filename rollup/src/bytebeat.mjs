@@ -12,8 +12,6 @@ const bytebeat = Object.seal({
 	audioCtx: null,
 	audioWorklet: null,
 	audioGain: null,
-	audioRecorder: null,
-	recordChunks: [],
 
 	nextErrType: null,
 	nextErr: null,
@@ -27,7 +25,6 @@ const bytebeat = Object.seal({
 	byteSample: 0,
 
 	isPlaying: false,
-	isRecording: false,
 
 	songData: { sampleRate: null, mode: null },
 	playSpeed: 1,
@@ -56,17 +53,6 @@ const bytebeat = Object.seal({
 	canvasTogglePlay: null,
 
 	async init() {
-		{
-			const a = document.createElement("a");
-			this.saveData = function saveData(blob, fileName) {
-				const url = URL.createObjectURL(blob);
-				a.href = url;
-				a.download = fileName;
-				a.click();
-				setTimeout(() => window.URL.revokeObjectURL(url));
-			};
-		}
-
 		await this.initAudioContext();
 
 		await domLoaded;
@@ -107,23 +93,6 @@ const bytebeat = Object.seal({
 		this.audioWorklet.port.addEventListener("message", e => this.handleMessage(e));
 		this.audioWorklet.port.start();
 		this.audioWorklet.connect(this.audioGain);
-
-		const mediaDest = this.audioCtx.createMediaStreamDestination();
-		this.audioRecorder = new MediaRecorder(mediaDest.stream);
-		this.audioRecorder.ondataavailable = e => this.recordChunks.push(e.data);
-		this.audioRecorder.addEventListener("stop", e => {
-			let file, type;
-			const types = ["audio/webm", "audio/ogg"];
-			const files = ["track.webm", "track.ogg"];
-			while ((file = files.pop()) && !MediaRecorder.isTypeSupported(type = types.pop())) {
-				if (types.length === 0) {
-					alert("Recording not supported in this browser!");
-					break;
-				}
-			}
-			this.saveData(new Blob(this.recordChunks, { type }), file);
-		});
-		this.audioGain.connect(mediaDest);
 
 		console.info(`started audio with latency ${this.audioCtx.baseLatency * this.audioCtx.sampleRate} at ${this.audioCtx.sampleRate}Hz`);
 	},
@@ -387,15 +356,6 @@ const bytebeat = Object.seal({
 		this.controlPlaybackMode.value = playbackMode;
 	},
 
-	rec() {
-		if (this.audioCtx && !this.isRecording) {
-			this.audioRecorder.start();
-			this.isRecording = true;
-			this.recordChunks = [];
-			if (!this.isPlaying)
-				this.togglePlay(true);
-		}
-	},
 	changeScale(amount) {
 		if (amount) {
 			this.drawSettings.scale = Math.max(this.drawSettings.scale + amount, 0);
