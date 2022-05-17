@@ -2,7 +2,7 @@
  * common
  */
 
-.disabled {
+.disabled { /* TODO: rename to hidden */
 	display: none !important;
 }
 
@@ -295,6 +295,7 @@ button.code-button {
 
 	color: #fc4;
 	cursor: pointer;
+	user-select: text;
 }
 button.code-button:focus-visible {
 	outline: 1px dotted;

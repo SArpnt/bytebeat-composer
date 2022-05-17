@@ -187,9 +187,14 @@ function createEntryElem(entry) {
 
 
 	if (entry.file) {
+		/*
+		 * TODO: change library format for this to:
+		 * "fileCategories": ["minified", "original"]
+		 */
 		for (const fileType of [
 			{ name: "formatted", prop: "fileFormatted" },
 			{ name: "minified", prop: "fileMinified" },
+			{ name: "optimized", prop: "fileOptimized" },
 			{ name: "original", prop: "fileOriginal" },
 		]) {
 			if (entry[fileType.prop]) {
@@ -216,7 +221,6 @@ function createEntryElem(entry) {
 		}
 		if (entry.codeMinified) {
 			const codeMinifiedElem = createCodeTypeElem(entry, "codeMinified");
-			entryElem.append(codeMinifiedElem);
 
 			const codeTypeToggleElem = document.createElement("button");
 			codeTypeToggleElem.className = "code-type-toggle";
@@ -235,11 +239,14 @@ function createEntryElem(entry) {
 						codeOriginalElem.classList.add("disabled");
 					}
 				});
+				entryElem.insertBefore(codeTypeToggleElem, codeOriginalElem);
+				entryElem.insertBefore(document.createTextNode(" "), codeOriginalElem);
 			} else {
 				codeTypeToggleElem.disabled = "true";
+				entryElem.append(codeTypeToggleElem, " ");
 			}
 
-			entryElem.append(" ", codeTypeToggleElem);
+			entryElem.append(codeMinifiedElem);
 		}
 	}
 
