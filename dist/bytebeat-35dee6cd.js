@@ -6774,7 +6774,7 @@ const bytebeat = Object.seal({
 
 		import('./fancyEditor-b79151aa.js').then(o => this.initCodemirror(o.default));
 		if (globalThis.loadLibrary !== false)
-			import('./library-b976ad5b.js');
+			import('./library-5f4ee6c7.js');
 
 		this.handleWindowResize(true);
 		document.defaultView.addEventListener("resize", () => this.handleWindowResize(false));
@@ -7380,7 +7380,7 @@ const bytebeat = Object.seal({
 				this.canvasTogglePlay.classList.remove("canvas-toggleplay-show");
 				if (this.audioCtx?.resume)
 					this.audioCtx.resume();
-				this.animationFrameId = window.requestAnimationFrame(this.animationFrame);
+				this.animationFrameId = window.requestAnimationFrame(() => this.animationFrame());
 			} else {
 				if (this.isRecording) {
 					this.audioRecorder.stop();
@@ -7474,5 +7474,7 @@ const bytebeat = Object.seal({
 });
 
 bytebeat.init();
+
+Object.defineProperty(globalThis, "bytebeat", { value: bytebeat });
 
 export { bytebeat as b, isPlainObject as i };

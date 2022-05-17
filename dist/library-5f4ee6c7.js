@@ -1,4 +1,4 @@
-import { b as bytebeat } from './bytebeat-cae29510.js';
+import { b as bytebeat } from './bytebeat-35dee6cd.js';
 
 var classic = [
 	{

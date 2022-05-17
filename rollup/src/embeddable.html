@@ -58,7 +58,7 @@
 					</select>
 				</span>
 				<span class="control-group">
-					<input title="Sample rate" id="control-samplerate" class="control-song control-round-right" type="number" min="0" step="any" list="samplerates" value="8000" style="width: 6em;" onchange="bytebeat.setSampleRate(+this.value); bytebeat.refreshCode();"><span class="text"><label for="control-samplerate" class="control-song">Hz</label>
+					<input title="Sample rate" id="control-samplerate" class="control-song control-round-right" type="number" min="0" step="any" list="samplerates" value="8000" style="width: 6em;" onfocus="this.placeholder=this.value;this.value=''" onblur="this.value||=this.placeholder;this.placeholder=''" onchange="bytebeat.setSampleRate(+this.value); bytebeat.refreshCode();"><span class="text"><label for="control-samplerate" class="control-song">Hz</label>
 					<label for="control-samplerate-divisor" class="control-playback">/</label></span><input title="Sample rate divisor" id="control-samplerate-divisor" class="control-playback control-round-left control-round-right" type="number" min="1" step="1" value="1" style="width: 3em;" onchange="bytebeat.setSampleRateDivisor(+this.value); bytebeat.refreshCode();">
 					<datalist id="samplerates">
 						<option value="8000">
