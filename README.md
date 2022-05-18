@@ -24,18 +24,19 @@ stereo is supported by returning an array
 this website runs arbitrary code!
 
 i've taken many security measures, but i can't guarantee what i've done is foolproof.
-As far as i can tell, this website should be secure, but this doesn't prevent:
+as far as i can tell, this website should be secure, but this doesn't prevent:
 - taking advantage of browser security vulnerabilities
 - sending data to other webpages (not sure about this, XMLHttpRequest isn't avalible, but i don't know if there are other ways)
 - locking up the audio thread, making controls not work (volume still works, and the page can be refreshed)
 - anything else an AudioWorklet could do that i don't know about (i really don't know that much about security)
+
 on a secure browser the website _should_ be safe, but i can't guarantee anything.
 If i've messed up anywhere then results could be much worse
 
 to judge yourself, these are the security measures i've taken:
 - input code is ran in an audio worklet (note that the code has access to the global scope)
-- most iterable global variables have been deleted
-- objects and prototypes of objects on the global scope have been frozen
+- most iterable global variables are deleted
+- objects and prototypes of objects on the global scope are frozen
 - variables remaining on the global scope are made unwritable and unconfigurable 
 
 ## embedding
