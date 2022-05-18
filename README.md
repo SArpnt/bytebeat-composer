@@ -3,7 +3,7 @@ modern bytebeat player with a library of many formulas from around the internet.
 
 originally forked from [StephanShi's website](https://github.com/SthephanShinkufag/bytebeat-composer) to fix bugs and add features, now maintained independently with different codebases.
 
-afaik this was the first bytebeat program that didn't have any bugs (the two common ones are being unable to access functions like `escape`, and editing strings like `"sin"`)  
+afaik this was the first bytebeat program that didn't have any major playback bugs (the two common ones are being unable to access functions like `escape`, and editing strings like `"sin"`)  
 this program also works well with storing persistent variables, in this example `b` is used to store persistent variables
 ```js
 this.b??={a:0,b:0}, // this, window, and globalThis are all the same in this context
