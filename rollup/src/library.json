@@ -12,8 +12,7 @@
 				"description": "Bassline #countercomplex",
 				"url": "http://viznut.fi/demos/unix/bytebeat_formulas.txt",
 				"date": "2011-10-05",
-				"codeOriginal": "(~t>>2)*((127&t*(7&t>>10))<(245&t*(2+(5&t>>14))))",
-				"starred": 1
+				"codeOriginal": "(~t>>2)*((127&t*(7&t>>10))<(245&t*(2+(5&t>>14))))"
 			}]
 		}, {
 			"description": "Oh the headaches",
@@ -42,28 +41,24 @@
 				"url": "https://www.pouet.net/topic.php?which=8357&page=4#c388477",
 				"date": "2011-09-30",
 				"codeOriginal": "(t>>6|t|t>>(t>>16))*10+((t>>11)&7)",
-				"codeMinified": "10*(t>>6|t|t>>(t>>16))+(7&t>>11)",
-				"starred": 1
+				"codeMinified": "10*(t>>6|t|t>>(t>>16))+(7&t>>11)"
 			}, {
 				"description": "Combined xpansive's and varjohukka's stuff",
 				"url": "https://www.pouet.net/topic.php?which=8357&page=4#c388488",
 				"date": "2011-09-30",
-				"codeOriginal": "(t>>7|t|t>>6)*10+4*(t&t>>13|t>>6)",
-				"starred": 2
+				"codeOriginal": "(t>>7|t|t>>6)*10+4*(t&t>>13|t>>6)"
 			}, {
 				"description": "Another attempt at melody construction",
 				"url": "http://www.pouet.net/topic.php?which=8357&page=9#c388930",
 				"date": "2011-10-04",
 				"codeOriginal": "(t*((3+(1^t>>10&5))*(5+(3&t>>14))))>>(t>>8&3)",
-				"codeMinified": "t*(3+(1^t>>10&5))*(5+(3&t>>14))>>(t>>8&3)",
-				"starred": 2
+				"codeMinified": "t*(3+(1^t>>10&5))*(5+(3&t>>14))>>(t>>8&3)"
 			}, {
 				"description": "#countercomplex \"moon scanner generalization\", based on jaffa's formula",
 				"url": "http://viznut.fi/demos/unix/bytebeat_formulas.txt",
 				"date": "2011-10-06",
 				"codeOriginal": "((t>>5&t)-(t>>5)+(t>>5&t))+(t*((t>>14)&14))",
-				"codeMinified": "2*(t>>5&t)-(t>>5)+t*(t>>14&14)",
-				"starred": 1
+				"codeMinified": "2*(t>>5&t)-(t>>5)+t*(t>>14&14)"
 			}]
 		}, {
 			"description": "\"the 42 melody\", separately discovered by several people on irc etc",
@@ -76,8 +71,7 @@
 			"codeMinified": "t+(t&t^t>>6)-t*(t>>9&(t%16?2:6)&t>>9)"
 		} , {
 			"description": "Explosions",
-			"codeOriginal": "t>>5|(t>>2)*(t>>5)",
-			"starred": 1
+			"codeOriginal": "t>>5|(t>>2)*(t>>5)"
 		}, {
 			"description": "Wheezing modem",
 			"codeOriginal": "100*((t<<2|t>>5|t^63)&(t<<10|t>>11))"
@@ -88,16 +82,14 @@
 				"url": "https://youtu.be/qlrs2Vorw2Y?t=2m14s",
 				"date": "2011-09-30",
 				"codeOriginal": "t*5&(t>>7)|t*3&(t*4>>10)",
-				"codeMinified": "5*t&t>>7|3*t&4*t>>10",
-				"starred": 1
+				"codeMinified": "5*t&t>>7|3*t&4*t>>10"
 			}, {
 				"description": "remix of miiro's 1-line symphony",
 				"author": "stephth",
 				"url": "https://news.ycombinator.com/item?id=3063359#3064986",
 				"date": "2011-10-03",
 				"codeOriginal": "t*9&(t*1>>4)|t*5&(t>>7)|t*3&(t*4>>12)",
-				"codeMinified": "9*t&t>>4|5*t&t>>7|3*t&t>>10",
-				"starred": 1
+				"codeMinified": "9*t&t>>4|5*t&t>>7|3*t&t>>10"
 			}, {
 				"description": "percussive",
 				"author": "radavis",
@@ -125,8 +117,7 @@
 				["raer", "http://www.pouet.net/topic.php?which=8357&page=4#c388494"]],
 			"date": "2011-09-30",
 			"codeOriginal": "(t&4096)?((t*(t^t%255)|(t>>4))>>1):(t>>3)|((t&8192)?t<<2:t)",
-			"codeMinified": "t&4096?(t*(t^t%255)|t>>4)>>1:t>>3|(t&8192?t<<2:t)",
-			"starred": 2
+			"codeMinified": "t&4096?(t*(t^t%255)|t>>4)>>1:t>>3|(t&8192?t<<2:t)"
 		}, {
 			"description": "I'm late to the party",
 			"author": "rrrola",
@@ -162,16 +153,14 @@
 			"url": "http://www.pouet.net/topic.php?which=8357&page=6#c388670",
 			"date": "2011-10-02",
 			"codeOriginal": "(t&t*5|t>>6 | ((t&0xFFFF)>0x8000? (-6*t)/7 : ((t&0x1FFFF)>0x10000 ? -9*t&100 : (-9*(t&100)))/11))*10",
-			"codeMinified": "10*(t&5*t|t>>6|(t&32768?-6*t/7:(t&65536?-9*t&100:-9*(t&100))/11))",
-			"starred": 2
+			"codeMinified": "10*(t&5*t|t>>6|(t&32768?-6*t/7:(t&65536?-9*t&100:-9*(t&100))/11))"
 		}, {
 			"description": "robot out of control",
 			"author": "frenzy",
 			"url": "http://www.pouet.net/topic.php?which=8357&page=6#c388680",
 			"date": "2011-10-02",
 			"codeOriginal": "(t&64|t>>5)^(t&33|t>>8)^(t&14|t>>9|t&76)^(t|187)^(t*(t>>8&838+t>>13)&644)",
-			"codeMinified": "(t&64|t>>5)^(t&33|t>>8)^(t&14|t>>9|t&76)^(t|187)^t*(t>>8&838+t>>13)&644",
-			"starred": 1
+			"codeMinified": "(t&64|t>>5)^(t&33|t>>8)^(t&14|t>>9|t&76)^(t|187)^t*(t>>8&838+t>>13)&644"
 		}, {
 			"description": "this shit is addictive",
 			"author": "lucasvb",
@@ -191,16 +180,14 @@
 			"url": "https://forum.arduino.cc/t/one-line-algorithmic-music/73409",
 			"date": "2011-10-03",
 			"codeOriginal": "(t*(4|7&t>>13)>>((~t>>11)&1)&128) + ((t)*(t>>11&t>>13)*((~t>>9)&3)&127)",
-			"codeMinified": "(t*(4|7&t>>13)>>(~t>>11&1)&128)+(t*(t>>11&t>>13)*(~t>>9&3)&127)",
-			"starred": 2
+			"codeMinified": "(t*(4|7&t>>13)>>(~t>>11&1)&128)+(t*(t>>11&t>>13)*(~t>>9&3)&127)"
 		}, {
 			"description": "generic 3/4 buildup",
 			"author": "yumeji",
 			"url": "https://www.pouet.net/topic.php?which=8357&page=6#c388717",
 			"date": "2011-10-03",
 			"codeOriginal": "t&0x256?t>>4:t>>10",
-			"codeMinified": "t&598?t>>4:t>>10",
-			"starred": 1
+			"codeMinified": "t&598?t>>4:t>>10"
 		}, {
 			"description": "Frere Jacques",
 			"author": "Lord Graga",
@@ -227,8 +214,7 @@
 				"url": "http://www.pouet.net/topic.php?which=8357&page=10#c388980",
 				"date": "2011-10-05",
 				"codeOriginal": "t*(0x13371337>>(t>>13&27)&127)|t>>4|t<<5",
-				"codeMinified": "t*(322376503>>(t>>13&27)&127)|t>>4|t<<5",
-				"starred": 2
+				"codeMinified": "t*(322376503>>(t>>13&27)&127)|t>>4|t<<5"
 			}]
 		}, {
 			"author": "216",
@@ -237,8 +223,7 @@
 				"author": "Danharaj & 216",
 				"url": "http://www.reddit.com/r/programming/comments/kyj77/algorithmic_symphonies_from_one_line_of_code_how/",
 				"date": "2011-10-03",
-				"codeOriginal": "t|t%255|t%257",
-				"starred": 1
+				"codeOriginal": "t|t%255|t%257"
 			}, {
 				"url": "https://youtu.be/tCRPUv8V22o?t=345",
 				"date": "2011-10-10",
@@ -258,11 +243,9 @@
 			"date": "2011-10-04",
 			"sampleRate": 44100,
 			"codeOriginal": "((t>>1)*(15&0x234568a0>>(t>>8&28))|t>>1>>(t>>11)^t>>12)+(t>>4&t&24)",
-			"codeMinified": "(((t>>1)*(15&(0x234568a0>>((t>>8)&28))))|((t>>1)>>(t>>11))^(t>>12))+((t>>4)&(t&24))",
-			"starred": 1
+			"codeMinified": "(((t>>1)*(15&(0x234568a0>>((t>>8)&28))))|((t>>1)>>(t>>11))^(t>>12))+((t>>4)&(t&24))"
 		}, {
 			"description": "CA98",
-			"starred": 2,
 			"children": [{
 				"author": "rrrola",
 				"url": "http://www.pouet.net/topic.php?which=8357&page=9#c388902",
@@ -281,8 +264,7 @@
 				"author": "krcko",
 				"url": "http://viznut.fi/demos/unix/bytebeat_formulas.txt",
 				"date": "2011-10-04",
-				"codeOriginal": "(t&t>>12)*(t>>4|t>>8)",
-				"starred": 1
+				"codeOriginal": "(t&t>>12)*(t>>4|t>>8)"
 			}, {
 				"description": "The 8-bit echo",
 				"author": "[deleted]",
@@ -333,24 +315,21 @@
 			"url": "http://www.pouet.net/topic.php?which=8357&page=12#c389114",
 			"date": "2011-10-05",
 			"codeOriginal": "t*(((t>>9)^((t>>9)-1)^1)%13)",
-			"codeMinified": "(t>>9^(t>>9)-1^1)%13*t",
-			"starred": 1
+			"codeMinified": "(t>>9^(t>>9)-1^1)%13*t"
 		}, {
 			"description": "Slow progression with 8-bit Atari inspired sounds",
 			"author": "visy",
 			"url": "http://www.pouet.net/topic.php?which=8357&page=13#c389250",
 			"date": "2011-10-06",
 			"codeOriginal": "(t%25-(t>>2|t*15|t%227)-t>>3)|((t>>5)&(t<<5)*1663|(t>>3)%1544)/(t%17|t%2048 )",
-			"codeMinified": "t%25-(t>>2|15*t|t%227)-t>>3|(t>>5&1663*(t<<5)|(t>>3)%1544)/(t%17|t%2048)",
-			"starred": 1
+			"codeMinified": "t%25-(t>>2|15*t|t%227)-t>>3|(t>>5&1663*(t<<5)|(t>>3)%1544)/(t%17|t%2048)"
 		}, {
 			"description": "A bit long I suppose...but nice and soothing. Featuring a snippet from yumeji on pouet.net",
 			"author": "beyon",
 			"url": "http://countercomplex.blogspot.com/2011/10/algorithmic-symphonies-from-one-line-of.html?showComment=1318081308422#c4945456935852459432",
 			"date": "2011-10-08",
 			"codeOriginal": "t>>6^t&0x25|t+(t^t>>11)-t*((t%24?2:6)&t>>11)^t<<1&(t&0x256?t>>4:t>>10)",
-			"codeMinified": "t>>6^t&37|t+(t^t>>11)-t*((t%24?2:6)&t>>11)^t<<1&(t&598?t>>4:t>>10)",
-			"starred": 2
+			"codeMinified": "t>>6^t&37|t+(t^t>>11)-t*((t%24?2:6)&t>>11)^t<<1&(t&598?t>>4:t>>10)"
 		}, {
 			"author": "harism",
 			"url": "http://viznut.fi/demos/unix/bytebeat_formulas.txt",
@@ -363,8 +342,7 @@
 			"url": "http://countercomplex.blogspot.com/2011/10/algorithmic-symphonies-from-one-line-of.html?showComment=1318282586154#c3276288453210259061",
 			"date": "2011-10-10",
 			"codeOriginal": "20 * t*t* (t >>11)/7",
-			"codeMinified": "20*t*t*(t>>11)/7",
-			"starred": 1
+			"codeMinified": "20*t*t*(t>>11)/7"
 		}, {
 			"description": "music bugs",
 			"author": "Ola",
@@ -416,8 +394,7 @@
 			}, {
 				"date": "2014-07-11",
 				"codeOriginal": "t*(1+((t>>10)*(43+(2*(t>>(15-((t>>16)%13)))%8)))%8)*(1+(t>>14)%4)",
-				"codeMinified": "t*(1+(t>>10)*(43+2*(t>>15-(t>>16)%13)%8)%8)*(1+(t>>14)%4)",
-				"starred": 1
+				"codeMinified": "t*(1+(t>>10)*(43+2*(t>>15-(t>>16)%13)%8)%8)*(1+(t>>14)%4)"
 			}, {
 				"date": "2015-03-20",
 				"codeOriginal": "(1+(t>>10)%7)*((t*(1+(t>>13)%4))%(24+(t>>14)*9%8)&16)*10",
@@ -437,14 +414,12 @@
 				"description": "a bare-bones version",
 				"url": "http://www.pouet.net/topic.php?which=8357&page=21#c401690",
 				"date": "2012-02-25",
-				"codeOriginal": "t>>4|t*t*(t>>6&8^8)*(t>>11^t/3>>12)/(7+(t>>10&t>>14&3))",
-				"starred": 1
+				"codeOriginal": "t>>4|t*t*(t>>6&8^8)*(t>>11^t/3>>12)/(7+(t>>10&t>>14&3))"
 			}, {
 				"description": "ONE MILLION alarm clocks",
 				"url": "http://www.pouet.net/topic.php?which=8357&page=21#c401895",
 				"date": "2012-02-27",
-				"codeOriginal": "t*t/(t>>12&t>>8)<<7",
-				"starred": 1
+				"codeOriginal": "t*t/(t>>12&t>>8)<<7"
 			}]
 		}, {
 			"author": "isislovecruft",
@@ -468,13 +443,11 @@
 				"codeMinified": "(t&5*t|t>>4)+(t|t>>4*t<<7)^t>>12"
 			}, {
 				"description": "Extremely loud grinding machine",
-				"codeOriginal": "t/(t%(t>>8|t>>16))",
-				"starred": 1
+				"codeOriginal": "t/(t%(t>>8|t>>16))"
 			}, {
 				"description": "Everything is broken",
 				"codeOriginal": "(t*t/(1+(t>>9&t>>8)))&128",
-				"codeMinified": "t*t/(1+(t>>9&t>>8))&128",
-				"starred": 1
+				"codeMinified": "t*t/(1+(t>>9&t>>8))&128"
 			}, {
 				"description": "It wont stop",
 				"codeOriginal": "t*((t/401)^(t/400))",
@@ -504,24 +477,20 @@
 			"children": [{
 				"description": "1) THE SWINGS",
 				"codeOriginal": "(t%262144<131072)?(((t/64)>>3&t*2&t*10)|(t>>5&t*6)&(t>>4|t>>5)):(t%262144>131072&t%262144<163840)?(t>>4&t*8)&(t>>5|t>>4)|(t*3&t*10):(t%262144>163840&t%262144<196608)?(t>>4&t*8)&(t>>5|t>>4)|(t*3&t*6):(t%262144>196608&t%262144<229376)?(t>>4&t*8)&(t>>5|t>>4)|(t*4&t*6):(t%262144>229376&t%262144<245760)?(t>>4&t*8)&(t>>5|t>>4)|(t*4&t*2):(t>>4&t*8)&(t>>4)|(t*4&t*2)>>20",
-				"codeMinified": "131072>t%262144?t/64>>3&2*t&10*t|t>>5&6*t&(t>>4|t>>5):131072<t%262144&163840>t%262144?t>>4&8*t&(t>>5|t>>4)|3*t&10*t:163840<t%262144&196608>t%262144?t>>4&8*t&(t>>5|t>>4)|3*t&6*t:196608<t%262144&229376>t%262144?t>>4&8*t&(t>>5|t>>4)|4*t&6*t:229376<t%262144&245760>t%262144?t>>4&8*t&(t>>5|t>>4)|4*t&2*t:t>>4&8*t&t>>4|(4*t&2*t)>>20",
-				"starred": 2
+				"codeMinified": "131072>t%262144?t/64>>3&2*t&10*t|t>>5&6*t&(t>>4|t>>5):131072<t%262144&163840>t%262144?t>>4&8*t&(t>>5|t>>4)|3*t&10*t:163840<t%262144&196608>t%262144?t>>4&8*t&(t>>5|t>>4)|3*t&6*t:196608<t%262144&229376>t%262144?t>>4&8*t&(t>>5|t>>4)|4*t&6*t:229376<t%262144&245760>t%262144?t>>4&8*t&(t>>5|t>>4)|4*t&2*t:t>>4&8*t&t>>4|(4*t&2*t)>>20"
 			}, {
 				"description": "2) ZEMFIRA",
 				"url": "http://arhivach.ng/thread/28592/#71681967",
 				"codeOriginal": "((t*40>>430|t*40>>4)*430)",
-				"codeMinified": "430*(5*t>>11|5*t>>1)",
-				"starred": 1
+				"codeMinified": "430*(5*t>>11|5*t>>1)"
 			}, {
 				"description": "4) CAT-GIRL",
 				"codeOriginal": "t<35000?((t*8)|(t>>2)+(t*13)|(t>>3)%t|t>>5):(t<67500?((t*9)|(t>>2)+(t*13)|(t>>3)%t|t>>5):(t<84000?((t*9)|(t>>2)+(t*12)|(t>>3)%t|t>>5):(t<98000?((t*8)|(t>>2)+(t*12)|(t>>3)%t|t>>5):(t<129000?((t*8)|(t>>2)+(t*13)|(t>>3)%t|t>>5):t%0))))",
-				"codeMinified": "35E3>t?8*t|(t>>2)+13*t|(t>>3)%t|t>>5:67500>t?9*t|(t>>2)+13*t|(t>>3)%t|t>>5:84E3>t?9*t|(t>>2)+12*t|(t>>3)%t|t>>5:98E3>t?8*t|(t>>2)+12*t|(t>>3)%t|t>>5:129E3>t?8*t|(t>>2)+13*t|(t>>3)%t|t>>5:t%0",
-				"starred": 2
+				"codeMinified": "35E3>t?8*t|(t>>2)+13*t|(t>>3)%t|t>>5:67500>t?9*t|(t>>2)+13*t|(t>>3)%t|t>>5:84E3>t?9*t|(t>>2)+12*t|(t>>3)%t|t>>5:98E3>t?8*t|(t>>2)+12*t|(t>>3)%t|t>>5:129E3>t?8*t|(t>>2)+13*t|(t>>3)%t|t>>5:t%0"
 			}, {
 				"description": "7) RICK ROLL",
 				"codeOriginal": "t>125000?t*4.238:t>124375?t*0.01:t>125000?t*4.238:t>122500?t*4.757:t>120000?t*3.364:t>118750?t*0.01:t>115000?t*3.364:t>113750?t*3.564:t>110000?t*4:t>108750?t*0.01:t>106250?t*4.757:t>105000?t*0.01:t>102500?t*4.238:t>101250?t*3.564:t>100000?t*4.238:t>98750?t*3.564:t>97500?t*3.175:t>95000?t*3.564:t>93750?t*4:t>91250?t*4.238:t>90000?t*0.01:t>87500?t*4.757:t>86250?t*0.01:t>83750?t*4.757:t>82500?t*3.564:t>81250?t*4.238:t>80000?t*3.564:t>78750?t*3.175:t>77500?t*0.01:t>72500?t*4.757:t>71250?t*0.01:t>68750?t*5.339:t>67500?t*0.01:t>65000?t*5.339:t>63750?t*3.564:t>62500?t*4.238:t>61250?t*3.564:t>60000?t*3.175:t>52500?t*3.175:t>45000?t*4.757:t>36250?t*4.283:t>35000?t*5.339:t>33750?t*5.657:t>32500?t*6.35:t>25000?t*5.656:t>20000?t*5.04:t>18500?t*3.36:t>7500?t*5.04:t*4.236",
-				"codeMinified": "125E3<t?4.238*t:124375<t?.01*t:125E3<t?4.238*t:122500<t?4.757*t:12E4<t?3.364*t:118750<t?.01*t:115E3<t?3.364*t:113750<t?3.564*t:11E4<t?4*t:108750<t?.01*t:106250<t?4.757*t:105E3<t?.01*t:102500<t?4.238*t:101250<t?3.564*t:1E5<t?4.238*t:98750<t?3.564*t:97500<t?3.175*t:95E3<t?3.564*t:93750<t?4*t:91250<t?4.238*t:9E4<t?.01*t:87500<t?4.757*t:86250<t?.01*t:83750<t?4.757*t:82500<t?3.564*t:81250<t?4.238*t:8E4<t?3.564*t:78750<t?3.175*t:77500<t?.01*t:72500<t?4.757*t:71250<t?.01*t:68750<t?5.339*t:67500<t?.01*t:65E3<t?5.339*t:63750<t?3.564*t:62500<t?4.238*t:61250<t?3.564*t:6E4<t?3.175*t:52500<t?3.175*t:45E3<t?4.757*t:36250<t?4.283*t:35E3<t?5.339*t:33750<t?5.657*t:32500<t?6.35*t:25E3<t?5.656*t:2E4<t?5.04*t:18500<t?3.36*t:7500<t?5.04*t:4.236*t",
-				"starred": 1
+				"codeMinified": "125E3<t?4.238*t:124375<t?.01*t:125E3<t?4.238*t:122500<t?4.757*t:12E4<t?3.364*t:118750<t?.01*t:115E3<t?3.364*t:113750<t?3.564*t:11E4<t?4*t:108750<t?.01*t:106250<t?4.757*t:105E3<t?.01*t:102500<t?4.238*t:101250<t?3.564*t:1E5<t?4.238*t:98750<t?3.564*t:97500<t?3.175*t:95E3<t?3.564*t:93750<t?4*t:91250<t?4.238*t:9E4<t?.01*t:87500<t?4.757*t:86250<t?.01*t:83750<t?4.757*t:82500<t?3.564*t:81250<t?4.238*t:8E4<t?3.564*t:78750<t?3.175*t:77500<t?.01*t:72500<t?4.757*t:71250<t?.01*t:68750<t?5.339*t:67500<t?.01*t:65E3<t?5.339*t:63750<t?3.564*t:62500<t?4.238*t:61250<t?3.564*t:6E4<t?3.175*t:52500<t?3.175*t:45E3<t?4.757*t:36250<t?4.283*t:35E3<t?5.339*t:33750<t?5.657*t:32500<t?6.35*t:25E3<t?5.656*t:2E4<t?5.04*t:18500<t?3.36*t:7500<t?5.04*t:4.236*t"
 			}, {
 				"description": "9) SADLY",
 				"url": "http://arhivach.ng/thread/28592/#71681889",
@@ -531,8 +500,7 @@
 				"description": "11) THE HIT OF THE SEASON",
 				"url": "http://arhivach.ng/thread/28592/#71678428",
 				"codeOriginal": "(t>0&t<65535?t%32>(t/10000)?t>>4:t>>6:0+t>65535&t<65535*2?t%32>(t%43)?t>>4:t>>6:0+t>65535*2&t<65535*3?t%36>(t%43)?t>>4:t>>6:0+t>65535*3&t<65535*4?t%64>(t%43)?t>>4:t>>6:0+t>65535*4&t<65535*5?t%43>5?t<<3:t>>6:0+t>65535*5&t<65535*6?t%27>5?t<<3:t>>6:0+t>65535*6&t<65535*8?t%63>5?t<<3:t>>6:0)&(t>>4)",
-				"codeMinified": "(0<t&65535>t?t%32>t/1E4?t>>4:t>>6:65535<0+t&131070>t?t%32>t%43?t>>4:t>>6:131070<0+t&196605>t?t%36>t%43?t>>4:t>>6:196605<0+t&262140>t?t%64>t%43?t>>4:t>>6:262140<0+t&327675>t?5<t%43?t<<3:t>>6:327675<0+t&393210>t?5<t%27?t<<3:t>>6:393210<0+t&524280>t?5<t%63?t<<3:t>>6:0)&t>>4",
-				"starred": 1
+				"codeMinified": "(0<t&65535>t?t%32>t/1E4?t>>4:t>>6:65535<0+t&131070>t?t%32>t%43?t>>4:t>>6:131070<0+t&196605>t?t%36>t%43?t>>4:t>>6:196605<0+t&262140>t?t%64>t%43?t>>4:t>>6:262140<0+t&327675>t?5<t%43?t<<3:t>>6:327675<0+t&393210>t?5<t%27?t<<3:t>>6:393210<0+t&524280>t?5<t%63?t<<3:t>>6:0)&t>>4"
 			}, {
 				"description": "12) PSYCHEDELIC",
 				"codeOriginal": "t<40000?((t<20000?((t%(t>>9)*10)|(t/2)&t):(t*(t>>9)*10)&t/2)|(t%(t>>9)*3)&t/16):(t*(t>>9)^t)",
@@ -550,14 +518,12 @@
 			"children": [{
 				"url": "http://arhivach.ng/thread/28592/#71678984",
 				"codeOriginal": "((t>>4+t%34)|(t>>5+t%(43+(t/7777%8>4?3:0))))|(t/4)|((t/8)%32+3)",
-				"codeMinified": "t>>4+t%34|t>>5+t%(43+(4<t/7777%8?3:0))|t/4|t/8%32+3",
-				"starred": 1
+				"codeMinified": "t>>4+t%34|t>>5+t%(43+(4<t/7777%8?3:0))|t/4|t/8%32+3"
 			}, {
 				"description": "Electrohouse",
 				"url": "http://arhivach.ng/thread/28592/#71681785",
 				"codeOriginal": "t>>(((t%2?t%((t>>13)%8>=2?((t>>13)%8>=4?41:51):61):t%34)))|(~t>>4)",
-				"codeMinified": "t>>t%(t%2?t&32768?41:t&16384?51:61:34)&t>>4",
-				"starred": 2
+				"codeMinified": "t>>t%(t%2?t&32768?41:t&16384?51:61:34)&t>>4"
 			}]
 		}, {
 			"description": "fiesta",
@@ -565,16 +531,14 @@
 			"url": "https://battleofthebits.org/arena/Entry/fiesta/17514/",
 			"date": "2015-04-14",
 			"codeOriginal": "((t * (3 + (4 + ((t >> 12) % 2))*(t >> 10) % 7)) & 0x80) * 0.5 * (0.15 + (((t>>9) % 2)))",
-			"codeMinified": "(t*(3+(4+(t>>12)%2)*(t>>10)%7)&128)*.5*(.15+(t>>9)%2)",
-			"starred": 1
+			"codeMinified": "(t*(3+(4+(t>>12)%2)*(t>>10)%7)&128)*.5*(.15+(t>>9)%2)"
 		}, {
 			"description": "son of a glitch",
 			"author": "Xaser",
 			"url": "https://battleofthebits.org/arena/Entry/son+of+a+glitch.txt/17660/",
 			"date": "2015-04-29",
 			"codeOriginal": "( ( ((((t >> 10) & 44) % 32) >> 1) + ((((t >> 9) & 44) % 32) >> 1) ) * (t % (2 << 15) < (2 << 14) ? 1.0 : 0.8) * t | t >> 3 ) * (t|(t>>8|t>>6))",
-			"codeMinified": "((((t>>10&44)%32>>1)+((t>>9&44)%32>>1))*(32768>t%65536?1:.8)*t|t>>3)*(t|t>>8|t>>6)",
-			"starred": 2
+			"codeMinified": "((((t>>10&44)%32>>1)+((t>>9&44)%32>>1))*(32768>t%65536?1:.8)*t|t>>3)*(t|t>>8|t>>6)"
 		}, {
 			"author": "Gabriel Miceli",
 			"url": "https://www.youtube.com/watch?v=V4GfkFbDojc",
@@ -610,8 +574,7 @@
 				"url": "https://www.reddit.com/r/bytebeat/comments/q8cqdv/thing/",
 				"date": "2021-10-15",
 				"sampleRate": 44100,
-				"codeOriginal": "(t&t/2&t/4)*t/4E3",
-				"starred": 1
+				"codeOriginal": "(t&t/2&t/4)*t/4E3"
 			}]
 		}, {
 			"description": "Electrohouse2",
@@ -674,8 +637,7 @@
 				"date": "2021-12-12",
 				"sampleRate": 11025,
 				"codeOriginal": "(t*(t&8192?7:5)*(6-(3&t>>8)+(3&t>>9))>>(3&-t>>(t&2048?2:11))|t>>3)",
-				"codeMinified": "t*(t&8192?7:5)*(6-(3&t>>8)+(3&t>>9))>>(3&-t>>(t&2048?2:11))|t>>3",
-				"starred": 1
+				"codeMinified": "t*(t&8192?7:5)*(6-(3&t>>8)+(3&t>>9))>>(3&-t>>(t&2048?2:11))|t>>3"
 			}]
 		}, {
 			"author": "Decent-Manager-6169",
@@ -705,8 +667,7 @@
 				},
 				"url": "https://www.reddit.com/r/bytebeat/comments/rlczbs/stimmer_but_its_all_square/",
 				"date": "2021-12-21",
-				"codeOriginal": "(t*(4|7&t>>13)>>(~t>>11&1)&128)+(t*(t>>11&t>>13)*(~t>>9&3)&64)",
-				"starred": 1
+				"codeOriginal": "(t*(4|7&t>>13)>>(~t>>11&1)&128)+(t*(t>>11&t>>13)*(~t>>9&3)&64)"
 			}, {
 				"description": "Completely Reverse of \"rrrola\"",
 				"remixed": {
@@ -715,8 +676,7 @@
 				},
 				"url": "https://www.reddit.com/r/bytebeat/comments/rwdxp0/completely_reverse_of_rrrola/",
 				"date": "2022-01-05",
-				"codeOriginal": "-t*(0xCA98CA98>>(-t>>9&30)&15)|-t>>8",
-				"starred": 1
+				"codeOriginal": "-t*(0xCA98CA98>>(-t>>9&30)&15)|-t>>8"
 			}]
 		}, {
 			"description": "Bagpipes or something",
@@ -774,16 +734,14 @@
 			"url": "http://www.pouet.net/topic.php?which=8357&page=4#c388504",
 			"date": "2011-09-30",
 			"codeOriginal": "((t&4096)?((t*(t^t%255)|(t>>4))>>1):(t>>3)|((t&8192)?t <<2:t)) ^ ((((t&8192)?((t&4096)?((t&1024)?t*2:t*4):((t&512)?t*4:t*4.2)):((t&4096)?((t&1024)?t*2:t*10):((t&512)?t*2:t*8))>>2)*((t&16384)?3:2))|t*((t&16384)?1/8:1/(.01*t))>>1)",
-			"codeMinified": "(t&4096?(t*(t^t%255)|t>>4)>>1:t>>3|(t&8192?t<<2:t))^((t&8192?t&4096?t&1024?2*t:4*t:t&512?4*t:4.2*t:(t&4096?t&1024?2*t:10*t:t&512?2*t:8*t)>>2)*(t&16384?3:2)|t*(t&16384?.125:1/(.01*t))>>1)",
-			"starred": 1
+			"codeMinified": "(t&4096?(t*(t^t%255)|t>>4)>>1:t>>3|(t&8192?t<<2:t))^((t&8192?t&4096?t&1024?2*t:4*t:t&512?4*t:4.2*t:(t&4096?t&1024?2*t:10*t:t&512?2*t:8*t)>>2)*(t&16384?3:2)|t*(t&16384?.125:1/(.01*t))>>1)"
 		}, {
 			"description": "algorithmic music in a \"constructivist\" way",
 			"author": "a1k0n",
 			"url": "https://news.ycombinator.com/item?id=3063359#3064980",
 			"date": "2011-10-03",
 			"codeOriginal": "SS=function(s,o,r,p){var c=s.charCodeAt((t>>r)%p);return c==32?0:31&t*Math.pow(2,c/12-o)},SS(\"0 0     7 7     037:<<\",6,10,32) + (t&4096?SS(\"037\",4,8,3)*(4096-(t&4095))>>12 : 0)",
-			"codeMinified": "SS=(s,o,r,p)=>(c=s.charCodeAt((t>>r)%p),32==c?0:31&t*2**(c/12-o)),3*SS('0 0     7 7     037:<<',6,10,32)+5*(t&4096?SS('037',4,8,3)*(4096-(t&4095))>>12:0)",
-			"starred": 1
+			"codeMinified": "SS=(s,o,r,p)=>(c=s.charCodeAt((t>>r)%p),32==c?0:31&t*2**(c/12-o)),3*SS('0 0     7 7     037:<<',6,10,32)+5*(t&4096?SS('037',4,8,3)*(4096-(t&4095))>>12:0)"
 		}, {
 			"description": "baseline, melody, snare, volume control",
 			"author": "CC123",
@@ -791,8 +749,7 @@
 			"date": "2011-10-03",
 			"sampleRate": 11025,
 			"codeOriginal": "( ((t*4)*(((t>>>11)&1)?1:0)*(((t>>>11)&8)?0:1) + (t*2)*(((t>>>10)&1)?1:0)*(((t>>>10)&128)?0:1) +(t*4)*(((t>>>10)&1)?1:0)*(((t>>>10)&128)?1:0) + (t*sin(t)*(((t>>>10)&4)?1:0)*(((t>>>10)&1)?1:0))) % 256) * (7/10)",
-			"codeMinified": "(4*t*(t>>>11&1?1:0)*(t>>>11&8?0:1)+2*t*(t>>>10&1?1:0)*(t>>>10&128?0:1)+4*t*(t>>>10&1?1:0)*(t>>>10&128?1:0)+t*sin(t)*(t>>>10&4?1:0)*(t>>>10&1?1:0))%256*.7",
-			"starred": 1
+			"codeMinified": "(4*t*(t>>>11&1?1:0)*(t>>>11&8?0:1)+2*t*(t>>>10&1?1:0)*(t>>>10&128?0:1)+4*t*(t>>>10&1?1:0)*(t>>>10&128?1:0)+t*sin(t)*(t>>>10&4?1:0)*(t>>>10&1?1:0))%256*.7"
 		}, {
 			"description": "No Limit",
 			"children": [{
@@ -809,8 +766,7 @@
 				"date": "2011-10-05",
 				"mode": "Signed Bytebeat",
 				"codeOriginal": "sin(2000/(y=t&4095))*25+((x=t*(15&0x9866>>(t>>12&12))/6)&127)*(y/1e+4)+((t>>6^t>>8|t>>12|x)&63)",
-				"codeMinified": "sin(2e3/(y=t&4095))*25+(x=t*(15&0x9866>>(t>>12&12))/6&127)*y/1e4+((t>>6^t>>8|t>>12|x)&63)",
-				"starred": 1
+				"codeMinified": "sin(2e3/(y=t&4095))*25+(x=t*(15&0x9866>>(t>>12&12))/6&127)*y/1e4+((t>>6^t>>8|t>>12|x)&63)"
 			}]
 		}, {
 			"author": "ryg",
@@ -826,8 +782,7 @@
 				"date": "2011-10-06",
 				"sampleRate": 44100,
 				"codeOriginal": "((t*\"36364689\"[t>>13&7]/12)&128)+((((t>>12)^(t>>12)-2)%11*t/4|t>>13)&127)",
-				"codeMinified": "(t*'36364689'[t>>13&7]/12&128)+(((t>>12^(t>>12)-2)%11*t/4|t>>13)&127)",
-				"starred": 1
+				"codeMinified": "(t*'36364689'[t>>13&7]/12&128)+(((t>>12^(t>>12)-2)%11*t/4|t>>13)&127)"
 			}]
 		}, {
 			"description": "G minor Bach",
@@ -837,31 +792,26 @@
 				"date": "2011-10-05",
 				"mode": "Signed Bytebeat",
 				"codeOriginal": "30*cos(t*Math.pow(2,(\"B*918/916-918/91B*918/916-918/91>*;2:1;26/;2:1;2&g t;*;2:1;26/\"+ \";2:1;2A*;291;28/;291;2A*;291;28/;291;2B*=-;,=-91=-;,=-B*=-;,=-91=-;,=-E*&g t;6=4>69\"+ \"2>6=4>6E*>6=4>692>6=4>6D*<3:1<380<3:1<3D*< ;3:1<380<3:1<3D(=4<3=481=4<3=4D(=4<3=4\"+ \"81=4<3=4B(:18/:16.:18/:1B(:18/:16.:18/:1B&;2:1;26/;2:1;2B&;2:1; 26/;2:1;2@&;,9*;\"+ \",8/;,9*;,@&;,9*;,8/;,9*;,@%=-;,=-91=-;,=-@%=-;,=-91=-;,=->*=-;,=-92 =-;,=->*=-;,\"+ \"=-92=-;,=->,8/6-8/428/6-8/>,8/6-8/428/6-8/=-412/4192412141=-412/4192 412141;-634\"+ \"1613/634163;-6341613/634163;,8/6-8/528/6-8/;,8/6-8/528/6\").charCodeAt (t>>9)/12-7))",
-				"codeMinified": "30*cos(t*2**('B*918/916-918/91B*918/916-918/91>*;2:1;26/;2:1;2&g t;*;2:1;26/;2:1;2A*;291;28/;291;2A*;291;28/;291;2B*=-;,=-91=-;,=-B*=-;,=-91=-;,=-E*&g t;6=4>692>6=4>6E*>6=4>692>6=4>6D*<3:1<380<3:1<3D*< ;3:1<380<3:1<3D(=4<3=481=4<3=4D(=4<3=481=4<3=4B(:18/:16.:18/:1B(:18/:16.:18/:1B&;2:1;26/;2:1;2B&;2:1; 26/;2:1;2@&;,9*;,8/;,9*;,@&;,9*;,8/;,9*;,@%=-;,=-91=-;,=-@%=-;,=-91=-;,=->*=-;,=-92 =-;,=->*=-;,=-92=-;,=->,8/6-8/428/6-8/>,8/6-8/428/6-8/=-412/4192412141=-412/4192 412141;-6341613/634163;-6341613/634163;,8/6-8/528/6-8/;,8/6-8/528/6'.charCodeAt(t>>9)/12-7))",
-				"starred": 2
+				"codeMinified": "30*cos(t*2**('B*918/916-918/91B*918/916-918/91>*;2:1;26/;2:1;2&g t;*;2:1;26/;2:1;2A*;291;28/;291;2A*;291;28/;291;2B*=-;,=-91=-;,=-B*=-;,=-91=-;,=-E*&g t;6=4>692>6=4>6E*>6=4>692>6=4>6D*<3:1<380<3:1<3D*< ;3:1<380<3:1<3D(=4<3=481=4<3=4D(=4<3=481=4<3=4B(:18/:16.:18/:1B(:18/:16.:18/:1B&;2:1;26/;2:1;2B&;2:1; 26/;2:1;2@&;,9*;,8/;,9*;,@&;,9*;,8/;,9*;,@%=-;,=-91=-;,=-@%=-;,=-91=-;,=->*=-;,=-92 =-;,=->*=-;,=-92=-;,=->,8/6-8/428/6-8/>,8/6-8/428/6-8/=-412/4192412141=-412/4192 412141;-6341613/634163;-6341613/634163;,8/6-8/528/6-8/;,8/6-8/528/6'.charCodeAt(t>>9)/12-7))"
 			}, {
 				"description": "Non-COS version",
-				"codeMinified": "30*t*2**('B*918/916-918/91B*918/916-918/91>*;2:1;26/;2:1;2>*;2:1;26/;2:1;2A*;291;28/;291;2A*;291;28/;291;2B*=-;,=-91=-;,=-B*=-;,=-91=-;,=-E*>6=4>692>6=4>6E*>6=4>692>6=4>6D*<3:1<380<3:1<3D*<3:1<380<3:1<3D(=4<3=481=4<3=4D(=4<3=481=4<3=4B(:18/:16.:18/:1B(:18/:16.:18/:1B&;2:1;26/;2:1;2B&;2:1;26/;2:1;2@&;,9*;,8/;,9*;,@&;,9*;,8/;,9*;,@%=-;,=-91=-;,=-@%=-;,=-91=-;,=->*=-;,=-92=-;,=->*=-;,=-92=-;,=->,8/6-8/428/6-8/>,8/6-8/428/6-8/=-412/4192412141=-412/4192412141;-6341613/634163;-6341613/634163;,8/6-8/528/6-8/;,8/6-8/528/6'.charCodeAt(t>>9)/12-7)",
-				"starred": 2
+				"codeMinified": "30*t*2**('B*918/916-918/91B*918/916-918/91>*;2:1;26/;2:1;2>*;2:1;26/;2:1;2A*;291;28/;291;2A*;291;28/;291;2B*=-;,=-91=-;,=-B*=-;,=-91=-;,=-E*>6=4>692>6=4>6E*>6=4>692>6=4>6D*<3:1<380<3:1<3D*<3:1<380<3:1<3D(=4<3=481=4<3=4D(=4<3=481=4<3=4B(:18/:16.:18/:1B(:18/:16.:18/:1B&;2:1;26/;2:1;2B&;2:1;26/;2:1;2@&;,9*;,8/;,9*;,@&;,9*;,8/;,9*;,@%=-;,=-91=-;,=-@%=-;,=-91=-;,=->*=-;,=-92=-;,=->*=-;,=-92=-;,=->,8/6-8/428/6-8/>,8/6-8/428/6-8/=-412/4192412141=-412/4192412141;-6341613/634163;-6341613/634163;,8/6-8/528/6-8/;,8/6-8/528/6'.charCodeAt(t>>9)/12-7)"
 			}, {
 				"description": "\"Warpnig timeline\" [Slowed down, PWM changing version of G minor bach + noise]",
 				"author": "Chasyxx",
 				"url": "https://www.reddit.com/r/bytebeat/comments/qi3enp/with_new_bytecodes_already_posted_here_are_all/",
 				"date": "2021-10-29",
 				"codeOriginal": "a=(30*t*Math.pow(2,\"B*918/916-918/91B*918/916-918/91>*;2:1;26/;2:1;2>*;2:1;26/;2:1;2A*;291;28/;291;2A*;291;28/;291;2B*=-;,=-91=-;,=-B*=-;,=-91=-;,=-E*>6=4>692>6=4>6E*>6=4>692>6=4>6D*<3:1<380<3:1<3D*<3:1<380<3:1<3D(=4<3=481=4<3=4D(=4<3=481=4<3=4B(:18/:16.:18/:1B(:18/:16.:18/:1B&;2:1;26/;2:1;2B&;2:1;26/;2:1;2@&;,9*;,8/;,9*;,@&;,9*;,8/;,9*;,@%=-;,=-91=-;,=-@%=-;,=-91=-;,=->*=-;,=-92=-;,=->*=-;,=-92=-;,=->,8/6-8/428/6-8/>,8/6-8/428/6-8/=-412/4192412141=-412/4192412141;-6341613/634163;-6341613/634163;,8/6-8/528/6-8/;,8/6-8/528/6\".charCodeAt(t>>10)/12-7))%256,a>([(Math.abs(((t>>8)%256)-128))+64])?Math.random()*16:~(Math.random()*16)",
-				"codeMinified": "a=30*t*2**('B*918/916-918/91B*918/916-918/91>*;2:1;26/;2:1;2>*;2:1;26/;2:1;2A*;291;28/;291;2A*;291;28/;291;2B*=-;,=-91=-;,=-B*=-;,=-91=-;,=-E*>6=4>692>6=4>6E*>6=4>692>6=4>6D*<3:1<380<3:1<3D*<3:1<380<3:1<3D(=4<3=481=4<3=4D(=4<3=481=4<3=4B(:18/:16.:18/:1B(:18/:16.:18/:1B&;2:1;26/;2:1;2B&;2:1;26/;2:1;2@&;,9*;,8/;,9*;,@&;,9*;,8/;,9*;,@%=-;,=-91=-;,=-@%=-;,=-91=-;,=->*=-;,=-92=-;,=->*=-;,=-92=-;,=->,8/6-8/428/6-8/>,8/6-8/428/6-8/=-412/4192412141=-412/4192412141;-6341613/634163;-6341613/634163;,8/6-8/528/6-8/;,8/6-8/528/6'.charCodeAt(t>>10)/12-7)%256,a>[abs((t>>8)%256-128)+64]?16*random():~(16*random())",
-				"starred": 2
+				"codeMinified": "a=30*t*2**('B*918/916-918/91B*918/916-918/91>*;2:1;26/;2:1;2>*;2:1;26/;2:1;2A*;291;28/;291;2A*;291;28/;291;2B*=-;,=-91=-;,=-B*=-;,=-91=-;,=-E*>6=4>692>6=4>6E*>6=4>692>6=4>6D*<3:1<380<3:1<3D*<3:1<380<3:1<3D(=4<3=481=4<3=4D(=4<3=481=4<3=4B(:18/:16.:18/:1B(:18/:16.:18/:1B&;2:1;26/;2:1;2B&;2:1;26/;2:1;2@&;,9*;,8/;,9*;,@&;,9*;,8/;,9*;,@%=-;,=-91=-;,=-@%=-;,=-91=-;,=->*=-;,=-92=-;,=->*=-;,=-92=-;,=->,8/6-8/428/6-8/>,8/6-8/428/6-8/=-412/4192412141=-412/4192412141;-6341613/634163;-6341613/634163;,8/6-8/528/6-8/;,8/6-8/528/6'.charCodeAt(t>>10)/12-7)%256,a>[abs((t>>8)%256-128)+64]?16*random():~(16*random())"
 			}]
 		}, {
 			"description": "some kind of 80s synth type thing (Never Gonna Give You Up)",
 			"author": "gasman",
 			"url": "http://www.pouet.net/topic.php?which=8357&page=12#c389109",
 			"date": "2011-10-05",
-			"codeOriginal": "(t<<3)*[8/9,1,9/8,6/5,4/3,3/2,0][[0xd2d2c8,0xce4088,0xca32c8,0x8e4009][t>>14&3]>>(0x3dbe4688>>((t>>10&15)>9?18:t>>10&15)*3&7)*3&7]",
-			"starred": 1
+			"codeOriginal": "(t<<3)*[8/9,1,9/8,6/5,4/3,3/2,0][[0xd2d2c8,0xce4088,0xca32c8,0x8e4009][t>>14&3]>>(0x3dbe4688>>((t>>10&15)>9?18:t>>10&15)*3&7)*3&7]"
 		}, {
 			"description": "Longline Theory",
-			"starred": 2,
 			"children": [{
 				"author": "mu6k",
 				"url": "http://www.pouet.net/topic.php?which=8357&page=13#c389287",
@@ -892,15 +842,13 @@
 			"url": "https://www.reddit.com/r/programming/comments/mbakl/experimental_oneline_algorithmic_music/c2zn7qv/",
 			"date": "2011-11-15",
 			"codeOriginal": "t*Math.pow(2,(\"kotojokohogohotojokohogokokhpmjmjfokhomkjhggcc kotojokohogohotojokohogokokhpmjmjfrmorokfjkkkkkkrpomkjkmokmpoprrjjkkoommoottqqhjkkjjhfecebccccccfffhihfdfcdahhhjkjhghegcmjcjmjpjojmjkhchkhohmhkhjhkhmhohphmhoomkjkhhhhhh\".charCodeAt((t>>10)&255)-58)/12)*63>>6&132",
-			"codeMinified": "t*2**(('kotojokohogohotojokohogokokhpmjmjfokhomkjhggcckotojokohogohotojokohogokokhpmjmjfrmorokfjkkkkkkrpomkjkmokmpoprrjjkkoommoottqqhjkkjjhfecebccccccfffhihfdfcdahhhjkjhghegcmjcjmjpjojmjkhchkhohmhkhjhkhmhohphmhoomkjkhhhhhh'.charCodeAt(t>>10&255)-58)/12)*63>>6&132",
-			"starred": 1
+			"codeMinified": "t*2**(('kotojokohogohotojokohogokokhpmjmjfokhomkjhggcckotojokohogohotojokohogokokhpmjmjfrmorokfjkkkkkkrpomkjkmokmpoprrjjkkoommoottqqhjkkjjhfecebccccccfffhihfdfcdahhhjkjhghegcmjcjmjpjojmjkhchkhohmhkhjhkhmhohphmhoomkjkhhhhhh'.charCodeAt(t>>10&255)-58)/12)*63>>6&132"
 		}, {
 			"author": "yehar",
 			"children": [{
 				"url": "http://www.pouet.net/topic.php?which=8357&page=21#c401680",
 				"date": "2012-02-25",
-				"codeOriginal": "t>>4+!(-t>>13&7)+2*!(t>>17)|t*t*(t>>(t>>12^t>>11)%3+10)/(7+(t>>10&t>>14&3))*!(t&512)<<3+(t>>14&1)",
-				"starred": 1
+				"codeOriginal": "t>>4+!(-t>>13&7)+2*!(t>>17)|t*t*(t>>(t>>12^t>>11)%3+10)/(7+(t>>10&t>>14&3))*!(t&512)<<3+(t>>14&1)"
 			}, {
 				"description": "No 4",
 				"url": "http://www.pouet.net/topic.php?which=8357&page=21#c401817",
@@ -949,8 +897,7 @@
 			}, {
 				"description": "\"Harmony v2\". Based off of mu6k's \"Long Line Theory\"",
 				"codeOriginal": "w=[1,2,3,4,3,4,1][(t>>13)%7]*t,(w%50.01+w%40.1+w%30.1+w%60.01)",
-				"codeMinified": "w=[1,2,3,4,3,4,1][(t>>13)%7]*t,w%50.01+w%40.1+w%30.1+w%60.01",
-				"starred": 1
+				"codeMinified": "w=[1,2,3,4,3,4,1][(t>>13)%7]*t,w%50.01+w%40.1+w%30.1+w%60.01"
 			}, {
 				"description": "Array song",
 				"codeOriginal": "a=[1,1,2,3,1,1,2,3,1,1,2,4,4,4,5,5,5][(t>>12)%17],b=[5,4,3,2][(t>>16)%4],(t*b/a)%50.1+(t*b/a)%50",
@@ -981,8 +928,7 @@
 			}, {
 				"description": "10) FUTURE ROCK",
 				"codeOriginal": "t%1000<50?t<<t/5:0+(t/16000)%2>1?(t/22.5>>t*14)*(t%200>5)%64:(t*2.1)*(t%200>5)%64+((t/500)%6>4?t*4.87:0)%176",
-				"codeMinified": "50>t%1E3?t<<t/5:1<t/16E3%2?(t/22.5>>14*t)*(5<t%200)%64:2.1*t*(5<t%200)%64+(4<t/500%6?4.87*t:0)%176",
-				"starred": 1
+				"codeMinified": "50>t%1E3?t<<t/5:1<t/16E3%2?(t/22.5>>14*t)*(5<t%200)%64:2.1*t*(5<t%200)%64+(4<t/500%6?4.87*t:0)%176"
 			}]
 		}, {
 			"description": "Extraordinary thread of FRACTAL MUSIC",
@@ -1033,8 +979,7 @@
 				"",
 				"+ sin(t/16 *((t >> 10) & 42) + 1*sin(t/64 * (t/1 >> 7) & 8)) * 12"
 			],
-			"codeMinified": "128+24*sin(t/24*(t>>10&42)+1*sin(t/64*(t/1>>15)&21))+sin(1*t/3/4+4*sin(1*t/6/4))*(t>>11&1)*16+sin(1*t/6/4+4*sin(1*t/12/4))*(t>>10&1)*16+56*(3E3/(y=4*t&16383)&1)+56*(300/(y=32*t&28600)&1)+12*sin(t/16*(t>>10&42)+1*sin(t/64*(t/1>>7)&8))",
-			"starred": 2
+			"codeMinified": "128+24*sin(t/24*(t>>10&42)+1*sin(t/64*(t/1>>15)&21))+sin(1*t/3/4+4*sin(1*t/6/4))*(t>>11&1)*16+sin(1*t/6/4+4*sin(1*t/12/4))*(t>>10&1)*16+56*(3E3/(y=4*t&16383)&1)+56*(300/(y=32*t&28600)&1)+12*sin(t/16*(t>>10&42)+1*sin(t/64*(t/1>>7)&8))"
 		}, {
 			"author": "Gabriel Miceli",
 			"url": "https://www.youtube.com/watch?v=V4GfkFbDojc",
@@ -1048,18 +993,15 @@
 				},
 				"sampleRate": 11025,
 				"codeOriginal": "i=t&8191,(((t*((t>>9^((t>>9)-1)^1)%13)&255)/2)+((((t>>3|t<<(t>>12&2))*(i<4096)+(t>>4|t*(t^t+t/256))*(i>4095)))&255)/2)*(2+(t>>16))",
-				"codeMinified": "i=t&8191,(((t>>9^(t>>9)-1^1)%13*t&255)/2+((t>>3|t<<(t>>12&2))*(4096>i)+(t>>4|t*(t^t+t/256))*(4095<i)&255)/2)*(2+(t>>16))",
-				"starred": 2
+				"codeMinified": "i=t&8191,(((t>>9^(t>>9)-1^1)%13*t&255)/2+((t>>3|t<<(t>>12&2))*(4096>i)+(t>>4|t*(t^t+t/256))*(4095<i)&255)/2)*(2+(t>>16))"
 			}, {
 				"description": "Now this actually sounds pretty cool",
-				"codeOriginal": "d=t*465/(43+6*(t>>15&3^1)),((d/4&t>>6)+d/2&127)+(d/6&127)",
-				"starred": 2
+				"codeOriginal": "d=t*465/(43+6*(t>>15&3^1)),((d/4&t>>6)+d/2&127)+(d/6&127)"
 			}, {
 				"description": "Crude Sinewave Dubstep",
 				"sampleRate": 44100,
 				"codeOriginal": "d=(t*(t&t>>12)*8/11025)|0,((d&16)/8-1)*(d*(d^15)+d+127)",
-				"codeMinified": "d=t*(t&t>>12)*8/11025|0,((d&16)/8-1)*(d*(d^15)+d+127)",
-				"starred": 1
+				"codeMinified": "d=t*(t&t>>12)*8/11025|0,((d&16)/8-1)*(d*(d^15)+d+127)"
 			}, {
 				"description": "Crazy Groovy Beats",
 				"sampleRate": 32000,
@@ -1068,8 +1010,7 @@
 			}, {
 				"description": "Crazy Groovy Beats 2",
 				"codeOriginal": "d=t>>12&1,h=(t>>9)+4,(t*t*(t&255)*d/156+(t*(t^15)+t)*((h|t/2048+1&127)-h)/64&127-d*((t>>5&127)*2/3+32))",
-				"codeMinified": "d=t>>12&1,h=(t>>9)+4,t*t*(t&255)*d/156+(t*(t^15)+t)*((h|t/2048+1&127)-h)/64&127-d*(2*(t>>5&127)/3+32)",
-				"starred": 1
+				"codeMinified": "d=t>>12&1,h=(t>>9)+4,t*t*(t&255)*d/156+(t*(t^15)+t)*((h|t/2048+1&127)-h)/64&127-d*(2*(t>>5&127)/3+32)"
 			}, {
 				"description": "New Sawtooth Music (again) Remix",
 				"codeOriginal": "j=(t-41024&t+1024)>>11&255,k=t&16383,(t*(j&255)/2&127)+((100000/(t&4095))/4&63)+((int(k/(k>>7)-136)/8)&((32*(1+(j>7))-1)))",
@@ -1092,8 +1033,7 @@
 			"url": "https://www.reddit.com/r/bytebeat/comments/7e7a61/t6t4300xccdd1000_11khz_infix/",
 			"date": "2017-11-20",
 			"codeOriginal": "(((t>>6)*t)>>430)*[0xccDD]%1000",
-			"codeMinified": "52445*((t>>6)*t>>430)%1E3",
-			"starred": 1
+			"codeMinified": "52445*((t>>6)*t>>430)%1E3"
 		}, {
 			"author": "raphaelgoulart",
 			"children": [{
@@ -1109,8 +1049,7 @@
 					"r=floor(b/2)%64,",
 					"([0,3,6,10].includes(floor(b/4%16))?d:0)%64+d*a[r]%64+d*a[r]/1.33%64+(b%4==0?n:0)%20+(b%32==16?n:0)%44"
 				],
-				"codeMinified": "d=.127*t,b=int(t/1578),a=[0,0,0,0,0,0,0,0,4,4,4.75,4.75,5.3,0,5.3,5.3,5.3,5.3,5.3,5.3,4.75,4.75,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,4,4.75,4.75,5.3,0,5.3,5.3,5.3,5.3,4.75,4.75,0,0,4,4,0,0,3.55,3.55,4,4,0,0],n=d*random(),r=int(b/2)%64,([0,3,6,10].includes(int(b/4%16))?d:0)%64+d*a[r]%64+d*a[r]/1.33%64+(0==b%4?n:0)%20+(16==b%32?n:0)%44",
-				"starred": 1
+				"codeMinified": "d=.127*t,b=int(t/1578),a=[0,0,0,0,0,0,0,0,4,4,4.75,4.75,5.3,0,5.3,5.3,5.3,5.3,5.3,5.3,4.75,4.75,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,4,4.75,4.75,5.3,0,5.3,5.3,5.3,5.3,4.75,4.75,0,0,4,4,0,0,3.55,3.55,4,4,0,0],n=d*random(),r=int(b/2)%64,([0,3,6,10].includes(int(b/4%16))?d:0)%64+d*a[r]%64+d*a[r]/1.33%64+(0==b%4?n:0)%20+(16==b%32?n:0)%44"
 			}, {
 				"description": "ripthisentry.txt, tune#3",
 				"url": "https://battleofthebits.org/arena/Entry/ripthisentry.txt/32559/",
@@ -1149,8 +1088,7 @@
 				"",
 				")"
 			],
-			"codeMinified": "t<2?(a=0,b=0,c=0):(a=.999*a+.001*random(),b<0?(b=.7*random(),c=random()):b-=1/44100,abs(256*a*(5*sin(t/5E4)+10)%256-128)+255*(t/300*(10*c+200)&2)*b**(random()/5+4))",
-			"starred": 1
+			"codeMinified": "t<2?(a=0,b=0,c=0):(a=.999*a+.001*random(),b<0?(b=.7*random(),c=random()):b-=1/44100,abs(256*a*(5*sin(t/5E4)+10)%256-128)+255*(t/300*(10*c+200)&2)*b**(random()/5+4))"
 		}, {
 			"description": "Vl-Tone Rock 1 rhythm emulation",
 			"author": "spikkks",
@@ -1173,8 +1111,7 @@
 				"description": "first one",
 				"sampleRate": 32000,
 				"codeOriginal": "t=(6*(t-((t>>10&4|t>>13&3)|(t>>17&6|t>>14&4))*t/((t>>16&7)+4))),Math.pow(Math.abs(1-Math.abs(0.5+cos(t/64.25))**0.3)+Math.abs(0.35-Math.abs(5.5+cos(t/64.5))**0.5),1-Math.abs(1-Math.abs(0.5-sin(t/63.75))**0.5+1-Math.abs(2.1-Math.abs(2.3-sin(t/96))**0.75)))*80+15",
-				"codeMinified": "t=6*(t-(t>>10&4|t>>13&3|t>>17&6|t>>14&4)*t/((t>>16&7)+4)),80*(abs(1-abs(.5+cos(t/64.25))**.3)+abs(.35-abs(5.5+cos(t/64.5))**.5))**(1-abs(1-abs(.5-sin(t/63.75))**.5+1-abs(2.1-abs(2.3-sin(t/96))**.75)))+15",
-				"starred": 1
+				"codeMinified": "t=6*(t-(t>>10&4|t>>13&3|t>>17&6|t>>14&4)*t/((t>>16&7)+4)),80*(abs(1-abs(.5+cos(t/64.25))**.3)+abs(.35-abs(5.5+cos(t/64.5))**.5))**(1-abs(1-abs(.5-sin(t/63.75))**.5+1-abs(2.1-abs(2.3-sin(t/96))**.75)))+15"
 			}, {
 				"description": "second one",
 				"sampleRate": 32000,
@@ -1207,8 +1144,7 @@
 				"date": "2021-10-11",
 				"sampleRate": 44100,
 				"codeOriginal": "a=t/[2,4,3,5,6,7,8,10][(t>>13)%8],((a*2*(a&64?-1:1)))+15*(3E3/(t&16383)&4)+(25*sin((t*[1.5,1.5,1.5,1.35,1.2,1.2,1,1][(t>>15)%8])/41)+25)+(t*[0.5,0.75,1,0.8,1,1.2,0.4,0.6,0.8,0.3,0.5,0.6][((t>>10)%3)+((t>>16)%4)*3]/2&16)",
-				"codeMinified": "a=t/[2,4,3,5,6,7,8,10][(t>>13)%8],2*a*(a&64?-1:1)+15*(3E3/(t&16383)&4)+(25*sin(t*[1.5,1.5,1.5,1.35,1.2,1.2,1,1][(t>>15)%8]/41)+25)+(t*[.5,.75,1,.8,1,1.2,.4,.6,.8,.3,.5,.6][(t>>10)%3+(t>>16)%4*3]/2&16)",
-				"starred": 1
+				"codeMinified": "a=t/[2,4,3,5,6,7,8,10][(t>>13)%8],2*a*(a&64?-1:1)+15*(3E3/(t&16383)&4)+(25*sin(t*[1.5,1.5,1.5,1.35,1.2,1.2,1,1][(t>>15)%8]/41)+25)+(t*[.5,.75,1,.8,1,1.2,.4,.6,.8,.3,.5,.6][(t>>10)%3+(t>>16)%4*3]/2&16)"
 			}, {
 				"description": "non-javascript 8khz song, turned out pretty good",
 				"url": "https://www.reddit.com/r/bytebeat/comments/q5rp4d/tried_to_make_a_nonjavascript_8khz_song_turned/",
@@ -1221,8 +1157,7 @@
 				"date": "2021-10-12",
 				"sampleRate": 44100,
 				"codeOriginal": "((63+sin((t*(t&t>>12))/164)*64)*(t>>13<60)+(t*random()%((-t>>8)%128+128))*(t>>13<64))+((63+sin((t*(t&t>>12)*50/22050)/164)*64)+(3E5/(t&32767)&90)+(3E6/((t+16384)&32767)&100))*(t>>13>63)",
-				"codeMinified": "(63+64*sin(t*(t&t>>12)/164))*(t>>13<60)+t*random()%((-t>>8)%128+128)*(t>>13<64)+(63+64*sin(t*(t&t>>12)*50/22050/164)+(3E5/(t&32767)&90)+(3E6/(t+16384&32767)&100))*(t>>13>63)",
-				"starred": 2
+				"codeMinified": "(63+64*sin(t*(t&t>>12)/164))*(t>>13<60)+t*random()%((-t>>8)%128+128)*(t>>13<64)+(63+64*sin(t*(t&t>>12)*50/22050/164)+(3E5/(t&32767)&90)+(3E6/(t+16384&32767)&100))*(t>>13>63)"
 			}, {
 				"description": "remix of \"Trance beat\" by SthephanShi",
 				"url": "https://www.reddit.com/r/bytebeat/comments/q834xu/i_remixed_stephanshis_trance_beat/",
@@ -1234,15 +1169,13 @@
 				"date": "2021-10-15",
 				"sampleRate": 44100,
 				"codeOriginal": "a=t/[1.5,1.25,1.5,1][(t>>17)%4]*((t>>12)+1&1),(((a/4^(.998*a/8))&63)%(t>>14)+((32*sin((t/[1,1,1,2,1.5,1.5,1.25,1.25][(t>>15)%8]/20.5))+32)*(t>>20>0)))*(t>>15!=63)+(t*random()%((-t>>9)%64+64)*(t>>15==63))+(((3E5/(t&8191)&50)*[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1][(t>>13)%16])+((3E6/(t&8191)&45)*[0,0,0,0,1,0,0,0][(t>>13)%8])+((t/4*(t&t>>12))&32))*(t>>20>1)",
-				"codeMinified": "a=t/[1.5,1.25,1.5,1][(t>>17)%4]*((t>>12)+1&1),(((a/4^.998*a/8)&63)%(t>>14)+(32*sin(t/[1,1,1,2,1.5,1.5,1.25,1.25][(t>>15)%8]/20.5)+32)*(t>>20>0))*(t>>15!=63)+t*random()%((-t>>9)%64+64)*(t>>15==63)+((3E5/(t&8191)&50)*[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1][(t>>13)%16]+(3E6/(t&8191)&45)*[0,0,0,0,1,0,0,0][(t>>13)%8]+(t/4*(t&t>>12)&32))*(t>>20>1)",
-				"starred": 2
+				"codeMinified": "a=t/[1.5,1.25,1.5,1][(t>>17)%4]*((t>>12)+1&1),(((a/4^.998*a/8)&63)%(t>>14)+(32*sin(t/[1,1,1,2,1.5,1.5,1.25,1.25][(t>>15)%8]/20.5)+32)*(t>>20>0))*(t>>15!=63)+t*random()%((-t>>9)%64+64)*(t>>15==63)+((3E5/(t&8191)&50)*[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1][(t>>13)%16]+(3E6/(t&8191)&45)*[0,0,0,0,1,0,0,0][(t>>13)%8]+(t/4*(t&t>>12)&32))*(t>>20>1)"
 			}, {
 				"description": "get stickbugged lol",
 				"url": "https://www.reddit.com/r/bytebeat/comments/qa0k1s/get_stickbugged_lol/",
 				"date": "2021-10-17",
 				"codeOriginal": "r=1.05946309,b=t/0.2575,as=b/r,a=as/r,c=b*r,cs=c*r,d=cs*r,ds=d*r,e=ds*r,f=e*r,fs=f*r,g=fs*r,gs=g*r,([fs,e,cs,b,as,,,,,,,,,,ds,,b,cs,d,ds,fs,,,,,,,,,,cs,,ds,cs,as,gs/2,ds/2,,,,,,,,,,as,,cs,b,gs/2,g/2,fs/2][(t>>10)%64]&127)+([fs/8,0,0,fs/4,fs/8,0,g/4,0,fs/8,0,fs/4,0,fs/8,0,fs/4][(t>>10)%16]&127)",
-				"codeMinified": "r=1.05946309,b=t/.2575,as=b/r,a=as/r,c=b*r,cs=c*r,d=cs*r,ds=d*r,e=ds*r,f=e*r,fs=f*r,g=fs*r,gs=g*r,([fs,e,cs,b,as,,,,,,,,,,ds,,b,cs,d,ds,fs,,,,,,,,,,cs,,ds,cs,as,gs/2,ds/2,,,,,,,,,,as,,cs,b,gs/2,g/2,fs/2][(t>>10)%64]&127)+([fs/8,0,0,fs/4,fs/8,0,g/4,0,fs/8,0,fs/4,0,fs/8,0,fs/4][(t>>10)%16]&127)",
-				"starred": 1
+				"codeMinified": "r=1.05946309,b=t/.2575,as=b/r,a=as/r,c=b*r,cs=c*r,d=cs*r,ds=d*r,e=ds*r,f=e*r,fs=f*r,g=fs*r,gs=g*r,([fs,e,cs,b,as,,,,,,,,,,ds,,b,cs,d,ds,fs,,,,,,,,,,cs,,ds,cs,as,gs/2,ds/2,,,,,,,,,,as,,cs,b,gs/2,g/2,fs/2][(t>>10)%64]&127)+([fs/8,0,0,fs/4,fs/8,0,g/4,0,fs/8,0,fs/4,0,fs/8,0,fs/4][(t>>10)%16]&127)"
 			}, {
 				"description": "2-bit song hardcore remix",
 				"url": "https://www.reddit.com/r/bytebeat/comments/qdfa0i/2bit_song/",
@@ -1253,8 +1186,7 @@
 				"date": "2021-10-22",
 				"sampleRate": 44100,
 				"codeOriginal": "(sqrt((t&16383)*5000)&128)+(3E6/((t+16384)&32767)&128)+(t/2*(t&t>>11)&64)|(t/32&128)&t/16",
-				"codeMinified": "(sqrt(5E3*(t&16383))&128)+(3E6/(t+16384&32767)&128)+(t/2*(t&t>>11)&64)|t/32&128&t/16",
-				"starred": 2
+				"codeMinified": "(sqrt(5E3*(t&16383))&128)+(3E6/(t+16384&32767)&128)+(t/2*(t&t>>11)&64)|t/32&128&t/16"
 			}, {
 				"description": "having fun with square waves",
 				"url": "https://www.reddit.com/r/bytebeat/comments/qeml94/having_fun_with_square_waves/",
@@ -1273,8 +1205,7 @@
 				"date": "2021-10-25",
 				"sampleRate": 11025,
 				"codeOriginal": "((t*(t&16384?7:5)*(3-(3&-t>>9)+(3&t>>8))>>(2&t>>(t%65536<59392?(t&4096?2:16):2))|t>>4)/2&127)+(3E4/(t&4095)&128)+(random()*(((-t>>5)%64)+64))",
-				"codeMinified": "((t*(t&16384?7:5)*(3-(3&-t>>9)+(3&t>>8))>>(2&t>>(59392>t%65536?t&4096?2:16:2))|t>>4)/2&127)+(3E4/(t&4095)&128)+random()*((-t>>5)%64+64)",
-				"starred": 1
+				"codeMinified": "((t*(t&16384?7:5)*(3-(3&-t>>9)+(3&t>>8))>>(2&t>>(59392>t%65536?t&4096?2:16:2))|t>>4)/2&127)+(3E4/(t&4095)&128)+random()*((-t>>5)%64+64)"
 			}, {
 				"description": "remix of SthephanShi's remix",
 				"url": "https://www.reddit.com/r/bytebeat/comments/qf9meb/remix_of_the_time_is_running_out_by_stephanshi/hi9r80q/?utm_source=reddit&utm_medium=web2x&context=3",
@@ -1286,8 +1217,7 @@
 				"date": "2021-10-27",
 				"sampleRate": 44100,
 				"codeOriginal": "t/=4,((t/2*(t&16384?7:5)*(t&512?0.5:(t&256?1:2))*(3-(3&t>>9)+(3&t>>8))>>(3&-t>>(t%65536<59392?(t&4096?2:16):2))|t>>4)&127)+(1E5/(t%(t&8192?4096:3072))&128-64)+(random()*(((-t>>(t&4096?5:(t&2048?3:4)))%64)+64))",
-				"codeMinified": "t/=4,((t/2*(t&16384?7:5)*(t&512?.5:t&256?1:2)*(3-(3&t>>9)+(3&t>>8))>>(3&-t>>(59392>t%65536?t&4096?2:16:2))|t>>4)&127)+(1E5/(t%(t&8192?4096:3072))&64)+random()*((-t>>(t&4096?5:t&2048?3:4))%64+64)",
-				"starred": 2
+				"codeMinified": "t/=4,((t/2*(t&16384?7:5)*(t&512?.5:t&256?1:2)*(3-(3&t>>9)+(3&t>>8))>>(3&-t>>(59392>t%65536?t&4096?2:16:2))|t>>4)&127)+(1E5/(t%(t&8192?4096:3072))&64)+random()*((-t>>(t&4096?5:t&2048?3:4))%64+64)"
 			}, {
 				"description": "better remix of \"The time is running out!\"",
 				"url": "https://www.reddit.com/r/bytebeat/comments/qlst5m/better_remix_of_the_time_is_running_out_by/",
@@ -1299,8 +1229,7 @@
 				"date": "2021-11-03",
 				"sampleRate": 44100,
 				"codeOriginal": "t/=4,a=t*(t&16384?7:5)*(3-(3&t>>(t&524288?10:9))+(3&t>>(t&262144?4:8)))>>(3&-t>>(t%65536<59392?(t&4096?2:16):2)),(t&524288?sqrt((t&4095)*5000)&64|t/16&64:(((t>>9)%64)*random()*((t>>15)%32==15))+6E4/(t%(t&8192?3072:4096))%100)+((-t>>3)%256+256)*tan(sin(a/40.75*2)+cos(a/40.75*2))/32+50",
-				"codeMinified": "t/=4,a=t*(t&16384?7:5)*(3-(3&t>>(t&524288?10:9))+(3&t>>(t&262144?4:8)))>>(3&-t>>(59392>t%65536?t&4096?2:16:2)),(t&524288?sqrt(5E3*(t&4095))&64|t/16&64:(t>>9)%64*random()*(15==(t>>15)%32)+6E4/(t%(t&8192?3072:4096))%100)+((-t>>3)%256+256)*tan(sin(a/40.75*2)+cos(a/40.75*2))/32+50",
-				"starred": 2
+				"codeMinified": "t/=4,a=t*(t&16384?7:5)*(3-(3&t>>(t&524288?10:9))+(3&t>>(t&262144?4:8)))>>(3&-t>>(59392>t%65536?t&4096?2:16:2)),(t&524288?sqrt(5E3*(t&4095))&64|t/16&64:(t>>9)%64*random()*(15==(t>>15)%32)+6E4/(t%(t&8192?3072:4096))%100)+((-t>>3)%256+256)*tan(sin(a/40.75*2)+cos(a/40.75*2))/32+50"
 			}, {
 				"description": "remix of \"first bytebeat remixed\"",
 				"url": "https://www.reddit.com/r/bytebeat/comments/qlf0op/first_bytebeat_remixed/hj50s9a/?utm_source=reddit&utm_medium=web2x&context=3",
@@ -1325,8 +1254,7 @@
 				"date": "2021-11-04",
 				"sampleRate": 32000,
 				"codeOriginal": "(48*(random()*\"0000202020002020\"[t/1.2>>10&15]&1))+(6E4/(t/1.2&4095))+(t*[1,random(),random(),random(),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0][(t/1.2>>10)+16&31])+(t/\"12483456\"[t/1.2>>16&7]&40)&64",
-				"codeMinified": "48*(random()*'0000202020002020'[t/1.2>>10&15]&1)+6E4/(t/1.2&4095)+t*[1,random(),random(),random(),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0][(t/1.2>>10)+16&31]+(t/'12483456'[t/1.2>>16&7]&40)&64",
-				"starred": 1
+				"codeMinified": "48*(random()*'0000202020002020'[t/1.2>>10&15]&1)+6E4/(t/1.2&4095)+t*[1,random(),random(),random(),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0][(t/1.2>>10)+16&31]+(t/'12483456'[t/1.2>>16&7]&40)&64"
 			}, {
 				"description": "\"wow that was pretty cool\" remixed",
 				"remixed": {
@@ -1345,16 +1273,14 @@
 				"date": "2022-01-18",
 				"sampleRate": 32000,
 				"codeOriginal": "t/=5.5,((t*(t&16384?6:5)*(3-(3&-t>>9)+(3&t>>8))>>(2&t>>(t%65536<59392?(t&4096?2:11):2))|t>>4)/2&127)+(3E4/(t&4095)&128)+(random()*(((-t>>5)%64)+64))+(t*\"23\"[t>>14&1]&64)",
-				"codeMinified": "t/=5.5,((t*(t&16384?6:5)*(3-(3&-t>>9)+(3&t>>8))>>(2&t>>(59392>t%65536?t&4096?2:11:2))|t>>4)/2&127)+(3E4/(t&4095)&128)+random()*((-t>>5)%64+64)+(t*'23'[t>>14&1]&64)",
-				"starred": 2
+				"codeMinified": "t/=5.5,((t*(t&16384?6:5)*(3-(3&-t>>9)+(3&t>>8))>>(2&t>>(59392>t%65536?t&4096?2:11:2))|t>>4)/2&127)+(3E4/(t&4095)&128)+random()*((-t>>5)%64+64)+(t*'23'[t>>14&1]&64)"
 			}, {
 				"description": "zynx92 type beat remixed",
 				"url": "https://www.reddit.com/r/bytebeat/comments/s8hiun/comment/htjy1ae/?utm_source=reddit&utm_medium=web2x&context=3",
 				"date": "2022-01-21",
 				"sampleRate": 32000,
 				"codeOriginal": "(random()*\"1000\"[t>>10&3]*32)+(sqrt((t&16383)*400)&63*\"10\"[t>>12&1])+(((t&t>>11)&32)+(64*sin(t*(t&t>>12)*4/88200))+([1,1.5,0.5,0.8][(t>>16)%4]*t>>1&128))/3+31",
-				"codeMinified": "random()*'1000'[t>>10&3]*32+(sqrt(400*(t&16383))&63*'10'[t>>12&1])+((t&t>>11&32)+64*sin(t*(t&t>>12)*4/88200)+([1,1.5,.5,.8][(t>>16)%4]*t>>1&128))/3+31",
-				"starred": 1
+				"codeMinified": "random()*'1000'[t>>10&3]*32+(sqrt(400*(t&16383))&63*'10'[t>>12&1])+((t&t>>11&32)+64*sin(t*(t&t>>12)*4/88200)+([1,1.5,.5,.8][(t>>16)%4]*t>>1&128))/3+31"
 			}]
 		}, {
 			"author": "kOLbOSa_exe",
@@ -1420,8 +1346,7 @@
 				"date": "2021-10-14",
 				"sampleRate": 44100,
 				"codeOriginal": "(((((((t%2)?t/2:t/4)+t/800)+sin(t/(t%2?20:10))*9)&t^t))+t^t)",
-				"codeMinified": "(t/(t%2?2:4)+t/800+9*sin(t/(t%2?20:10))&t^t)+t^t",
-				"starred": 1
+				"codeMinified": "(t/(t%2?2:4)+t/800+9*sin(t/(t%2?20:10))&t^t)+t^t"
 			}, {
 				"description": "thing 2",
 				"url": "https://www.reddit.com/r/bytebeat/comments/q8ctdl/thing_2/",
@@ -1510,8 +1435,7 @@
 					"e=(random()*(((-t>>[6,5,5,5,5,5,5,4,5,5,5,4,5,5,4,3][(t>>11)%16])%64)+64)),",
 					"(((((a%64)+(a/2%64)+(b/4%64))/2)+64)+(c/2*2)-44)+d+e"
 				],
-				"codeMinified": "t/=4,a=t*(t&16384?6:5)*(3+(3&t>>(t&2048?7:8)))>>(3&t>>10)|t>>4,b=t*(t&16384?6:5)*(3+(3&t>>(t&2048?7:14)))>>(3&t>>9)|t>>4,c=3E4/(t&4095)&64,d=t*(t&16384?6:5)*2*(1&t>>11)/32%64,e=random()*((-t>>[6,5,5,5,5,5,5,4,5,5,5,4,5,5,4,3][(t>>11)%16])%64+64),(a%64+a/2%64+b/4%64)/2+64+c/2*2-44+d+e",
-				"starred": 2
+				"codeMinified": "t/=4,a=t*(t&16384?6:5)*(3+(3&t>>(t&2048?7:8)))>>(3&t>>10)|t>>4,b=t*(t&16384?6:5)*(3+(3&t>>(t&2048?7:14)))>>(3&t>>9)|t>>4,c=3E4/(t&4095)&64,d=t*(t&16384?6:5)*2*(1&t>>11)/32%64,e=random()*((-t>>[6,5,5,5,5,5,5,4,5,5,5,4,5,5,4,3][(t>>11)%16])%64+64),(a%64+a/2%64+b/4%64)/2+64+c/2*2-44+d+e"
 			}, {
 				"description": "Awesome level #2 Remix",
 				"remixed": {
@@ -1569,8 +1493,7 @@
 					"e=(random()*(((-t>>[6,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,4,4,6,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,4,3][(t>>11)%64])%64)+64)),",
 					"(b/2%128)+(c%164)+d+e"
 				],
-				"codeMinified": "t/=4,b=(t*(t&16384?7:5)*(3-(3&-t>>9)+(3&t>>8))>>(2&t>>(t%65536?t&4096?2:16:2))|t>>4)/2&127,c=3E4/(t%(t&8192?5120:4096))&64,d=t*(t&16384?7:5)*2*(1&t>>11)/32%64,e=random()*((-t>>[6,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,4,4,6,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,4,3][(t>>11)%64])%64+64),b/2%128+c%164+d+e",
-				"starred": 2
+				"codeMinified": "t/=4,b=(t*(t&16384?7:5)*(3-(3&-t>>9)+(3&t>>8))>>(2&t>>(t%65536?t&4096?2:16:2))|t>>4)/2&127,c=3E4/(t%(t&8192?5120:4096))&64,d=t*(t&16384?7:5)*2*(1&t>>11)/32%64,e=random()*((-t>>[6,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,4,4,6,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,4,3][(t>>11)%64])%64+64),b/2%128+c%164+d+e"
 			}, {
 				"description": "TIRO Remixed#5",
 				"remixed": {
@@ -1588,8 +1511,7 @@
 					"",
 					"t&524288?(random()*(((-t>>([6,5,5,4,5,5,5,4,5,5,5,4,5,5,4,4,5,5,5,4,5,5,5,4,5,5,5,4,5,5,4,3,6,5,5,4,5,5,5,4,5,5,5,4,5,5,4,4,5,5,5,4,5,5,5,4,5,5,5,4,5,5,4,3][(t>>11)%64]))%64)+64))%102+((5.12e4/(t%(t&8192?4096:4096))&128-64)%180)+c:(random()*(((-t>>([6,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,4,4][(t>>11)%32]))%64)+64))%102+((3.02e4/(t%(t&8192?4096:6144))&128-64)%180)+c"
 				],
-				"codeMinified": "t/=4,a=t&524288?t*(t&16384?7:5)*(3-(3&t>>11)+(3&t<<8)):t*(t&16384?7:5)*(4-(3&t>>10)+(3&t<<7)),b=t*(t&16384?7:5)*(3-(3&t>>(t&524288?10:9))+(3&t>>(t&262144?4:8)))>>(3&-t>>(59392>t%65536?t&4096?2:16:2)),c=a/32%32+b/4%32,t&524288?random()*((-t>>[6,5,5,4,5,5,5,4,5,5,5,4,5,5,4,4,5,5,5,4,5,5,5,4,5,5,5,4,5,5,4,3,6,5,5,4,5,5,5,4,5,5,5,4,5,5,4,4,5,5,5,4,5,5,5,4,5,5,5,4,5,5,4,3][(t>>11)%64])%64+64)%102+(51200/(t%4096)&64)%180+c:random()*((-t>>[6,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,4,4][(t>>11)%32])%64+64)%102+(30200/(t%(t&8192?4096:6144))&64)%180+c",
-				"starred": 1
+				"codeMinified": "t/=4,a=t&524288?t*(t&16384?7:5)*(3-(3&t>>11)+(3&t<<8)):t*(t&16384?7:5)*(4-(3&t>>10)+(3&t<<7)),b=t*(t&16384?7:5)*(3-(3&t>>(t&524288?10:9))+(3&t>>(t&262144?4:8)))>>(3&-t>>(59392>t%65536?t&4096?2:16:2)),c=a/32%32+b/4%32,t&524288?random()*((-t>>[6,5,5,4,5,5,5,4,5,5,5,4,5,5,4,4,5,5,5,4,5,5,5,4,5,5,5,4,5,5,4,3,6,5,5,4,5,5,5,4,5,5,5,4,5,5,4,4,5,5,5,4,5,5,5,4,5,5,5,4,5,5,4,3][(t>>11)%64])%64+64)%102+(51200/(t%4096)&64)%180+c:random()*((-t>>[6,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,4,4][(t>>11)%32])%64+64)%102+(30200/(t%(t&8192?4096:6144))&64)%180+c"
 			}, {
 				"description": "TIRO Remixed#5.1",
 				"remixed": {
@@ -1607,8 +1529,7 @@
 					"",
 					"t&524288?(random()*(((-t>>([6,5,5,4,5,5,5,4,5,5,5,4,5,5,4,4,5,5,5,4,5,5,5,4,5,5,5,4,5,5,4,3,6,5,5,4,5,5,5,4,5,5,5,4,5,5,4,4,5,5,5,4,5,5,5,4,5,5,5,4,5,5,4,3][(t>>11)%64]))%64)+64))%102+((5.12e4/(t%(t&8192?4096:4096))&128-64)%180)+c:(t&262144?(random()*(((-t>>([6,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,4,4,6,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,4,5,3,6,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,4,4,6,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,4,3,2,1][(t>>11)%128]))%64)+64))%102+((3.02e4/(t%(t&8192?4096:6144))&128-64)%180)+c:(random()*(((-t>>([6,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,4,4][(t>>11)%32]))%64)+64))%1+((3.02e4/(t%(t&8192?3072:4096))&128-64)%180)+c)"
 				],
-				"codeMinified": "t/=4,a=t&524288?t*(t&16384?7:5)*(3-(3&t>>11)+(3&t<<8)):t*(t&16384?7:5)*(1+(3&t>>10)+(3&t<<7)),b=t*(t&16384?7:5)*(3-(3&t>>(t&524288?10:9))+(3&t>>(t&262144?4:8)))>>(3&-t>>(59392>t%65536?t&4096?2:16:2)),c=a/32%32+b/4%32,t&524288?random()*((-t>>[6,5,5,4,5,5,5,4,5,5,5,4,5,5,4,4,5,5,5,4,5,5,5,4,5,5,5,4,5,5,4,3,6,5,5,4,5,5,5,4,5,5,5,4,5,5,4,4,5,5,5,4,5,5,5,4,5,5,5,4,5,5,4,3][(t>>11)%64])%64+64)%102+(51200/(t%4096)&64)%180+c:t&262144?random()*((-t>>[6,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,4,4,6,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,4,5,3,6,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,4,4,6,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,4,3,2,1][(t>>11)%128])%64+64)%102+(30200/(t%(t&8192?4096:6144))&64)%180+c:random()*((-t>>[6,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,4,4][(t>>11)%32])%64+64)%1+(30200/(t%(t&8192?3072:4096))&64)%180+c",
-				"starred": 1
+				"codeMinified": "t/=4,a=t&524288?t*(t&16384?7:5)*(3-(3&t>>11)+(3&t<<8)):t*(t&16384?7:5)*(1+(3&t>>10)+(3&t<<7)),b=t*(t&16384?7:5)*(3-(3&t>>(t&524288?10:9))+(3&t>>(t&262144?4:8)))>>(3&-t>>(59392>t%65536?t&4096?2:16:2)),c=a/32%32+b/4%32,t&524288?random()*((-t>>[6,5,5,4,5,5,5,4,5,5,5,4,5,5,4,4,5,5,5,4,5,5,5,4,5,5,5,4,5,5,4,3,6,5,5,4,5,5,5,4,5,5,5,4,5,5,4,4,5,5,5,4,5,5,5,4,5,5,5,4,5,5,4,3][(t>>11)%64])%64+64)%102+(51200/(t%4096)&64)%180+c:t&262144?random()*((-t>>[6,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,4,4,6,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,4,5,3,6,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,4,4,6,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,4,3,2,1][(t>>11)%128])%64+64)%102+(30200/(t%(t&8192?4096:6144))&64)%180+c:random()*((-t>>[6,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,4,5,5,5,5,5,5,4,4][(t>>11)%32])%64+64)%1+(30200/(t%(t&8192?3072:4096))&64)%180+c"
 			}, {
 				"description": "Neurofunk remixed",
 				"remixed": {
@@ -1629,8 +1550,7 @@
 					"f=e/8%32+(b%190),",
 					"(t%131072<126976?f:(f+(44583/(-t&4095))/2%128))"
 				],
-				"codeMinified": "t/=5.5125,a=t*((t&4096?59392>t%65536?7:t&7:16)+(1&t>>14))>>(3&-t>>(t&2048?2:10))|t>>(t&16384?t&4096?10:3:2),b=a/3%(85+1/3)+(61440>t%65536?44583.5284:0)/(t&4095)/2%128,c=(256>t%1024?4:0)*t*Math.random()|t>>0,d=(256>t%512?4:0)*t*Math.random()|t>>0,e=14336>t%16384?c:d,f=e/8%32+b%190,126976>t%131072?f:f+44583/(-t&4095)/2%128",
-				"starred": 1
+				"codeMinified": "t/=5.5125,a=t*((t&4096?59392>t%65536?7:t&7:16)+(1&t>>14))>>(3&-t>>(t&2048?2:10))|t>>(t&16384?t&4096?10:3:2),b=a/3%(85+1/3)+(61440>t%65536?44583.5284:0)/(t&4095)/2%128,c=(256>t%1024?4:0)*t*Math.random()|t>>0,d=(256>t%512?4:0)*t*Math.random()|t>>0,e=14336>t%16384?c:d,f=e/8%32+b%190,126976>t%131072?f:f+44583/(-t&4095)/2%128"
 			}]
 		}, {
 			"author": "getDolphinedLol",
@@ -1640,8 +1560,7 @@
 				"date": "2021-12-06",
 				"sampleRate": 44100,
 				"codeOriginal": "-(((30*sin(t>>4))^t>>9)|(tan(t>>13)&t>>4)*t>>5)",
-				"codeMinified": "-(30*sin(t>>4)^t>>9|(tan(t>>13)&t>>4)*t>>5)",
-				"starred": 1
+				"codeMinified": "-(30*sin(t>>4)^t>>9|(tan(t>>13)&t>>4)*t>>5)"
 			}, {
 				"description": "⌬ (Signed Bytebeat)",
 				"url": "https://www.reddit.com/r/bytebeat/comments/rda606/signed_bytebeat/",
@@ -1683,15 +1602,13 @@
 				"mode": "Sighned Bytebeat",
 				"sampleRate": 11025,
 				"codeOriginal": "(t>>4|t*(t&16384?7:5)*(3-(3&t>>9)+(3&t>>8))>>(3&-t>>(t%65536<59392?(t&4096?2:16):2))&96)+(64*random(t)*(1&t>>11))+(44444/(t%pow(4,(3+(2+(1)))))&128)",
-				"codeMinified": "(t>>4|t*(t&16384?7:5)*(3-(3&t>>9)+(3&t>>8))>>(3&-t>>(59392>t%65536?t&4096?2:16:2))&96)+64*random()*(1&t>>11)+(44444/(t%4096)&128)",
-				"starred": 1
+				"codeMinified": "(t>>4|t*(t&16384?7:5)*(3-(3&t>>9)+(3&t>>8))>>(3&-t>>(59392>t%65536?t&4096?2:16:2))&96)+64*random()*(1&t>>11)+(44444/(t%4096)&128)"
 			}, {
 				"description": "fitebeat",
 				"url": "https://www.reddit.com/r/bytebeat/comments/ry7d6g/fitebeat/",
 				"date": "2022-01-07",
 				"codeOriginal": "((\"Baz§zaB-\".charCodeAt((t*(t&4096?3:2)*(t&2048?2:1))>>3&7))+(((t>>1)*(t&32768?3:2)*(1&t>>11)&144))+(64*random(t)*(1-(1&t>>9)))+(44444/(t%pow(4,(3+(2+(1)))))&64))/2",
-				"codeMinified": "('Baz\u00a7zaB-'.charCodeAt(t*(t&4096?3:2)*(t&2048?2:1)>>3&7)+((t>>1)*(t&32768?3:2)*(1&t>>11)&144)+64*random()*(1-(1&t>>9))+(44444/(t%4096)&64))/2",
-				"starred": 1
+				"codeMinified": "('Baz\u00a7zaB-'.charCodeAt(t*(t&4096?3:2)*(t&2048?2:1)>>3&7)+((t>>1)*(t&32768?3:2)*(1&t>>11)&144)+64*random()*(1-(1&t>>9))+(44444/(t%4096)&64))/2"
 			}, {
 				"description": "65536",
 				"url": "https://www.reddit.com/r/bytebeat/comments/s0ixnm/65536_signed_bytebeat/",
@@ -1720,8 +1637,7 @@
 				"date": "2022-01-11",
 				"sampleRate": 44100,
 				"codeOriginal": "(([2,2,3,0,2.9,0,3,0,3.5,3.5,3,3,2.9,2.9,3,0,3,0,3,0,2.9,0,3,0,2,2,1.8,1.8,2,2,1,1][(t>>12)%32]*t&192)/2)+([0,2,0,2,0,2,0,3,0][(t>>13)%8]*t>>2&128)",
-				"codeMinified": "([2,2,3,0,2.9,0,3,0,3.5,3.5,3,3,2.9,2.9,3,0,3,0,3,0,2.9,0,3,0,2,2,1.8,1.8,2,2,1,1][(t>>12)%32]*t&192)/2+([0,2,0,2,0,2,0,3,0][(t>>13)%8]*t>>2&128)",
-				"starred": 1
+				"codeMinified": "([2,2,3,0,2.9,0,3,0,3.5,3.5,3,3,2.9,2.9,3,0,3,0,3,0,2.9,0,3,0,2,2,1.8,1.8,2,2,1,1][(t>>12)%32]*t&192)/2+([0,2,0,2,0,2,0,3,0][(t>>13)%8]*t>>2&128)"
 			}, {
 				"description": "ARRAY 11025HZ SONG",
 				"url": "https://www.reddit.com/r/bytebeat/comments/s1cai7/array_11025hz_song/",
@@ -1741,8 +1657,7 @@
 				"date": "2022-01-11",
 				"sampleRate": 44100,
 				"codeOriginal": "(([2,0,3,0,2,0,2.5,0,3,0,2,0,1.8,0,3,3][(t>>12)%16]*t>>2&127)+(t>>8)&128)+([0,1][(t>>13)%2]*t>>2&127)+(128*sin(4095/(t%pow(4,(3+(3+(1)))))))",
-				"codeMinified": "(([2,0,3,0,2,0,2.5,0,3,0,2,0,1.8,0,3,3][(t>>12)%16]*t>>2&127)+(t>>8)&128)+([0,1][(t>>13)%2]*t>>2&127)+128*sin(4095/(t%16384))",
-				"starred": 1
+				"codeMinified": "(([2,0,3,0,2,0,2.5,0,3,0,2,0,1.8,0,3,3][(t>>12)%16]*t>>2&127)+(t>>8)&128)+([0,1][(t>>13)%2]*t>>2&127)+128*sin(4095/(t%16384))"
 			}, {
 				"description": "-PWM MUISC-",
 				"url": "https://www.reddit.com/r/bytebeat/comments/s27xzz/pwm_muisc/",
@@ -1774,15 +1689,13 @@
 				"date": "2022-01-17",
 				"sampleRate": 44100,
 				"codeOriginal": "t/=4.7,[sin(t>>3),2,sin(t>>1),3][(t>>11)%4]*t|[2,1,0.5,0.1,2,1,0.5,PI][(t>>12)%8]*t>>4",
-				"codeMinified": "t/=4.7,[sin(t>>3),2,sin(t>>1),3][(t>>11)%4]*t|[2,1,.5,.1,2,1,.5,PI][(t>>12)%8]*t>>4",
-				"starred": 1
+				"codeMinified": "t/=4.7,[sin(t>>3),2,sin(t>>1),3][(t>>11)%4]*t|[2,1,.5,.1,2,1,.5,PI][(t>>12)%8]*t>>4"
 			}, {
 				"description": "( ͡° ͜ʖ ͡°)",
 				"url": "https://www.reddit.com/r/bytebeat/comments/s6xqf1/%CA%96/",
 				"date": "2022-01-18",
 				"sampleRate": 11025,
-				"codeOriginal": "([sin(t>>3),2,sin(t),2,sin(t>>3),2,sin(t),2,sin(t>>3),2,sin(t),2,sin(t>>3),2,sin(t),3][(t>>11)%16]*t&t>>3)-20",
-				"starred": 2
+				"codeOriginal": "([sin(t>>3),2,sin(t),2,sin(t>>3),2,sin(t),2,sin(t>>3),2,sin(t),2,sin(t>>3),2,sin(t),3][(t>>11)%16]*t&t>>3)-20"
 			}, {
 				"description": "kinda funni remix of \"the time is running out!\"",
 				"url": "https://www.reddit.com/r/bytebeat/comments/s7aiq2/kinda_funni_remix_of_the_time_is_running_out_by/",
@@ -1793,30 +1706,26 @@
 				},
 				"date": "2021-10-19",
 				"sampleRate": 11025,
-				"codeOriginal": "t*(t&16384?7:5)*(3-(3&t>>9)+(3&t>>8))>>(3&-t>>(t&4096?2:16))|4e4/(t&4095)|t>>(t&4096?t&8192?4:2:3)",
-				"starred": 1
+				"codeOriginal": "t*(t&16384?7:5)*(3-(3&t>>9)+(3&t>>8))>>(3&-t>>(t&4096?2:16))|4e4/(t&4095)|t>>(t&4096?t&8192?4:2:3)"
 			}, {
 				"description": "grogrogilla",
 				"url": "https://www.reddit.com/r/bytebeat/comments/s73i8u/grogrogilla/",
 				"date": "2022-01-18",
 				"codeOriginal": "t/=0.4,([sin(t>>4),2,sin(t>>2),2,sin(t>>4),2,sin(t>>2),2,sin(t>>4),2,sin(t>>2),2,sin(t>>4),2.5,sin(t>>2),3,][(t>>12)%16]*t&t>>4)-20",
-				"codeMinified": "t/=.4,([sin(t>>4),2,sin(t>>2),2,sin(t>>4),2,sin(t>>2),2,sin(t>>4),2,sin(t>>2),2,sin(t>>4),2.5,sin(t>>2),3][(t>>12)%16]*t&t>>4)-20",
-				"starred": 1
+				"codeMinified": "t/=.4,([sin(t>>4),2,sin(t>>2),2,sin(t>>4),2,sin(t>>2),2,sin(t>>4),2,sin(t>>2),2,sin(t>>4),2.5,sin(t>>2),3][(t>>12)%16]*t&t>>4)-20"
 			}, {
 				"description": "taiko drums",
 				"url": "https://www.reddit.com/r/bytebeat/comments/s7daoh/taiko_drums/",
 				"date": "2022-01-19",
 				"sampleRate": 11025,
-				"codeOriginal": "([1,1,1,1,2,3,2.4,3,1,1,1,1,6,3,2,2.4][(t>>11)%16]*t*(t&4096?1:2)&t>>(t&8192?3:4))-16",
-				"starred": 1
+				"codeOriginal": "([1,1,1,1,2,3,2.4,3,1,1,1,1,6,3,2,2.4][(t>>11)%16]*t*(t&4096?1:2)&t>>(t&8192?3:4))-16"
 			}, {
 				"description": "snaerasrakd",
 				"url": "https://www.reddit.com/r/bytebeat/comments/saf49d/snaerasrakd/",
 				"date": "2022-01-23",
 				"sampleRate": 44100,
 				"codeOriginal": "t/=5.5,+[1.5,sin(t>>1),1.5,sin(t>>1),2,sin(t>>1),1.8,sin(t>>1),][(t>>12)%8]*t&-t>>4|128*random()*(1-(1&t>>9))|4e4/(t&4095)",
-				"codeMinified": "t/=5.5,+[1.5,sin(t>>1),1.5,sin(t>>1),2,sin(t>>1),1.8,sin(t>>1)][(t>>12)%8]*t&-t>>4|128*random()*(1-(1&t>>9))|4E4/(t&4095)",
-				"starred": 1
+				"codeMinified": "t/=5.5,+[1.5,sin(t>>1),1.5,sin(t>>1),2,sin(t>>1),1.8,sin(t>>1)][(t>>12)%8]*t&-t>>4|128*random()*(1-(1&t>>9))|4E4/(t&4095)"
 			}]
 		}, {
 			"author": "Decent-Manager-6169",
@@ -1892,8 +1801,7 @@
 					"d=(t*Math.random()|t/1.1>>9)&31*[0,1][t/1.1>>15&1],",
 					"e=t*[0,0,1,0,1,0,1,0,0,0,1,0,0,0,1,0][t/1.1>>12&15]*[2.4,2.15,2.4,2.15,2.7,2.15,2.7,2.15][t/1.1>>16&7]/2.75,e=(Math.cos(e/14.8)*64+64)/4,a+b+c+d+e"
 				],
-				"codeMinified": "a=t*'87'[t/1.1>>16&1]/2.75,a=(64*cos(a/5.13/8)+64)/8,b=t*'87'[t/1.1>>16&1]/2.75/.8,b=(64*cos(b/5.13/8)+64)/8,c=(t*random()|t/1.1>>7)&31*[1,0,1,0,0,0,1,1,0,0,1,0,0,0,1,0][t/1.1>>12&15],d=(t*random()|t/1.1>>9)&31*[0,1][t/1.1>>15&1],e=t*[0,0,1,0,1,0,1,0,0,0,1,0,0,0,1,0][t/1.1>>12&15]*[2.4,2.15,2.4,2.15,2.7,2.15,2.7,2.15][t/1.1>>16&7]/2.75,e=(64*cos(e/14.8)+64)/4,a+b+c+d+e",
-				"starred": 2
+				"codeMinified": "a=t*'87'[t/1.1>>16&1]/2.75,a=(64*cos(a/5.13/8)+64)/8,b=t*'87'[t/1.1>>16&1]/2.75/.8,b=(64*cos(b/5.13/8)+64)/8,c=(t*random()|t/1.1>>7)&31*[1,0,1,0,0,0,1,1,0,0,1,0,0,0,1,0][t/1.1>>12&15],d=(t*random()|t/1.1>>9)&31*[0,1][t/1.1>>15&1],e=t*[0,0,1,0,1,0,1,0,0,0,1,0,0,0,1,0][t/1.1>>12&15]*[2.4,2.15,2.4,2.15,2.7,2.15,2.7,2.15][t/1.1>>16&7]/2.75,e=(64*cos(e/14.8)+64)/4,a+b+c+d+e"
 			}, {
 				"description": "Stimmer but with Hihat and Crash",
 				"remixed": {
@@ -1907,8 +1815,7 @@
 					"b=(t*Math.random()|t>>6)&63*\"01\"[t>>12&1],",
 					"c=(t*Math.random()|t>>4)&32,a+b+c"
 				],
-				"codeMinified": "a=((t*(4|7&t>>13)>>(~t>>11&1)&128)+(t*(t>>11&t>>13)*(~t>>9&3)&127))/2,b=(t*random()|t>>6)&63*'01'[t>>12&1],c=(t*random()|t>>4)&32,a+b+c",
-				"starred": 1
+				"codeMinified": "a=((t*(4|7&t>>13)>>(~t>>11&1)&128)+(t*(t>>11&t>>13)*(~t>>9&3)&127))/2,b=(t*random()|t>>6)&63*'01'[t>>12&1],c=(t*random()|t>>4)&32,a+b+c"
 			}, {
 				"description": "Melody Of Im Blue (with drums)",
 				"url": "https://www.reddit.com/r/bytebeat/comments/rs1qqi/comment/hqridb8/?utm_source=reddit&utm_medium=web2x&context=3",
@@ -1919,8 +1826,7 @@
 					"b=(Math.sin(t/2|t/12)*((-t/2.4>>6&31)+1)+32)*[1,0][t/2.4>>11&1],",
 					"c=(Math.sin(t/3|t/18)*((-t/2.4>>8&31)+1)+32)*[0,1][t/2.4>>13&1],a+b+c"
 				],
-				"codeMinified": "a=t*[1.35,.85,1.125,1.35,1.5,1,1.27,1.35,1.35,1.125,1.35,1.7,1.8,1.125,1.7,1.5,1.35,.85,1.125,1.35,1.5,1,1.27,1.35,1.35,1.125,1.35,1.7,1.8,1.125,1.7,1.5,1.35,.85,1.125,1.35,1.5,1,1.27,1.35,1.35,1.125,1.35,1.7,1.8,1.125,1.7,1.5,1.35,.85,1.125,1.35,1.27,.75,1,1.125,1.125,1.125,1,1.125,1.125,1,1.125,1.27][t/2.4>>12&63]/4&63,b=(sin(t/2|t/12)*((-t/2.4>>6&31)+1)+32)*[1,0][t/2.4>>11&1],c=(sin(t/3|t/18)*((-t/2.4>>8&31)+1)+32)*[0,1][t/2.4>>13&1],a+b+c",
-				"starred": 2
+				"codeMinified": "a=t*[1.35,.85,1.125,1.35,1.5,1,1.27,1.35,1.35,1.125,1.35,1.7,1.8,1.125,1.7,1.5,1.35,.85,1.125,1.35,1.5,1,1.27,1.35,1.35,1.125,1.35,1.7,1.8,1.125,1.7,1.5,1.35,.85,1.125,1.35,1.5,1,1.27,1.35,1.35,1.125,1.35,1.7,1.8,1.125,1.7,1.5,1.35,.85,1.125,1.35,1.27,.75,1,1.125,1.125,1.125,1,1.125,1.125,1,1.125,1.27][t/2.4>>12&63]/4&63,b=(sin(t/2|t/12)*((-t/2.4>>6&31)+1)+32)*[1,0][t/2.4>>11&1],c=(sin(t/3|t/18)*((-t/2.4>>8&31)+1)+32)*[0,1][t/2.4>>13&1],a+b+c"
 			}, {
 				"description": "Sine Melody",
 				"url": "https://www.reddit.com/r/bytebeat/comments/rwd856/sine_melody/",
@@ -1930,8 +1836,7 @@
 					"a=(v=t/16*[2,4,2,4,2,4,2,4,2,5,2,4,3,3,2,1][t>>13&15]*((t>>13&3)+1),w=t/16*[1,2,1,2,3,2,1,4,5,4,6,3,2,4,1,3,3][t>>13&15]*((t>>13&3)+1),m=((Math.sin(v>>1)*64+64)+(Math.cos(w>>1)*64+64))/8+((Math.sin(v)*64+64)+(Math.cos(w)*64+64))/8)^64,",
 					"b=Math.sin(t/[64,16,17,16,14,16,17,16,32,16,17,16,21,24,26,32][t>>14&15]*2)*2*((-t>>10&15)+1)+16,a+b"
 				],
-				"codeMinified": "a=(v=t/16*[2,4,2,4,2,4,2,4,2,5,2,4,3,3,2,1][t>>13&15]*((t>>13&3)+1),w=t/16*[1,2,1,2,3,2,1,4,5,4,6,3,2,4,1,3,3][t>>13&15]*((t>>13&3)+1),m=(64*sin(v>>1)+64+(64*cos(w>>1)+64))/8+(64*sin(v)+64+(64*cos(w)+64))/8)^64,b=2*sin(t/[64,16,17,16,14,16,17,16,32,16,17,16,21,24,26,32][t>>14&15]*2)*((-t>>10&15)+1)+16,a+b",
-				"starred": 2
+				"codeMinified": "a=(v=t/16*[2,4,2,4,2,4,2,4,2,5,2,4,3,3,2,1][t>>13&15]*((t>>13&3)+1),w=t/16*[1,2,1,2,3,2,1,4,5,4,6,3,2,4,1,3,3][t>>13&15]*((t>>13&3)+1),m=(64*sin(v>>1)+64+(64*cos(w>>1)+64))/8+(64*sin(v)+64+(64*cos(w)+64))/8)^64,b=2*sin(t/[64,16,17,16,14,16,17,16,32,16,17,16,21,24,26,32][t>>14&15]*2)*((-t>>10&15)+1)+16,a+b"
 			}, {
 				"description": "literally don't know the name",
 				"url": "https://www.reddit.com/r/bytebeat/comments/ryoyt5/literally_dont_know_the_name/",
@@ -1941,8 +1846,7 @@
 					"a=t*\"60303060303060303060303060306030\"[t/5.5>>9&31]/8&127,",
 					"b=t*\"60303060303060303060303060306030\"[t/5.5>>9&31]/[0,2.65,2.5,3][t/5.5>>14&3]/2&127,a+b"
 				],
-				"codeMinified": "a=t*'60303060303060303060303060306030'[t/5.5>>9&31]/8&127,b=t*'60303060303060303060303060306030'[t/5.5>>9&31]/[0,2.65,2.5,3][t/5.5>>14&3]/2&127,a+b",
-				"starred": 1
+				"codeMinified": "a=t*'60303060303060303060303060306030'[t/5.5>>9&31]/8&127,b=t*'60303060303060303060303060306030'[t/5.5>>9&31]/[0,2.65,2.5,3][t/5.5>>14&3]/2&127,a+b"
 			}, {
 				"description": "Never gonna give you up",
 				"url": "https://www.reddit.com/r/bytebeat/comments/s0b0m0/i_made_the_coolest_music/",
@@ -1985,8 +1889,7 @@
 				"url": "https://www.reddit.com/r/bytebeat/comments/s7aiep/squsinsaw_music/",
 				"date": "2022-01-19",
 				"codeOriginal": "squ=((t)*[1,0,2,0,1,0,2,2,1,0,2,0,1,0,2,0,1.5,0,3,3,1.5,0,3,0,1.35,0,2.7,2.7,1.35,0,2.70,][t>>10&31])&64,sine=((sin(((t/40.743648)*([8,9,9.5,12][t>>10&3])*[1,1,1.5,1.35][t>>13&3]))*32)+32),saw=(((t/4)*[0,0,0,0,0,0,0,0,8,9.5,12,16,0,0,0,0][t>>8&15])&31),kick=((1E5/(t&4095)/5)&63),snr=((((t*t*t>>10)&63)|((t>>6)&63))*\"0101\"[t>>12&3]),(sine%((-t>>4)&63))+(squ*[0,1,1,1,1,1,1,1][t>>16&7])+(kick*[0,0,1,1,1,1,1,1][t>>16&7])+(snr*[0,0,1,1,1,1,1,1][t>>16&7])+(saw*[0,0,1,1,1,1,1,1][t>>16&7])",
-				"codeMinified": "squ=t*[1,0,2,0,1,0,2,2,1,0,2,0,1,0,2,0,1.5,0,3,3,1.5,0,3,0,1.35,0,2.7,2.7,1.35,0,2.7][t>>10&31]&64,sine=32*sin(t/40.743648*[8,9,9.5,12][t>>10&3]*[1,1,1.5,1.35][t>>13&3])+32,saw=t/4*[0,0,0,0,0,0,0,0,8,9.5,12,16,0,0,0,0][t>>8&15]&31,kick=1E5/(t&4095)/5&63,snr=(t*t*t>>10&63|t>>6&63)*'0101'[t>>12&3],sine%(-t>>4&63)+squ*[0,1,1,1,1,1,1,1][t>>16&7]+kick*[0,0,1,1,1,1,1,1][t>>16&7]+snr*[0,0,1,1,1,1,1,1][t>>16&7]+saw*[0,0,1,1,1,1,1,1][t>>16&7]",
-				"starred": 2
+				"codeMinified": "squ=t*[1,0,2,0,1,0,2,2,1,0,2,0,1,0,2,0,1.5,0,3,3,1.5,0,3,0,1.35,0,2.7,2.7,1.35,0,2.7][t>>10&31]&64,sine=32*sin(t/40.743648*[8,9,9.5,12][t>>10&3]*[1,1,1.5,1.35][t>>13&3])+32,saw=t/4*[0,0,0,0,0,0,0,0,8,9.5,12,16,0,0,0,0][t>>8&15]&31,kick=1E5/(t&4095)/5&63,snr=(t*t*t>>10&63|t>>6&63)*'0101'[t>>12&3],sine%(-t>>4&63)+squ*[0,1,1,1,1,1,1,1][t>>16&7]+kick*[0,0,1,1,1,1,1,1][t>>16&7]+snr*[0,0,1,1,1,1,1,1][t>>16&7]+saw*[0,0,1,1,1,1,1,1][t>>16&7]"
 			}]
 		}, {
 			"description": "Demporal Tisturbance",
@@ -2015,8 +1918,7 @@
 				"date": "2022-04-06",
 				"sampleRate": 11025,
 				"codeOriginal": "((15+1*'1370'[t>>15&3])/8*'12346543'[t>>10&7]*t%192+160)%256/2+64+((x=t>>(y=2+1*('99999999999999889999999967886855999999997788886799999999678568459199297788999756956999946788685347999999778888649391990664075405'[t>>10&127]))&2)-1)*(2*3e3*(x+1)/(t&(2**(y+1)-1))&1)*64",
-				"codeMinified": "((15+1*'1370'[t>>15&3])/8*'12346543'[t>>10&7]*t%192+160)%256/2+64+((x=t>>(y=2+1*'99999999999999889999999967886855999999997788886799999999678568459199297788999756956999946788685347999999778888649391990664075405'[t>>10&127])&2)-1)*(6E3*(x+1)/(t&(2**(y+1)-1))&1)*64",
-				"starred": 1
+				"codeMinified": "((15+1*'1370'[t>>15&3])/8*'12346543'[t>>10&7]*t%192+160)%256/2+64+((x=t>>(y=2+1*'99999999999999889999999967886855999999997788886799999999678568459199297788999756956999946788685347999999778888649391990664075405'[t>>10&127])&2)-1)*(6E3*(x+1)/(t&(2**(y+1)-1))&1)*64"
 			}, {
 				"description": "Unnecessary-ARPEG",
 				"date": "2022-04-07",
@@ -2031,8 +1933,7 @@
 				"description": "delchor",
 				"date": "2022-04-13",
 				"sampleRate": 44100,
-				"codeOriginal": "(s=4*((l=t/44100*4400)%2**12)>>11<7)*((a=l*'12'[l>>8&1]*'66998887'[l>>13&7]/6)%48+a%64)|(a<<3&a>>7)%32",
-				"starred": 1
+				"codeOriginal": "(s=4*((l=t/44100*4400)%2**12)>>11<7)*((a=l*'12'[l>>8&1]*'66998887'[l>>13&7]/6)%48+a%64)|(a<<3&a>>7)%32"
 			}]
 		}
 	],
@@ -2046,8 +1947,7 @@
 				"sampleRate": 44100,
 				"file": "Savestate - Bit-Shift Melodies.js",
 				"fileFormatted": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}, {
 				"description": "Earl Grey Groove",
 				"url": "http://battleofthebits.org/arena/Entry/Earl+Grey+Groove/20500/",
@@ -2055,8 +1955,7 @@
 				"file": "Savestate - Earl Grey Groove.js",
 				"fileFormatted": true,
 				"fileMinified": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}]
 		}, {
 			"description": "my headache generator",
@@ -2066,8 +1965,7 @@
 			"sampleRate": 44100,
 			"file": "frantic - my headache generator.js",
 			"fileFormatted": true,
-			"fileOriginal": true,
-			"starred": 1
+			"fileOriginal": true
 		}, {
 			"author": "Jimmyoshi",
 			"children": [{
@@ -2077,16 +1975,14 @@
 				"sampleRate": 22050,
 				"file": "Jimmyoshi - damnit kf i have to do homework why'd you have to pick now to host a bytebeat ohb.js",
 				"fileFormatted": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}, {
 				"description": "The Flower Festival",
 				"url": "https://battleofthebits.org/arena/Entry/The+Flower+Festival/17736/",
 				"date": "2015-05-09",
 				"sampleRate": 44100,
 				"file": "Jimmyoshi - The Flower Festival.js",
-				"fileOptimized": true,
-				"starred": 0
+				"fileOptimized": true
 			}, {
 				"description": "Spring Fever",
 				"url": "https://battleofthebits.org/arena/Entry/Spring+Fever/21648/",
@@ -2094,8 +1990,7 @@
 				"sampleRate": 22050,
 				"file": "Jimmyoshi - Spring Fever.js",
 				"fileFormatted": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}, {
 				"description": "Daydreamer",
 				"url": "https://battleofthebits.org/arena/Entry/Daydreamer/25439/",
@@ -2104,8 +1999,7 @@
 				"file": "Jimmyoshi - Daydreamer.js",
 				"fileFormatted": true,
 				"fileMinified": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}, {
 				"description": "HITLER-CHANデートシム",
 				"url": "https://battleofthebits.org/arena/Entry/HITLER-CHAN%E3%83%87%E3%83%BC%E3%83%88%E3%82%B7%E3%83%A0.txt/25871/",
@@ -2114,8 +2008,7 @@
 				"file": "Jimmyoshi - HITLER-CHANデートシム.js",
 				"fileFormatted": true,
 				"fileMinified": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}]
 		}, {
 			"author": "raphaelgoulart",
@@ -2126,8 +2019,7 @@
 				"sampleRate": 11025,
 				"file": "raphaelgoulart - the cute bytebeast ^o^.js",
 				"fileFormatted": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}, {
 				"description": "bossabeat",
 				"url": "https://battleofthebits.org/arena/Entry/bossabeat/21386/",
@@ -2135,8 +2027,7 @@
 				"sampleRate": 44100,
 				"file": "raphaelgoulart - bossabeat.js",
 				"fileFormatted": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}, {
 				"description": "bytefunk",
 				"url": "https://battleofthebits.org/arena/Entry/bytefunk/31042/",
@@ -2144,8 +2035,7 @@
 				"sampleRate": 22050,
 				"file": "raphaelgoulart - bytefunk.js",
 				"fileFormatted": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}, {
 				"description": "1k dance",
 				"url": "https://battleofthebits.org/arena/Entry/1k+dance/31132/",
@@ -2154,8 +2044,7 @@
 				"file": "raphaelgoulart - 1k dance.js",
 				"fileFormatted": true,
 				"fileMinified": true,
-				"fileOriginal": true,
-				"starred": 1
+				"fileOriginal": true
 			}, {
 				"description": "shy smile",
 				"url": "https://battleofthebits.org/arena/Entry/shy+smile/31801/",
@@ -2163,8 +2052,7 @@
 				"sampleRate": 44100,
 				"file": "raphaelgoulart - shy smile.js",
 				"fileFormatted": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}, {
 				"description": "ripthisentry.txt",
 				"url": "https://battleofthebits.org/arena/Entry/ripthisentry.txt/32559/",
@@ -2173,8 +2061,7 @@
 				"file": "raphaelgoulart - ripthisentry.txt.js",
 				"fileFormatted": true,
 				"fileMinified": true,
-				"fileOriginal": true,
-				"starred": 1
+				"fileOriginal": true
 			}]
 		}, {
 			"author": "funute",
@@ -2186,8 +2073,7 @@
 				"file": "funute - bloop factory.js",
 				"fileFormatted": true,
 				"fileMinified": true,
-				"fileOriginal": true,
-				"starred": 1
+				"fileOriginal": true
 			}, {
 				"description": "bytebeat? how about bitbeat?",
 				"url": "https://battleofthebits.org/arena/Entry/bytebeat_+how+about+bitbeat_/21510/",
@@ -2196,8 +2082,7 @@
 				"file": "funute - bytebeat! how about bitbeat!.js",
 				"fileFormatted": true,
 				"fileMinified": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}, {
 				"description": "tiny rave",
 				"url": "https://battleofthebits.org/arena/Entry/tiny+rave/27419/",
@@ -2206,8 +2091,7 @@
 				"file": "funute - tiny rave.js",
 				"fileFormatted": true,
 				"fileMinified": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}, {
 				"description": "frequency machine",
 				"url": "https://battleofthebits.org/arena/Entry/frequency+machine/32329/",
@@ -2215,8 +2099,7 @@
 				"sampleRate": 44100,
 				"file": "funute - frequency machine.js",
 				"fileFormatted": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}, {
 				"description": "vgm engine",
 				"url": "https://battleofthebits.org/arena/Entry/vgm+engine/39556/",
@@ -2224,8 +2107,7 @@
 				"sampleRate": 44100,
 				"file": "funute - vgm engine.js",
 				"fileFormatted": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}]
 		}, {
 			"author": "pigdevil2010",
@@ -2237,8 +2119,7 @@
 				"file": "pigdevil2010 - Last Palette.js",
 				"fileFormatted": true,
 				"fileMinified": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}, {
 				"description": "Last Fountain",
 				"url": "https://battleofthebits.org/arena/Entry/Last+Fountain/27281/",
@@ -2247,8 +2128,7 @@
 				"file": "pigdevil2010 - Last Fountain.js",
 				"fileFormatted": true,
 				"fileMinified": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}]
 		}, {
 			"author": "Bp103",
@@ -2269,8 +2149,7 @@
 				"file": "Bp103 - a sequencer type thing.js",
 				"fileFormatted": true,
 				"fileMinified": true,
-				"fileOriginal": true,
-				"starred": 1
+				"fileOriginal": true
 			}, {
 				"description": "a song in a half baked pseudo-mml format",
 				"url": "https://twitter.com/Bp103/status/1221435415032406017",
@@ -2297,8 +2176,7 @@
 				"file": "Bp103 - triangle kick drum and snare.js",
 				"fileFormatted": true,
 				"fileMinified": true,
-				"fileOriginal": true,
-				"starred": 1
+				"fileOriginal": true
 			}, {
 				"description": "random bytebeat thing with delay effect",
 				"url": "https://twitter.com/Bp103/status/1401194230656253952",
@@ -2306,8 +2184,7 @@
 				"sampleRate": 44100,
 				"file": "Bp103 - random bytebeat thing with delay effect.js",
 				"fileFormatted": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}, {
 				"description": "bytebeat song 06-15-2021",
 				"url": "https://www.youtube.com/watch?v=aA7pyVkkPk4",
@@ -2315,8 +2192,7 @@
 				"sampleRate": 44100,
 				"file": "Bp103 - bytebeat song 06-15-2021.js",
 				"fileFormatted": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}, {
 				"description": "chip box",
 				"url": "https://www.reddit.com/r/bytebeat/comments/qenxc2/learned_how_to_do_functions_now_i_have_an/",
@@ -2325,8 +2201,7 @@
 				"file": "Bp103 - chip box.js",
 				"fileFormatted": true,
 				"fileMinified": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}]
 		}, {
 			"description": "happybeat",
@@ -2336,8 +2211,7 @@
 			"sampleRate": 44100,
 			"file": "Yung Gotenks - happybeat.js",
 			"fileFormatted": true,
-			"fileOriginal": true,
-			"starred": 1
+			"fileOriginal": true
 		}, {
 			"description": "Takitjää",
 			"author": "Lia",
@@ -2367,8 +2241,7 @@
 			"file": "InfinitySnapz - Sunset.js",
 			"fileFormatted": true,
 			"fileMinified": true,
-			"fileOriginal": true,
-			"starred": 1
+			"fileOriginal": true
 		}, {
 			"author": "argarak",
 			"children": [{
@@ -2392,8 +2265,7 @@
 				"sampleRate": 44100,
 				"file": "argarak - pcm.modshape.wv.js",
 				"fileFormatted": true,
-				"fileOriginal": true,
-				"starred": 1
+				"fileOriginal": true
 			}]
 		}, {
 			"description": "Impromptu (Diatom)",
@@ -2403,8 +2275,7 @@
 			"sampleRate": 32000,
 			"file": "Radnyx - Impromptu (Diatom).js",
 			"fileFormatted": true,
-			"fileOriginal": true,
-			"starred": 1
+			"fileOriginal": true
 		}, {
 			"description": "A NΞW DIMΞNSION",
 			"author": "burlynn n01se",
@@ -2414,8 +2285,7 @@
 			"file": "burlynn n01se - A NΞW DIMΞNSION.js",
 			"fileFormatted": true,
 			"fileMinified": true,
-			"fileOriginal": true,
-			"starred": 2
+			"fileOriginal": true
 		}, {
 			"description": "__ws2.model",
 			"author": "beep-eep",
@@ -2425,8 +2295,7 @@
 			"file": "beep-eep - __ws2.model.js",
 			"fileFormatted": true,
 			"fileMinified": true,
-			"fileOriginal": true,
-			"starred": 1
+			"fileOriginal": true
 		}, {
 			"description": "511",
 			"author": "johanvandegriff",
@@ -2441,8 +2310,7 @@
 			"file": "Johan Vandegriff - 511.js",
 			"fileFormatted": true,
 			"fileMinified": true,
-			"fileOriginal": true,
-			"starred": 2
+			"fileOriginal": true
 		}, {
 			"description": "cool loop i guess",
 			"author": "RealZynx92",
@@ -2452,8 +2320,7 @@
 			"file": "RealZynx92 - cool loop i guess.js",
 			"fileFormatted": true,
 			"fileMinified": true,
-			"fileOriginal": true,
-			"starred": 1
+			"fileOriginal": true
 		}, {
 			"author": "Decent-Manager-6169",
 			"children": [{
@@ -2464,8 +2331,7 @@
 				"file": "Decent-Manager-6169 - Red Green Blue 4.js",
 				"fileFormatted": true,
 				"fileMinified": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}, {
 				"description": "An Escaped War Or Something",
 				"url": "https://www.reddit.com/r/bytebeat/comments/rnngwr/an_escaped_war_or_something/",
@@ -2474,8 +2340,7 @@
 				"file": "Decent-Manager-6169 - An Escaped War Or Something.js",
 				"fileFormatted": true,
 				"fileMinified": true,
-				"fileOriginal": true,
-				"starred": 1
+				"fileOriginal": true
 			}]
 		}, {
 			"description": "ByteSongg",
@@ -2486,8 +2351,7 @@
 			"file": "Danidanijr - ByteSongg.js",
 			"fileFormatted": true,
 			"fileMinified": true,
-			"fileOriginal": true,
-			"starred": 2
+			"fileOriginal": true
 		}
 	],
 	"floatbeat": [
@@ -2499,24 +2363,21 @@
 				"mode": "Floatbeat",
 				"file": "Wiebe-Marten Wijnja - Cover of 'Predestined Fate' from VVVVVV.js",
 				"fileFormatted": true,
-				"fileOriginal": true,
-				"starred": 1
+				"fileOriginal": true
 			}, {
 				"description": "Cover of 'Please Exist' from Knytt Underground",
 				"mode": "Floatbeat",
 				"sampleRate": 44100,
 				"file": "Wiebe-Marten Wijnja - Cover of 'Please Exist' from Knytt Underground.js",
 				"fileFormatted": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}, {
 				"description": "Cover of 'Focus' from SuperHexagon",
 				"mode": "Floatbeat",
 				"sampleRate": 44100,
 				"file": "Wiebe-Marten Wijnja - Cover of 'Focus' from SuperHexagon.js",
 				"fileFormatted": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}, {
 				"description": "Game of Thrones theme",
 				"url": "https://js1k.com/2014-dragons/details/1953",
@@ -2525,8 +2386,7 @@
 				"sampleRate": 44100,
 				"file": "Wiebe-Marten Wijnja - Game of Thrones theme.js",
 				"fileFormatted": true,
-				"fileOriginal": true,
-				"starred": 1
+				"fileOriginal": true
 			}]
 		}, {
 			"author": "lehandsomeguy",
@@ -2552,16 +2412,14 @@
 				"sampleRate": 44100,
 				"file": "lehandsomeguy - Melody with array 2.js",
 				"fileFormatted": true,
-				"fileOriginal": true,
-				"starred": 1
+				"fileOriginal": true
 			}, {
 				"description": "Drone",
 				"mode": "Floatbeat",
 				"sampleRate": 11025,
 				"file": "lehandsomeguy - Drone.js",
 				"fileFormatted": true,
-				"fileOriginal": true,
-				"starred": 1
+				"fileOriginal": true
 			}, {
 				"description": "Trippy test",
 				"mode": "Floatbeat",
@@ -2607,8 +2465,7 @@
 					"bas=asin(sin(t*[1,1.05,1,1.05,0,1,1.05,1][t>>14&7]/41))/4,",
 					"(kick+snare+hihat+mel+bas)/1.5"
 				],
-				"codeMinified": "noi=(x,a)=>sin(x/9E3*x*x*x)/256*a,kick=sin(1.6**(-t/512%32+8))/2,snare=noi(int(t/3)*'01'[t>>14&1],-(t/128%128)+128)/3,hihat=noi(t,16-sqrt(-t&4095)/1.5),mel=min(max(atan(tan(t*[1,4,1,4,1.05,4,1.05,4][t>>13&7]*'10'[t>>12&1]/2/41)^sin(t/41)),-1),1)/((t/512&7)+3),bas=asin(sin(t*[1,1.05,1,1.05,0,1,1.05,1][t>>14&7]/41))/4,(kick+snare+hihat+mel+bas)/1.5",
-				"starred": 1
+				"codeMinified": "noi=(x,a)=>sin(x/9E3*x*x*x)/256*a,kick=sin(1.6**(-t/512%32+8))/2,snare=noi(int(t/3)*'01'[t>>14&1],-(t/128%128)+128)/3,hihat=noi(t,16-sqrt(-t&4095)/1.5),mel=min(max(atan(tan(t*[1,4,1,4,1.05,4,1.05,4][t>>13&7]*'10'[t>>12&1]/2/41)^sin(t/41)),-1),1)/((t/512&7)+3),bas=asin(sin(t*[1,1.05,1,1.05,0,1,1.05,1][t>>14&7]/41))/4,(kick+snare+hihat+mel+bas)/1.5"
 			}, {
 				"description": "happy floatbeat melody",
 				"url": "https://www.reddit.com/r/bytebeat/comments/rtkgtn/happy_floatbeat_melody/",
@@ -2616,8 +2473,7 @@
 				"mode": "Floatbeat",
 				"sampleRate": 32000,
 				"codeOriginal": "a=t*[1,1,1,1,1.5,1.5,1.33,1.33][t>>15&7],b=t*[1,1.33][t>>14&1],sin(t*\"6868686834343434\"[t>>13&15]/41)/8+(b*4%256/256)/4+atan(tan(a/41)+cos(a/100))/[4,8,16,32][t>>13&3]",
-				"codeMinified": "a=t*[1,1,1,1,1.5,1.5,1.33,1.33][t>>15&7],b=t*[1,1.33][t>>14&1],sin(t*'6868686834343434'[t>>13&15]/41)/8+4*b%256/256/4+atan(tan(a/41)+cos(a/100))/[4,8,16,32][t>>13&3]",
-				"starred": 2
+				"codeMinified": "a=t*[1,1,1,1,1.5,1.5,1.33,1.33][t>>15&7],b=t*[1,1.33][t>>14&1],sin(t*'6868686834343434'[t>>13&15]/41)/8+4*b%256/256/4+atan(tan(a/41)+cos(a/100))/[4,8,16,32][t>>13&3]"
 			}]
 		}, {
 			"description": "they're getting closer",
@@ -2660,8 +2516,7 @@
 				"codeOriginal": "(t>>4)*(t>>3)|t>>4"
 			}, {
 				"description": "\"Explosive beat\". Obtained from combining the first two formulas",
-				"codeOriginal": "(t>>4)*(t>>3)|t>>(t&4096?3:2)",
-				"starred": 1
+				"codeOriginal": "(t>>4)*(t>>3)|t>>(t&4096?3:2)"
 			}, {
 				"description": "\"M-m-multiple explosion beat\"",
 				"codeOriginal": "(t>>4)*(t>>2)|t>>(t>>12)%4"
@@ -2673,8 +2528,7 @@
 			"description": "\"Robocop\". Cool beat discovered by experimenting with [<byte-snippet>(t>>2)*(t&16)|t>>2</byte-snippet>]",
 			"children": [{
 				"description": "Very cool sound with biting blows",
-				"codeOriginal": "(t>>2)*(t&(t&32768?16:24)|t>>(t>>8&28))|t>>2",
-				"starred": 1
+				"codeOriginal": "(t>>2)*(t&(t&32768?16:24)|t>>(t>>8&28))|t>>2"
 			}, {
 				"description": "Lower bass",
 				"codeOriginal": "(t>>3)*(t&(t&32768?16:24)|t>>(t>>8&28))|t>>2"
@@ -2689,8 +2543,7 @@
 				"codeOriginal": "t*((t>>10|t%16*t>>5)&8*t>>10&18)"
 			}, {
 				"description": "Very funny voice :)",
-				"codeOriginal": "t*((t>>10|t%16*t>>5)&8*t>>12&18)",
-				"starred": 1
+				"codeOriginal": "t*((t>>10|t%16*t>>5)&8*t>>12&18)"
 			}, {
 				"description": "I hear the long mewing of a cat :)",
 				"codeOriginal": "t*((t>>10|t%16*t>>8)&8*t>>12&18)"
@@ -2702,8 +2555,7 @@
 				"author": "Anonymous from russian imageboards",
 				"url": "http://abload.de/img/1405110021643uguil.jpg"
 			},
-			"codeOriginal": "t>>9&2*t&10*t|t>>5&6*t",
-			"starred": 2
+			"codeOriginal": "t>>9&2*t&10*t|t>>5&6*t"
 		}, {
 			"description": "\"Cat-girl\". Nya!",
 			"remixed": {
@@ -2711,8 +2563,7 @@
 				"author": "Anonymous from russian imageboards",
 				"url": "http://abload.de/img/1405110021643uguil.jpg"
 			},
-			"codeOriginal": "17*t|(t>>2)+(t&32768?13:14)*t|t>>3|t>>5",
-			"starred": 1
+			"codeOriginal": "17*t|(t>>2)+(t&32768?13:14)*t|t>>3|t>>5"
 		}, {
 			"description": "\"Trance beat\". Experiments with t>>N and ternary operations",
 			"remixed": {
@@ -2743,8 +2594,7 @@
 		}, {
 			"description": "Arabic beat",
 			"children": [{
-				"codeOriginal": "t%((t&-16|t>>10)&42)<<2|t>>4",
-				"starred": 1
+				"codeOriginal": "t%((t&-16|t>>10)&42)<<2|t>>4"
 			}, {
 				"description": "Allahu akbar!",
 				"codeOriginal": "t%((t&-16|t>>11)&42)<<2|t>>4"
@@ -2762,8 +2612,7 @@
 				"codeOriginal": "t*(2-(1&-t>>11))*(5+(2&t>>14))>>(3&t>>8)|t>>2"
 			}, {
 				"description": "\"Boss level\". Slow down |t>>2 rhythm to |t>>3... Sounds dangerous!",
-				"codeOriginal": "t*(2-(1&-t>>11))*(5+(2&t>>14))>>(3&t>>8)|t>>3",
-				"starred": 1
+				"codeOriginal": "t*(2-(1&-t>>11))*(5+(2&t>>14))>>(3&t>>8)|t>>3"
 			}, {
 				"description": "By playing with the \"Boss level\" I made a different percussion",
 				"codeOriginal": "t*(t&16384?6:5)*(1+(1&t>>12))>>(3&t>>8)|t>>3"
@@ -2783,16 +2632,13 @@
 				"codeOriginal": "t*(t&16384?6:5)*(4-(1&t>>8))>>(3&t>>8)|t>>(t&4096?3:4)"
 			}, {
 				"description": "\"Aliens on approach\". Slow down the explosions to 3&t>>9, get a heavy chiptune beat",
-				"codeOriginal": "t*(t&16384?6:5)*(3-(1&t>>8))>>(3&t>>9)|t>>4",
-				"starred": 1
+				"codeOriginal": "t*(t&16384?6:5)*(3-(1&t>>8))>>(3&t>>9)|t>>4"
 			}, {
 				"description": "\"Aliens are close\". t>>5 rhythm",
-				"codeOriginal": "t*(t&16384?6:5)*(3+(1&t>>8))>>(3&t>>9)|t>>5",
-				"starred": 1
+				"codeOriginal": "t*(t&16384?6:5)*(3+(1&t>>8))>>(3&t>>9)|t>>5"
 			}, {
 				"description": "\"Aliens are here\". t>>6 rhythm - SUPER POWERFUL ECHOES",
-				"codeOriginal": "t*(t&16384?6:5)*(4-(1&t>>8))>>(3&t>>9)|t>>6",
-				"starred": 2
+				"codeOriginal": "t*(t&16384?6:5)*(4-(1&t>>8))>>(3&t>>9)|t>>6"
 			}, {
 				"description": "Inverted explosions give us mysterious sounds",
 				"codeOriginal": "t*(t&16384?6:5)*(4-(1&t>>8))>>(3&-t>>9)|t>>6"
@@ -2800,12 +2646,10 @@
 				"description": " "
 			}, {
 				"description": "\"Aliens attack\". Complicated (t|t*3)>>5 rhythm with explosion drums. Cool!",
-				"codeOriginal": "t*(t&16384?6:5)*(4-(1&t>>8))>>(3&t>>9)|(t|t*3)>>5",
-				"starred": 1
+				"codeOriginal": "t*(t&16384?6:5)*(4-(1&t>>8))>>(3&t>>9)|(t|t*3)>>5"
 			}, {
 				"description": "\"Aliens encounter\". Making a ternary rhythm gives an EXTRA HARD BEAT!",
-				"codeOriginal": "t*(t&16384?6:5)*(4-(1&t>>8))>>(3&t>>9)|t>>(t&4096?3:4)",
-				"starred": 2
+				"codeOriginal": "t*(t&16384?6:5)*(4-(1&t>>8))>>(3&t>>9)|t>>(t&4096?3:4)"
 			}, {
 				"description": "Funny inverted sounds :D",
 				"codeOriginal": "t*(t&16384?6:5)*(3+(3&t>>7))>>(3&t>>9)|t>>(t&4096?3:4)"
@@ -2813,32 +2657,26 @@
 				"description": " "
 			}, {
 				"description": "\"Prepare to fight\". Long period, sound is changing from low to high",
-				"codeOriginal": "t*(t&16384?6:5)*(4-(1&t>>8))>>(3&-t>>15)|t>>(t&4096?3:4)",
-				"starred": 1
+				"codeOriginal": "t*(t&16384?6:5)*(4-(1&t>>8))>>(3&-t>>15)|t>>(t&4096?3:4)"
 			}, {
 				"description": "\"Prepare to fight #2\". Previous formula with doubled freqency bass",
-				"codeOriginal": "2*t*(t&16384?6:5)*(4-(3&t>>8))>>(3&-t>>15)|t>>(t&4096?3:4)",
-				"starred": 1
+				"codeOriginal": "2*t*(t&16384?6:5)*(4-(3&t>>8))>>(3&-t>>15)|t>>(t&4096?3:4)"
 			}, {
 				"description": "<br>Suddenly I discovered that replacing 3&t>>9 with 3&t>>2 in \"Aliens encounter\" gives a noise sound.<br>This is an excellent instrument for drums. For example, a ternary 3&t>>(t&4096?2:9)"
 			}, {
 				"description": "\"Aliens encounter + drums\". Impressive sound!",
-				"codeOriginal": "t*(t&16384?6:5)*(4-(1&t>>8))>>(3&t>>(t&4096?2:9))|t>>(t&4096?3:4)",
-				"starred": 2
+				"codeOriginal": "t*(t&16384?6:5)*(4-(1&t>>8))>>(3&t>>(t&4096?2:9))|t>>(t&4096?3:4)"
 			}, {
 				"description": "\"Prepare to fight #2 + drums\"",
-				"codeOriginal": "2*t*(t&16384?6:5)*(4-(3&t>>8))>>(3&-t>>(t&4096?2:15))|t>>(t&4096?3:4)",
-				"starred": 2
+				"codeOriginal": "2*t*(t&16384?6:5)*(4-(3&t>>8))>>(3&-t>>(t&4096?2:15))|t>>(t&4096?3:4)"
 			}, {
 				"description": "<br>Finally you can use complex ternary operators to create more complex drums:"
 			}, {
 				"description": "\"Ready to fight?\". Cool for a fighting game :)",
-				"codeOriginal": "2*t*(t&16384?6:5)*(4-(3&t>>8))>>(3&-t>>(t&4096?2:15))|t>>(t&8192?t&4096?4:5:3)",
-				"starred": 2
+				"codeOriginal": "2*t*(t&16384?6:5)*(4-(3&t>>8))>>(3&-t>>(t&4096?2:15))|t>>(t&8192?t&4096?4:5:3)"
 			}, {
 				"description": "\"Hard level\". My favorite!",
-				"codeOriginal": "t*(t&16384?7:5)*(5-(3&t>>8))>>(3&-t>>(t&4096?2:16))|t>>(t&16384?t&4096?3:4:3)",
-				"starred": 2
+				"codeOriginal": "t*(t&16384?7:5)*(5-(3&t>>8))>>(3&-t>>(t&4096?2:16))|t>>(t&16384?t&4096?3:4:3)"
 			}, {
 				"description": "<br>Fantastic! Let's continue our experiments:"
 			}, {
@@ -2846,8 +2684,7 @@
 				"codeOriginal": "t*(t&16384?6:5)*(1+(3&t>>10))>>(3&t>>8)|t>>2"
 			}, {
 				"description": "\"Another level\". Adding a noise beat by using ternary operation",
-				"codeOriginal": "t*(t&16384?6:5)*(1+(3&t>>(t&2048?4:10)))>>(3&t>>8)|t>>2",
-				"starred": 1
+				"codeOriginal": "t*(t&16384?6:5)*(1+(3&t>>(t&2048?4:10)))>>(3&t>>8)|t>>2"
 			}, {
 				"description": "\"Happy level\". Previous formula with slightly changed coefficitnts",
 				"codeOriginal": "t*(t&16384?6:5)*(2+(3&t>>(t&2048?4:9)))>>(3&t>>8)|t>>2"
@@ -2856,47 +2693,39 @@
 				"codeOriginal": "t*(t&16384?6:5)*(2+(3&t>>9))>>(3&-t>>8)|t>>4"
 			}, {
 				"description": "\"Happy level #3\". We can get an awesome harmonics with 3&-t>>9",
-				"codeOriginal": "t*(t&16384?6:5)*(2+(3&-t>>9))>>(3&t>>8)|t>>4",
-				"starred": 1
+				"codeOriginal": "t*(t&16384?6:5)*(2+(3&-t>>9))>>(3&t>>8)|t>>4"
 			}, {
 				"description": "\"Awesome level\". We can get a cool cartoon-game melody!",
-				"codeOriginal": "t*(t&16384?6:5)*(3+(3&t>>(t&2048?7:14)))>>(3&t>>9)|t>>2",
-				"starred": 2
+				"codeOriginal": "t*(t&16384?6:5)*(3+(3&t>>(t&2048?7:14)))>>(3&t>>9)|t>>2"
 			}, {
 				"description": "Slower rhythm...",
-				"codeOriginal": "t*(t&16384?6:5)*(3+(3&t>>(t&2048?7:14)))>>(3&t>>9)|t>>3",
-				"starred": 1
+				"codeOriginal": "t*(t&16384?6:5)*(3+(3&t>>(t&2048?7:14)))>>(3&t>>9)|t>>3"
 			}, {
 				"codeOriginal": "t*(t&16384?6:5)*(3+(3&t>>(t&2048?7:14)))>>(2&t>>9)|t>>3"
 			}, {
 				"description": "\"Awesome level #2\". The next awesome level!",
-				"codeOriginal": "t*(t&16384?6:5)*(5-(3&t>>(t&4096?7:14)))>>(3&t>>9)|t>>3",
-				"starred": 2
+				"codeOriginal": "t*(t&16384?6:5)*(5-(3&t>>(t&4096?7:14)))>>(3&t>>9)|t>>3"
 			}, {
 				"description": " "
 			}, {
 				"description": "\"Alien dungeon\". So sinister.. t>>6 gives a fading effect",
-				"codeOriginal": "t*(t&16384?7:5)*(3+(3&t>>14))>>(3&t>>9)|t>>6",
-				"starred": 1
+				"codeOriginal": "t*(t&16384?7:5)*(3+(3&t>>14))>>(3&t>>9)|t>>6"
 			}, {
 				"description": "\"Alien dungeon\" with a complicated rhytm (t|t*3)>>5",
 				"codeOriginal": "t*(t&16384?7:5)*(3+(3&t>>14))>>(3&t>>9)|(t|t*3)>>5"
 			}, {
 				"description": "Previous with a slightly different tune",
-				"codeOriginal": "t*(t&16384?7:5)*(4-(3&t>>14))>>(3&t>>9)|(t|t*3)>>5",
-				"starred": 1
+				"codeOriginal": "t*(t&16384?7:5)*(4-(3&t>>14))>>(3&t>>9)|(t|t*3)>>5"
 			}, {
 				"description": "Other \"Boss level\" variation",
 				"codeOriginal": "t*(6+(1&t>>14))>>(3&t>>8)|t>>(t&4096?3:4)"
 			}, {
 				"description": "Previous tune with a ternary magic",
-				"codeOriginal": "t*((t&4096?6:16)+(1&t>>14))>>(3&t>>8)|t>>(t&4096?3:4)",
-				"starred": 1
+				"codeOriginal": "t*((t&4096?6:16)+(1&t>>14))>>(3&t>>8)|t>>(t&4096?3:4)"
 			}]
 		}, {
 			"description": "The time is running out!",
 			"url": "https://www.reddit.com/r/bytebeat/comments/q9owio/the_time_is_running_out/",
-			"starred": 2,
 			"children": [{
 				"date": "2021-10-17",
 				"sampleRate": 11025,
@@ -2922,7 +2751,6 @@
 			"description": "Death chase",
 			"url": "https://www.reddit.com/r/bytebeat/comments/qh9hhr/death_chase/",
 			"date": "2021-10-28",
-			"starred": 2,
 			"children": [{
 				"description": "As a basis is taken modified <a href='https://www.reddit.com/r/bytebeat/comments/q9owio/the_time_is_running_out/' target='_blank'>\"The time is running out!\"</a> and <a href='https://www.reddit.com/r/bytebeat/comments/qf9meb/remix_of_the_time_is_running_out_by_stephanshi/' target='_blank'>\"remix by RealZynx92\"</a> songs. Used the idea of selecting notes and rhythm through an array.",
 				"sampleRate": 44100,
@@ -2936,7 +2764,6 @@
 			"description": "Neurofunk",
 			"url": "https://www.reddit.com/r/bytebeat/comments/s0laz2/neurofunk/",
 			"date": "2022-01-10",
-			"starred": 1,
 			"children": [{
 				"codeOriginal": "t*((t&4096?t%65536<59392?7:t&7:16)+(1&t>>14))>>(3&-t>>(t&2048?2:10))|t>>(t&16384?t&4096?10:3:2)"
 			}, {
@@ -2954,8 +2781,7 @@
 				"file": "SthephanShi - Frozen Planet.js",
 				"fileFormatted": true,
 				"fileMinified": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}]
 		}, {
 			"children": [{
@@ -2967,8 +2793,7 @@
 				"sampleRate": 44100,
 				"file": "SthephanShi - Antarctica.js",
 				"fileMinified": true,
-				"fileOriginal": true,
-				"starred": 2
+				"fileOriginal": true
 			}]
 		}
 	],
@@ -2978,15 +2803,13 @@
 			"url": "https://www.reddit.com/r/bytebeat/comments/ff5phi/menacing/",
 			"date": "2020-03-08",
 			"sampleRate": 44100,
-			"codeOriginal": "r=11e3,s=int(t/r+1)%32,b='ćóóóćÎÎÎÎÃÃÃÃÃÃÎ°°°°¦¦¦¦'.charCodeAt(s)/300*t%512,160/3*(sin(t%r/(t%r/100+8))+1)*(s%2+.6*!(s%16))+b%(400+128*sin(b/(21+sin(t/r))))%256/3+(.999*(0xDBC97749&2**s?2*b:b)%128>64+15*sin(t/1e4)?64-t/r%1*32:0)",
-			"starred": 2
+			"codeOriginal": "r=11e3,s=int(t/r+1)%32,b='ćóóóćÎÎÎÎÃÃÃÃÃÃÎ°°°°¦¦¦¦'.charCodeAt(s)/300*t%512,160/3*(sin(t%r/(t%r/100+8))+1)*(s%2+.6*!(s%16))+b%(400+128*sin(b/(21+sin(t/r))))%256/3+(.999*(0xDBC97749&2**s?2*b:b)%128>64+15*sin(t/1e4)?64-t/r%1*32:0)"
 		}, {
 			"description": "arpeggiator fun",
 			"url": "https://www.reddit.com/r/bytebeat/comments/fjsa1y/arpeggiator_fun/",
 			"date": "2020-03-16",
 			"sampleRate": 44100,
-			"codeOriginal": "i=int,c='charCodeAt',b=t/441e3*16,q=b%.5,h=x=>t/2210*2**((x-36)/12)%1,w=(x,y=0)=>(h(x)-sin(y*2+b*PI)/8>.5)*30,s=i(b*2)%32,a=abs(8-i(b*8)%16),t||(v=.5),v=3.65*v*(1-v),sin(q/(q/100+3e-4))*40*!(54878&1<<s%16)+(v-.5)*70*max(0,1-(b+1)%2*.77)+w(s==6&&i(b*6%6)==1?85:s==14&&q<.25?78:'SSSSSSSQOOONNOLJLLLLLNLJIIIGGGGG'[c](s),s==5)+w('@@@@@@BCEEECCBCCEEEEECEEBBB@@@@@'[c](s))+h('pnkgrnkipmigpnkg'[c](a%4+i(s/8)*4)+12*-i(a/4))*27+99",
-			"starred": 2
+			"codeOriginal": "i=int,c='charCodeAt',b=t/441e3*16,q=b%.5,h=x=>t/2210*2**((x-36)/12)%1,w=(x,y=0)=>(h(x)-sin(y*2+b*PI)/8>.5)*30,s=i(b*2)%32,a=abs(8-i(b*8)%16),t||(v=.5),v=3.65*v*(1-v),sin(q/(q/100+3e-4))*40*!(54878&1<<s%16)+(v-.5)*70*max(0,1-(b+1)%2*.77)+w(s==6&&i(b*6%6)==1?85:s==14&&q<.25?78:'SSSSSSSQOOONNOLJLLLLLNLJIIIGGGGG'[c](s),s==5)+w('@@@@@@BCEEECCBCCEEEEECEEBBB@@@@@'[c](s))+h('pnkgrnkipmigpnkg'[c](a%4+i(s/8)*4)+12*-i(a/4))*27+99"
 		}, {
 			"description": "Sync noise synth",
 			"url": "https://www.reddit.com/r/bytebeat/comments/flmyyd/sync_noise_synth/",
@@ -3009,8 +2832,7 @@
 			"description": "shredder",
 			"url": "https://www.reddit.com/r/bytebeat/comments/gfghdv/shredder_song_not_just_a_terrible_noise/",
 			"date": "2020-05-07",
-			"codeOriginal": "(~t>>max(t>>10&15,t>>12&15)&t*\"H$TT`0l6\".charCodeAt(t>>11&7)/19)*(10-(t>>16))",
-			"starred": 1
+			"codeOriginal": "(~t>>max(t>>10&15,t>>12&15)&t*\"H$TT`0l6\".charCodeAt(t>>11&7)/19)*(10-(t>>16))"
 		}, {
 			"description": "nose grind",
 			"url": "https://www.reddit.com/r/bytebeat/comments/ggkslh/cant_think_of_a_name_atm_but_new_thing/",
@@ -3031,8 +2853,7 @@
 			"description": "\"charCodeAt\"",
 			"url": "https://www.reddit.com/r/bytebeat/comments/lqkf8j/charcodeat/",
 			"date": "2021-02-23",
-			"codeOriginal": "c='charCodeAt',l=9+!(t&65536),c[c]((t>>c[c](((t>>9)%l&t>>12)%l))%l)+(t&4096)*.9",
-			"starred": 1
+			"codeOriginal": "c='charCodeAt',l=9+!(t&65536),c[c]((t>>c[c](((t>>9)%l&t>>12)%l))%l)+(t&4096)*.9"
 		}, {
 			"description": "i don't have a name for this",
 			"url": "https://www.reddit.com/r/bytebeat/comments/ns22lb/i_dont_have_a_name_for_this/",
@@ -3049,22 +2870,19 @@
 				"codeOriginal": "t*(1+(5&t>>10))*(3+(t>>17&1?(2^2&t>>14)/3:3&(t>>13)+1))>>(3&t>>9)"
 			}, {
 				"description": "Final song",
-				"codeOriginal": "(t*(1+(5&t>>10))*(3+(t>>17&1?(2^2&t>>14)/3:3&(t>>13)+1))>>(3&t>>9))&(t&4096?(t*(t^t%9)|t>>3)>>1:255)",
-				"starred": 1
+				"codeOriginal": "(t*(1+(5&t>>10))*(3+(t>>17&1?(2^2&t>>14)/3:3&(t>>13)+1))>>(3&t>>9))&(t&4096?(t*(t^t%9)|t>>3)>>1:255)"
 			}]
 		}, {
 			"description": "minibake",
 			"url": "https://www.reddit.com/r/bytebeat/comments/rcykm8/minibake/",
 			"date": "2021-12-10",
 			"sampleRate": 44100,
-			"codeOriginal": "eval(unescape(escape`瑨楳⹄㼿㵁牲慹⠸㠵㤩⹦楬氨〩ⱂ㵴⼵㤰㘬爽䈥ㄬ瘽ㄭ爬洽䈾㸶ⱳ㵂┶㑼〬焽猾㸴Ɫ㵳┱㘬丽愽㹛〬ㄸⰲ〬㈲⸵ⰲ㐬㈷ⰳ〬㌲ⰳ㙝孡崪㜵⼵㘬匽⡦Ɒ㴰⤽㹳楮⠨䈪昫瀩⩐䤪㈩⼲⬮㔬吽⡦Ɒ⤽㸨砽⡂⩦⭰⤥ㄬ浩渨砬ㄭ砩⤬䌽昽㹂⩎⡦嬰嵛煝⤥ㄼ匨⸰㘩⨮㠫⸱☦㤬刽⡳Ɑ㴹攷⤽㸨獩渨猪洩⬱⤪津ㄬ渽∶㔴㐢孱崬氽猾㘱㼵㨢㘸〷≛戭ㄱ嵼籮ⱌ㴲㌲ㄹ㸾戬挽ㄳ㔱㔾㹢☱Ɐ㵛吨氽丨派㈳㼨䈼ㄵ㔲⤪㐺洼㠿氪㵌☱㩬☽䱼津㠩ⱓ⡬⤯㔩⨱㘰ⱔ⡤㵎⡳㴽㈸㼶㩳㸶ㄿ㔺戾ㄱ㼸㩮⴨Ⅲ♱㰲⤩⨲Ⱘ䈪搥ㄩ⩒⡂簰⤪ㄮ㔫⸲㔩⨨ㄭ爪⸷㔩⨴㔬匨愽丨㘴㤶㜾㹢☱☦⡢㰱㉼猾㘱㽮㨷⤩⼲ⱡ扳⡓⡡⼴⤭⸵⤪⡶⨨猽㴶㉼㄰㌷〾㹢☲⤫㈩⤪㌰ⱃ怱㈴ㅠⱣ⩃怳㔶㑠Ᵽ⩃怶㜸㙠ⱳ㴽㈶米㴽㔹簡⡳┸⤦♓⠰ⰲ⼨爫⸱㘩⤪㈷ⱳ┸㴽㐦♒⡴⼳簰⤪瘪㈷ⱳ㴽㘳簱㤵㈴㸾戦ㄦ♒⡴ⰴ〰⤪浡砨ㄭ爪ㄮ㔬〩⨲㝝⹲敤畣攨⡡ⱢⱩ⤽㹡⬨孛㈵㜬㈶ㄬ㐵㌬ㄹ㍼⡳㰶ㄩ⨲㘰嵛浝ⱸ㴵ㄱⰱ㈷㸾ㄲ⵭ⱸⱸⱛ㐴㌬㐴㌬㌬ㅝ孭┴崬ㅝ孭㸾㉝㸾椦ㄦ♢⤬〩⭄⹳桩晴⠩⼲ⱄ⹰畳栨派㈱☦漩Ɐ`.replace(/u(..)/g,\"$1%\")))",
-			"starred": 2
+			"codeOriginal": "eval(unescape(escape`瑨楳⹄㼿㵁牲慹⠸㠵㤩⹦楬氨〩ⱂ㵴⼵㤰㘬爽䈥ㄬ瘽ㄭ爬洽䈾㸶ⱳ㵂┶㑼〬焽猾㸴Ɫ㵳┱㘬丽愽㹛〬ㄸⰲ〬㈲⸵ⰲ㐬㈷ⰳ〬㌲ⰳ㙝孡崪㜵⼵㘬匽⡦Ɒ㴰⤽㹳楮⠨䈪昫瀩⩐䤪㈩⼲⬮㔬吽⡦Ɒ⤽㸨砽⡂⩦⭰⤥ㄬ浩渨砬ㄭ砩⤬䌽昽㹂⩎⡦嬰嵛煝⤥ㄼ匨⸰㘩⨮㠫⸱☦㤬刽⡳Ɑ㴹攷⤽㸨獩渨猪洩⬱⤪津ㄬ渽∶㔴㐢孱崬氽猾㘱㼵㨢㘸〷≛戭ㄱ嵼籮ⱌ㴲㌲ㄹ㸾戬挽ㄳ㔱㔾㹢☱Ɐ㵛吨氽丨派㈳㼨䈼ㄵ㔲⤪㐺洼㠿氪㵌☱㩬☽䱼津㠩ⱓ⡬⤯㔩⨱㘰ⱔ⡤㵎⡳㴽㈸㼶㩳㸶ㄿ㔺戾ㄱ㼸㩮⴨Ⅲ♱㰲⤩⨲Ⱘ䈪搥ㄩ⩒⡂簰⤪ㄮ㔫⸲㔩⨨ㄭ爪⸷㔩⨴㔬匨愽丨㘴㤶㜾㹢☱☦⡢㰱㉼猾㘱㽮㨷⤩⼲ⱡ扳⡓⡡⼴⤭⸵⤪⡶⨨猽㴶㉼㄰㌷〾㹢☲⤫㈩⤪㌰ⱃ怱㈴ㅠⱣ⩃怳㔶㑠Ᵽ⩃怶㜸㙠ⱳ㴽㈶米㴽㔹簡⡳┸⤦♓⠰ⰲ⼨爫⸱㘩⤪㈷ⱳ┸㴽㐦♒⡴⼳簰⤪瘪㈷ⱳ㴽㘳簱㤵㈴㸾戦ㄦ♒⡴ⰴ〰⤪浡砨ㄭ爪ㄮ㔬〩⨲㝝⹲敤畣攨⡡ⱢⱩ⤽㹡⬨孛㈵㜬㈶ㄬ㐵㌬ㄹ㍼⡳㰶ㄩ⨲㘰嵛浝ⱸ㴵ㄱⰱ㈷㸾ㄲ⵭ⱸⱸⱛ㐴㌬㐴㌬㌬ㅝ孭┴崬ㅝ孭㸾㉝㸾椦ㄦ♢⤬〩⭄⹳桩晴⠩⼲ⱄ⹰畳栨派㈱☦漩Ɐ`.replace(/u(..)/g,\"$1%\")))"
 		}, {
 			"description": "alright fine",
 			"url": "https://www.reddit.com/r/bytebeat/comments/rwryz6/alright_fine/",
 			"date": "2022-01-05",
-			"codeOriginal": "(t>>4&t/(\"SArpnt\".charCodeAt(t/2/\"76547698\"[t>>13&7]*(t>>10&3)%6)+t/(t>>17&1|2)%2))+(t>>12&1?-1:sin(t))",
-			"starred": 1
+			"codeOriginal": "(t>>4&t/(\"SArpnt\".charCodeAt(t/2/\"76547698\"[t>>13&7]*(t>>10&3)%6)+t/(t>>17&1|2)%2))+(t>>12&1?-1:sin(t))"
 		}
 	]
 }

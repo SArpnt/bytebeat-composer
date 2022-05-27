@@ -44,13 +44,6 @@ function createCodeTypeElem(entry, name) {
 function createEntryElem(entry) {
 	const entryElem = document.createElement("li");
 
-	if (entry.starred) {
-		entryElem.classList.add([
-			"star-white",
-			"star-yellow",
-		][entry.starred - 1]);
-	}
-
 	if (entry.description) {
 		let descriptionElem;
 		if (entry.url) {

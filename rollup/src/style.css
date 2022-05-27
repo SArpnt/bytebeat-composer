@@ -37,7 +37,7 @@ body {
 @media (min-width: 1540px) { /* 1024 (canvas) + 4 (outline) + 512 (library) */
 	html:not([data-embed]) #content {
 		flex-direction: row;
-		min-width: 100%; /* override js window resize event while still letting .container-fixed inherit max-width */ 
+		min-width: 100%; /* override js window resize event while still letting .container-fixed inherit max-width */
 	}
 }
 
@@ -336,13 +336,6 @@ h2 {
 	summary::marker {
 		font-size: 1.2rem;
 	}
-}
-
-.star-white, .star-yellow {
-	list-style-type: "\2605";
-}
-.star-yellow::marker {
-	color: yellow;
 }
 
 a, a:visited {
