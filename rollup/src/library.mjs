@@ -1,5 +1,6 @@
-import libraryJson from "./library.json";
 import bytebeat from "./bytebeat.mjs";
+
+const wasm = WebAssembly.instantiateStreaming(fetch("./library.wasm"));
 
 function parseEntry(entry) {
 	if (Array.isArray(entry.codeOriginal))
@@ -273,4 +274,4 @@ function addLibrary(library) {
 }
 
 // note: dom is already loaded when this script is ran
-addLibrary(libraryJson);
+wasm.then(e => addLibrary(e.instance.loadLibrary()));

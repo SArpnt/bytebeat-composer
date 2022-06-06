@@ -1,7 +1,5 @@
-use std::error::Error;
 use std::io::{BufRead, Write};
 use wasm_bindgen::prelude::*;
-use chrono;
 use nonmax::NonMaxU16;
 
 mod bin_io {
@@ -10,6 +8,7 @@ mod bin_io {
 	use std::mem::MaybeUninit;
 	use std::marker::PhantomData;
 	use std::iter::FusedIterator;
+	use chrono::naive::NaiveDate;
 
 	/**
 	 * everything panics in every possible fail condition because everything relies on this loading
@@ -93,22 +92,68 @@ mod bin_io {
 			vec
 		}
 	}
+	impl Serialize for Option<NaiveDate> {
+		// ordinal can be stored in 9 bits
+		// negative years aren't needed and chrono uses i32 for years, so the sign bit is free
+		// to save space, the extra high bit of the ordinal is stored in the year sign bit
+		// ordinal = 0 is invalid, which is used to store None
+		fn write(&self, writer: &mut impl Write) {
+			use chrono::Datelike;
+
+			if let Some(date) = self {
+				let year: i32 = date.year();
+				if year < 0 { panic!("date cannot be serialized"); }
+				let ordinal: u32 = date.ordinal();
+
+				let packed_year: u32 =
+					year as u32 | // year
+					(((ordinal & 0x100) << (7 + 8 + 8)) as u32); // ordinal high bit
+				let packed_ordinal: u8 = ordinal as u8; // ordinal low byte
+
+				packed_year.write(writer);
+				packed_ordinal.write(writer);
+			} else {
+				0_u32.write(writer);
+				0_u8.write(writer);
+			}
+		}
+		fn read(reader: &mut impl BufRead) -> Self {
+			let packed_year = i32::read(reader);
+			let packed_ordinal = u8::read(reader);
+
+			let year: i32 = packed_year & 0x7fffffff; // year
+			let ordinal: u32 =
+				(((packed_year >> (7 + 8 + 8)) & 0x0100) as u32) | // ordinal high bit
+				(packed_ordinal as u32); // ordinal low byte
+
+			NaiveDate::from_yo_opt(year, ordinal)
+		}
+	}
+
+	pub trait SerializeIter<R: BufRead> {
+		fn start(reader: R) -> Self where Self: Sized + Iterator;
+		fn end(self) -> Result<R, Self> where Self: Sized;
+	}
+
 	#[derive(Debug)]
-	struct ReadIter<T: Serialize, R: BufRead> {
+	pub struct VecReadIter<T: Serialize, R: BufRead> {
 		reader: R,
 		remaining: u16,
 		content: PhantomData<T>,
 	}
-	impl<T: Serialize, R: BufRead> ReadIter<T, R> {
-		pub fn new(mut reader: R) -> Self {
+	impl<T: Serialize, R: BufRead> VecReadIter<T, R> {
+		pub fn len_raw(&self) -> u16 { self.remaining }
+	}
+	impl<T: Serialize, R: BufRead> SerializeIter<R> for VecReadIter<T, R> {
+		fn start(mut reader: R) -> Self {
 			let remaining = u16::read(&mut reader);
-			ReadIter {
+			VecReadIter {
 				reader,
 				remaining,
 				content: PhantomData,
 			}
 		}
-		pub fn end(self) -> Result<R, Self> {
+		fn end(self) -> Result<R, Self> {
 			if self.remaining == 0 {
 				Ok(self.reader)
 			} else {
@@ -116,7 +161,7 @@ mod bin_io {
 			}
 		}
 	}
-	impl<T: Serialize, R: BufRead> Iterator for ReadIter<T, R> {
+	impl<T: Serialize, R: BufRead> Iterator for VecReadIter<T, R> {
 		type Item = T;
 
 		fn next(&mut self) -> Option<Self::Item> {
@@ -128,8 +173,8 @@ mod bin_io {
 			}
 		}
 	}
-	impl<T: Serialize, R: BufRead> FusedIterator for ReadIter<T, R> {}
-	impl<T: Serialize, R: BufRead> ExactSizeIterator for ReadIter<T, R> {
+	impl<T: Serialize, R: BufRead> FusedIterator for VecReadIter<T, R> {}
+	impl<T: Serialize, R: BufRead> ExactSizeIterator for VecReadIter<T, R> {
 		fn len(&self) -> usize {
 			self.remaining.into()
 		}
@@ -248,7 +293,7 @@ mod bin_io {
 
 		let bufreader = BufReader::new(buf.as_slice());
 
-		let iter1 = ReadIter::<u16, _>::new(bufreader);
+		let iter1 = VecReadIter::<u16, _>::start(bufreader);
 
 		assert_eq!(iter1.len(), 4);
 		let mut iter1 = iter1.end().unwrap_err();
@@ -261,7 +306,7 @@ mod bin_io {
 		assert_eq!(iter1.len(), 0);
 
 		let bufreader = iter1.end().unwrap();
-		let iter2 = ReadIter::<String, _>::new(bufreader);
+		let iter2 = VecReadIter::<String, _>::start(bufreader);
 
 		assert_eq!(iter2.len(), 3);
 		let mut iter2 = iter2.end().unwrap_err();
@@ -277,8 +322,38 @@ mod bin_io {
 		let mut remaining = Vec::<u8>::new();
 		assert_eq!(bufreader.read_to_end(&mut remaining).unwrap(), 0);
 	}
+	#[test]
+	fn read_write_dates() {
+		use std::io::{Read, BufReader};
+
+		let mut buf = Vec::<u8>::new();
+
+		None.write(&mut buf); // TODO: can't specify full type on traits?
+		Some(NaiveDate::from_ymd(0, 1, 1)).write(&mut buf);
+		Some(NaiveDate::from_ymd(2000, 1, 1)).write(&mut buf);
+		Some(NaiveDate::from_ymd(12345, 8, 16)).write(&mut buf);
+		Some(chrono::naive::MAX_DATE).write(&mut buf);
+
+		let mut bufreader = BufReader::new(buf.as_slice());
+
+		assert!(Option::<NaiveDate>::read(&mut bufreader).is_none());
+		assert_eq!(Option::<NaiveDate>::read(&mut bufreader).unwrap(), NaiveDate::from_ymd(0, 1, 1));
+		assert_eq!(Option::<NaiveDate>::read(&mut bufreader).unwrap(), NaiveDate::from_ymd(2000, 1, 1));
+		assert_eq!(Option::<NaiveDate>::read(&mut bufreader).unwrap(), NaiveDate::from_ymd(12345, 8, 16));
+		assert_eq!(Option::<NaiveDate>::read(&mut bufreader).unwrap(), chrono::naive::MAX_DATE);
+
+		let mut remaining = Vec::<u8>::new();
+		assert_eq!(bufreader.read_to_end(&mut remaining).unwrap(), 0);
+	}
+	#[test]
+	#[should_panic(expected = "date cannot be serialized")]
+	fn write_invalid_date() {
+		let mut buf = Vec::<u8>::new();
+
+		Some(NaiveDate::from_ymd(-8, 1, 1)).write(&mut buf);
+	}
 }
-use bin_io::Serialize;
+use bin_io::{Serialize, SerializeIter, VecReadIter};
 
 #[repr(u8)]
 enum SongMode {
@@ -297,25 +372,24 @@ mod file_categories {
 }
 
 struct LibraryEntry {
-	description: String, // empty means none
-	url: String, // empty means none
-	authors: Vec<String>,
-	remix_of: Option<NonMaxU16>, // NonMaxU16 is a good enough usize for a playlist
-	date: Option<chrono::naive::NaiveDate>,
-	sample_rate: f64,
-	mode_and_files: u8, // SongMode and FileCategory
-	code_original: String, // empty means none // TODO: is this ever used if there are files?
-	code_minified: String, // empty means none // TODO: is this ever used if there are files?
-	children: Vec<LibraryEntry>,
+	pub description: String, // empty means none
+	pub url: String, // empty means none
+	pub authors: Vec<String>,
+	pub remix_of: Option<NonMaxU16>, // NonMaxU16 is a good enough usize for a playlist
+	pub date: Option<chrono::naive::NaiveDate>,
+	pub sample_rate: f64,
+	pub mode_and_files: u8, // SongMode and FileCategory
+	pub code_original: String, // empty means none // TODO: is this ever used if there are files?
+	pub code_minified: String, // empty means none // TODO: is this ever used if there are files?
+	pub children: Vec<LibraryEntry>,
 }
-/*
 impl Serialize for LibraryEntry {
 	fn write(&self, writer: &mut impl Write) {
 		self.description.write(writer);
 		self.url.write(writer);
 		self.authors.write(writer);
 		self.remix_of.map_or(u16::MAX, |x| x.get()).write(writer);
-		self.date.write(writer); // TODO
+		self.date.write(writer);
 		self.sample_rate.write(writer);
 		self.mode_and_files.write(writer);
 		self.code_original.write(writer);
@@ -328,7 +402,7 @@ impl Serialize for LibraryEntry {
 			url: String::read(reader),
 			authors: Vec::<String>::read(reader),
 			remix_of: NonMaxU16::new(u16::read(reader)),
-			date: Option::<chrono::naive::NaiveDate>::read(reader), // TODO
+			date: Option::<chrono::naive::NaiveDate>::read(reader),
 			sample_rate: f64::read(reader),
 			mode_and_files: u8::read(reader),
 			code_original: String::read(reader),
@@ -337,17 +411,60 @@ impl Serialize for LibraryEntry {
 		}
 	}
 }
-*/
+struct LibraryEntryIter<R: BufRead> {
+	pub description: String, // empty means none
+	pub url: String, // empty means none
+	pub authors: Vec<String>,
+	pub remix_of: Option<NonMaxU16>, // NonMaxU16 is a good enough usize for a playlist
+	pub date: Option<chrono::naive::NaiveDate>,
+	pub sample_rate: f64,
+	pub mode_and_files: u8, // SongMode and FileCategory
+	pub code_original: String, // empty means none // TODO: is this ever used if there are files?
+	pub code_minified: String, // empty means none // TODO: is this ever used if there are files?
+	children: VecReadIter<LibraryEntry, R>,
+}
+impl<R: BufRead> LibraryEntryIter<R> {
+	pub fn read(mut reader: R) -> Self {
+		LibraryEntryIter {
+			description: String::read(&mut reader),
+			url: String::read(&mut reader),
+			authors: Vec::<String>::read(&mut reader),
+			remix_of: NonMaxU16::new(u16::read(&mut reader)),
+			date: Option::<chrono::naive::NaiveDate>::read(&mut reader),
+			sample_rate: f64::read(&mut reader),
+			mode_and_files: u8::read(&mut reader),
+			code_original: String::read(&mut reader),
+			code_minified: String::read(&mut reader),
+			children: VecReadIter::<LibraryEntry, R>::start(reader),
+		}
+	}
+}
 
 struct Playlist {
-	name: String,
-	content: Vec<LibraryEntry>,
+	pub name: String,
+	pub content: Vec<LibraryEntry>,
 }
-impl Playlist {
-	/*pub fn loadFromBin(mut reader: impl BufRead) -> Result<Self, Box<dyn Error>> {
-		Ok(Playlist {
-			name: String::read(reader)?,
-			content: LibraryEntry::read(reader)?,
-		})
-	}*/
+impl Serialize for Playlist {
+	fn write(&self, writer: &mut impl Write) {
+		self.name.write(writer);
+		self.content.write(writer);
+	}
+	fn read(reader: &mut impl BufRead) -> Self {
+		Playlist {
+			name: String::read(reader),
+			content: Vec::<LibraryEntry>::read(reader),
+		}
+	}
+}
+struct PlaylistIter<R: BufRead> {
+	pub name: String,
+	content: VecReadIter<LibraryEntry, R>,
+}
+impl<R: BufRead> PlaylistIter<R> {
+	pub fn read(mut reader: R) -> Self {
+		PlaylistIter {
+			name: String::read(&mut reader),
+			content: VecReadIter::<LibraryEntry, R>::start(reader),
+		}
+	}
 }
