@@ -1,0 +1,12 @@
+[package]
+name = "bin_io"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["lib"]
+
+[dependencies]
+chrono = "0.4.19"
+nonmax = "0.5.0"
+console_error_panic_hook = { version = "0.1.7", optional = true }
