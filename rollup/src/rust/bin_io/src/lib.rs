@@ -8,7 +8,7 @@ use chrono::naive::NaiveDate;
  * everything panics in every possible fail condition because everything relies on this loading
  * nothing would recover anyways so it's better to not deal with all sorts of useless error types
  */
-mod traits {
+pub mod traits {
 	use std::io::{BufRead, Write};
 
 	pub trait SerializeIterContainer: Sized {

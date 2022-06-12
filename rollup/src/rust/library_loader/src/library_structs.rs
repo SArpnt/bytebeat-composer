@@ -1,7 +1,8 @@
 use std::io::{BufRead, Write};
 use nonmax::NonMaxU16;
 
-use crate::bin_io::{Serialize, SerializeIter, SerializeIterContainer, VecSyncReadIter, VecIterReadIter};
+use bin_io::VecIterReadIter;
+use bin_io::traits::*;
 
 #[repr(u8)]
 pub enum SongMode {
@@ -31,7 +32,7 @@ pub struct LibraryEntry {
 	pub code_minified: String, // empty means none // TODO: is this ever used if there are files?
 	pub children: Vec<LibraryEntry>,
 }
-impl Serialize for LibraryEntry {
+impl SerializeSync for LibraryEntry {
 	fn write(&self, writer: &mut impl Write) {
 		self.description.write(writer);
 		self.url.write(writer);
@@ -59,7 +60,7 @@ impl Serialize for LibraryEntry {
 		}
 	}
 }
-pub struct LibraryEntryIter<R: BufRead> {
+pub struct LibraryEntryIter {
 	pub description: String, // empty means none
 	pub url: String, // empty means none
 	pub authors: Vec<String>,
@@ -69,21 +70,37 @@ pub struct LibraryEntryIter<R: BufRead> {
 	pub mode_and_files: u8, // SongMode and FileCategory
 	pub code_original: String, // empty means none // TODO: is this ever used if there are files?
 	pub code_minified: String, // empty means none // TODO: is this ever used if there are files?
-	children: VecIterReadIter<LibraryEntry, R>,
+	pub children: VecIterReadIter<LibraryEntryIter>,
 }
-impl<R: BufRead> LibraryEntryIter<R> {
-	pub fn read(mut reader: R) -> Self {
+impl SerializeIterContainer for LibraryEntryIter {
+	type Sync = LibraryEntry;
+
+	fn start_read(reader: &mut impl BufRead) -> Self {
 		LibraryEntryIter {
-			description: String::read(&mut reader),
-			url: String::read(&mut reader),
-			authors: Vec::<String>::read(&mut reader),
-			remix_of: NonMaxU16::new(u16::read(&mut reader)),
-			date: Option::<chrono::naive::NaiveDate>::read(&mut reader),
-			sample_rate: f64::read(&mut reader),
-			mode_and_files: u8::read(&mut reader),
-			code_original: String::read(&mut reader),
-			code_minified: String::read(&mut reader),
-			children: VecReadIter::<LibraryEntry, R>::start(reader),
+			description: String::read(reader),
+			url: String::read(reader),
+			authors: Vec::<String>::read(reader),
+			remix_of: NonMaxU16::new(u16::read(reader)),
+			date: Option::<chrono::naive::NaiveDate>::read(reader),
+			sample_rate: f64::read(reader),
+			mode_and_files: u8::read(reader),
+			code_original: String::read(reader),
+			code_minified: String::read(reader),
+			children: VecIterReadIter::<LibraryEntryIter>::start_read(reader),
+		}
+	}
+	fn collect(self, reader: &mut impl BufRead) -> Self::Sync {
+		LibraryEntry {
+			description: self.description,
+			url: self.url,
+			authors: self.authors,
+			remix_of: self.remix_of,
+			date: self.date,
+			sample_rate: self.sample_rate,
+			mode_and_files: self.mode_and_files,
+			code_original: self.code_original,
+			code_minified: self.code_minified,
+			children: self.children.collect(reader),
 		}
 	}
 }
@@ -92,7 +109,7 @@ pub struct Playlist {
 	pub name: String,
 	pub content: Vec<LibraryEntry>,
 }
-impl Serialize for Playlist {
+impl SerializeSync for Playlist {
 	fn write(&self, writer: &mut impl Write) {
 		self.name.write(writer);
 		self.content.write(writer);
@@ -104,21 +121,23 @@ impl Serialize for Playlist {
 		}
 	}
 }
-struct PlaylistIter<R: BufRead> {
+pub struct PlaylistIter {
 	pub name: String,
-	content: VecIterReadIter<LibraryEntry, R>,
+	pub content: VecIterReadIter<LibraryEntryIter>,
 }
-trait SerializeIterContainer: Sized {
-	type Sync: SerializeSync;
+impl SerializeIterContainer for PlaylistIter {
+	type Sync = Playlist;
 
-	fn start_read(reader: &mut impl BufRead) -> Self;
-	fn collect(self, reader: &mut impl BufRead) -> Self::Sync;
-}
-impl<R: BufRead> PlaylistIter<R> {
-	pub fn read(mut reader: R) -> Self {
+	fn start_read(reader: &mut impl BufRead) -> Self {
 		PlaylistIter {
-			name: String::read(&mut reader),
-			content: VecReadIter::<LibraryEntry, R>::start(reader),
+			name: String::read(reader),
+			content: VecIterReadIter::<LibraryEntryIter>::start_read(reader),
+		}
+	}
+	fn collect(self, reader: &mut impl BufRead) -> Self::Sync {
+		Playlist {
+			name: self.name,
+			content: self.content.collect(reader),
 		}
 	}
 }

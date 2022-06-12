@@ -135,6 +135,7 @@ dependencies = [
 name = "rust-wasm-template"
 version = "0.1.0"
 dependencies = [
+ "bin_io",
  "chrono",
  "console_error_panic_hook",
  "lazy_static",

@@ -13,6 +13,7 @@ crate-type = ["cdylib"]
 #lto = true # not sure if this should be used
 
 [dependencies]
+bin_io = { path = "../bin_io/" }
 chrono = "0.4.19"
 nonmax = "0.5.0"
 lazy_static = "1.4.0"
@@ -27,13 +28,14 @@ features = [
 #	"console",
 #	"CanvasRenderingContext2d",
 	"Document",
+	"Text",
 	"Element",
 #	"HtmlCanvasElement",
 	"HtmlElement",
 #	"HtmlInputElement",
 #	"MessageEvent",
-#	"MouseEvent",
 #	"Performance",
 	"Window",
 #	"Worker",
+	"ReadableStream",
 ]
