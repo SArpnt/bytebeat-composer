@@ -44,8 +44,8 @@ const config = {
 				if (PROD) {
 					if (filePath.endsWith(".css")) {
 						const min = cleanCSS.minify(content.toString("utf-8"));
-						min.errors.forEach(e => console.error(e)); 
-						min.warnings.forEach(w => console.warn(w)); 
+						min.errors.forEach(e => console.error(e));
+						min.warnings.forEach(w => console.warn(w));
 						return min.styles;
 					}
 				}

@@ -1,6 +1,10 @@
 [workspace]
-
 members = [
-	"bin_io",
 	"library_loader",
 ]
+
+[profile.release]
+opt-level = "s"
+debug = true
+lto = true
+panic = "abort"

@@ -3,24 +3,22 @@ name = "rust-wasm-template"
 version = "0.1.0"
 edition = "2021"
 
-[build]
-target = "wasm32-unknown-unknown"
-
 [lib]
 crate-type = ["cdylib"]
 
-[profile.release]
-#lto = true # not sure if this should be used
-
 [dependencies]
 bin_io = { path = "../bin_io/" }
-chrono = "0.4.19"
+wee_alloc = "0.4.5"
+num_enum = "0.5.7"
+#chrono = "0.4.19"
 nonmax = "0.5.0"
-lazy_static = "1.4.0"
-wasm-bindgen = { version = "0.2.79", features = ["serde-serialize"] }
+#lazy_static = "1.4.0"
+wasm-bindgen = { version = "0.2.79", features = [
+	#"serde-serialize",
+]}
 #js-sys = "0.3.56"
-serde = { version = "1.0", features = ["derive"] }
-console_error_panic_hook = { version = "0.1.7", optional = true }
+#serde = { version = "1.0", features = ["derive"] }
+#console_error_panic_hook = { version = "0.1.7", optional = true }
 
 [dependencies.web-sys]
 version = "0.3.4"
