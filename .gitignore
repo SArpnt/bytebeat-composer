@@ -3,3 +3,4 @@ node_modules
 dist/*
 !dist/assets/
 **/rust/target
+rollup/working

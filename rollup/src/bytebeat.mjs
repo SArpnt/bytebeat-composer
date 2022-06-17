@@ -63,7 +63,7 @@ const bytebeat = Object.seal({
 
 		import("./fancyEditor.mjs").then(o => this.initCodemirror(o.default));
 		if (globalThis.loadLibrary !== false)
-			import("./library.mjs");
+			import("../build/library_loader.js");
 
 		this.handleWindowResize(true);
 		document.defaultView.addEventListener("resize", () => this.handleWindowResize(false));

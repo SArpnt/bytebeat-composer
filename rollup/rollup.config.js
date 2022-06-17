@@ -7,7 +7,7 @@ import CleanCSS from "clean-css";
 
 // TODO preload
 // TODO prevent moving script tag to end of body
-// TODO prevent generating file just to export to html (this does nothing)
+// TODO prevent generating js file that only module exports to html (this does nothing)
 // TODO html plugin doesnt grab css file
 // TODO minify css ids and classes
 // TODO minify html inline code properties

@@ -1,7 +1,5 @@
 import bytebeat from "./bytebeat.mjs";
 
-const wasm = WebAssembly.instantiateStreaming(fetch("./library.wasm"));
-
 function parseEntry(entry) {
 	if (Array.isArray(entry.codeOriginal))
 		entry.codeOriginal = entry.codeOriginal.join("\n");

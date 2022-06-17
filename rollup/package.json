@@ -1,8 +1,8 @@
 {
 	"scripts": {
-		"clean": "find ../dist -mindepth 1 -maxdepth 1 ! -name 'assets' -exec rm -r '{}' \\;",
-		"start": "npm run clean && NODE_ENV=development rollup -c -w & http-server ../dist",
-		"build": "npm run clean && NODE_ENV=production rollup -c",
+		"clean": "find ../dist -mindepth 1 -maxdepth 1 ! -name 'assets' -exec rm -r '{}' \\; && echo $(rm -r build/*)",
+		"start": "npm run clean && src/rust/build\\ debug.sh build \"NODE_ENV=development rollup -c -w\" & http-server ../dist",
+		"build": "npm run clean && src/rust/build.sh build && NODE_ENV=production rollup -c",
 		"publish": "npm run build && gh-pages -d ../dist"
 	},
 	"dependencies": {
