@@ -7,6 +7,7 @@ name = "bin_io"
 version = "0.1.0"
 dependencies = [
  "nonmax",
+ "num_enum",
 ]
 
 [[package]]
@@ -123,8 +124,6 @@ name = "rust-wasm-template"
 version = "0.1.0"
 dependencies = [
  "bin_io",
- "nonmax",
- "num_enum",
  "wasm-bindgen",
  "web-sys",
  "wee_alloc",

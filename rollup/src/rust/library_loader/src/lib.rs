@@ -1,10 +1,8 @@
 use wasm_bindgen::prelude::*;
 use web_sys::{ReadableStream, Element};
-//use bin_io::{VecSyncReadIter, VecIterReadIter};
 use bin_io::traits::*;
+use bin_io::library::*;
 use std::io::BufReader;
-mod library_structs;
-use library_structs::*;
 
 extern crate wee_alloc;
 #[global_allocator]
