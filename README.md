@@ -26,7 +26,6 @@ this website runs arbitrary code!
 i've taken many security measures, but i can't guarantee what i've done is foolproof.
 as far as i can tell, this website should be secure, but this doesn't prevent:
 - taking advantage of browser security vulnerabilities
-- sending data to other webpages (not sure about this, XMLHttpRequest isn't avalible, but i don't know if there are other ways)
 - locking up the audio thread, making controls not work (volume still works, and the page can be refreshed)
 - anything else an AudioWorklet could do that i don't know about (i really don't know that much about security)
 
