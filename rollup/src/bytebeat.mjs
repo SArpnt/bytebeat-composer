@@ -1,5 +1,6 @@
 import { inflateRaw, deflateRaw } from "pako";
-import default as Prism from "./prism/prism.js"
+import { default as PrismInit } from "./prism/prism.mjs"
+import { default as codeInput } from "./code-input/code-input.mjs"
 import { domLoaded, isPlainObject } from "./common.mjs";
 
 const searchParams = new URLSearchParams(location.search);
@@ -60,7 +61,7 @@ const bytebeat = Object.seal({
 
 		this.contentElem = document.getElementById("content");
 		this.initControls();
-		await this.initTextarea(document.getElementById("code-editor"));
+		this.initCodeEditor(document.getElementById("code-editor"));
 
 		if (globalThis.loadLibrary !== false)
 			import("./library.mjs");
@@ -138,9 +139,9 @@ const bytebeat = Object.seal({
 			}
 		}
 	},
-	initCodeEditor(codeInput) {
-		codeInput.registerTemplate("syntax-highlighted", codeInput.templates.prism(Prism));
-		this.codeEditor = CodeInput;
+	initCodeEditor(elem) {
+		elem.registerTemplate("js", codeInput.templates.prism(PrismInit()));
+		this.codeEditor = elem;
 	},
 
 	getUrlData() {
