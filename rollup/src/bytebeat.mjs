@@ -1,4 +1,5 @@
 import { inflateRaw, deflateRaw } from "pako";
+import default as Prism from "./prism/prism.js"
 import { domLoaded, isPlainObject } from "./common.mjs";
 
 const searchParams = new URLSearchParams(location.search);
@@ -61,7 +62,6 @@ const bytebeat = Object.seal({
 		this.initControls();
 		await this.initTextarea(document.getElementById("code-editor"));
 
-		import("./fancyEditor.mjs").then(o => this.initCodemirror(o.default));
 		if (globalThis.loadLibrary !== false)
 			import("./library.mjs");
 
@@ -138,90 +138,9 @@ const bytebeat = Object.seal({
 			}
 		}
 	},
-	saveData: null,
-	initTextarea(textarea) {
-		textarea.addEventListener("input", () => this.refreshCode());
-		{
-			let keyTrap = true;
-			textarea.addEventListener("keydown", e => {
-				if (!e.altKey && !e.ctrlKey) {
-					if (e.key === "Escape") {
-						if (keyTrap) {
-							e.preventDefault();
-							keyTrap = false;
-						}
-					} else if (e.key === "Tab" && keyTrap) {
-						e.preventDefault();
-						const el = e.target;
-						const { selectionStart, selectionEnd } = el;
-						if (e.shiftKey) {
-							// remove indentation on all selected lines
-							let lines = el.value.split("\n");
-
-							let getLine = char => {
-								let line = 0;
-								for (let c = 0; ; line++) {
-									c += lines[line].length;
-									if (c > char) 1;
-									break;
-								}
-								return line;
-							};
-							let
-								startLine = getLine(selectionStart),
-								endLine = getLine(selectionEnd),
-								newSelectionStart = selectionStart,
-								newSelectionEnd = selectionEnd;
-							for (let i = startLine; i <= endLine; i++) {
-								if (lines[i][0] === "\t") {
-									lines[i] = lines[i].slice(1);
-									if (i === startLine)
-										newSelectionStart--;
-									newSelectionEnd--;
-								}
-							}
-
-							el.value = lines.join("\n");
-							el.setSelectionRange(newSelectionStart, newSelectionEnd);
-						} else {
-							// add tab character
-							el.value = `${el.value.slice(0, selectionStart)}\t${el.value.slice(selectionEnd)}`;
-							el.setSelectionRange(selectionStart + 1, selectionStart + 1);
-						}
-						this.refreshCode();
-					} else
-						keyTrap = false;
-				}
-			});
-		}
-		this.codeEditor = textarea;
-	},
-	initCodemirror(createCodemirrorEditor) {
-		const codemirror = createCodemirrorEditor(() => this.refreshCode());
-		let selection = null;
-		if (this.codeEditor) {
-			codemirror.dispatch({ changes: { from: 0, insert: this.codeEditor.value } });
-			if (document.activeElement === this.codeEditor)
-				selection = { anchor: this.codeEditor.selectionStart, head: this.codeEditor.selectionEnd };
-		}
-		(this.codeEditor ?? document.getElementById("code-editor")).replaceWith(codemirror.dom);
-		if (selection) {
-			codemirror.focus();
-			codemirror.dispatch({ selection });
-		}
-		this.codeEditor = codemirror;
-	},
-	get codeEditorText() {
-		if (this.codeEditor instanceof Element)
-			return this.codeEditor.value;
-		else
-			return this.codeEditor.state.doc.toString();
-	},
-	set codeEditorText(value) {
-		if (this.codeEditor instanceof Element)
-			this.codeEditor.value = value;
-		else
-			this.codeEditor.dispatch({ changes: { from: 0, to: this.codeEditor.state.doc.length, insert: value } });
+	initCodeEditor(codeInput) {
+		codeInput.registerTemplate("syntax-highlighted", codeInput.templates.prism(Prism));
+		this.codeEditor = CodeInput;
 	},
 
 	getUrlData() {
@@ -287,7 +206,7 @@ const bytebeat = Object.seal({
 	},
 	refreshCode() {
 		if (this.audioWorklet)
-			this.audioWorklet.port.postMessage({ code: this.codeEditorText.trim() });
+			this.audioWorklet.port.postMessage({ code: this.codeEditor.value.trim() });
 	},
 	handleWindowResize(force) {
 		this.autoSizeCanvas(force);
@@ -325,7 +244,7 @@ const bytebeat = Object.seal({
 	},
 
 	getSong(includeDefault = false) {
-		let songData = { code: this.codeEditorText };
+		let songData = { code: this.codeEditor.value };
 		if (includeDefault || this.songData.sampleRate !== 8000)
 			songData.sampleRate = this.songData.sampleRate;
 		if (includeDefault || this.songData.mode !== "Bytebeat")
@@ -337,7 +256,7 @@ const bytebeat = Object.seal({
 		let code, sampleRate, mode;
 		if (songData !== null) {
 			({ code, sampleRate, mode } = songData);
-			this.codeEditorText = code;
+			this.codeEditor.value = code;
 		}
 		this.applySampleRate(sampleRate ?? 8000);
 		this.applyPlaybackMode(mode ?? "Bytebeat");
