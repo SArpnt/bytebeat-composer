@@ -3,6 +3,8 @@ import { default as PrismInit } from "./prism/prism.mjs"
 import { default as codeInput } from "./code-input/code-input.mjs"
 import { domLoaded, isPlainObject } from "./common.mjs";
 
+codeInput.registerTemplate("js", codeInput.templates.prism(PrismInit()));
+
 const searchParams = new URLSearchParams(location.search);
 
 const timeUnits = [
@@ -61,7 +63,7 @@ const bytebeat = Object.seal({
 
 		this.contentElem = document.getElementById("content");
 		this.initControls();
-		this.initCodeEditor(document.getElementById("code-editor"));
+		this.codeEditor = document.getElementById("code-editor");
 
 		if (globalThis.loadLibrary !== false)
 			import("./library.mjs");
@@ -138,10 +140,6 @@ const bytebeat = Object.seal({
 					this.hideErrorMessage();
 			}
 		}
-	},
-	initCodeEditor(elem) {
-		elem.registerTemplate("js", codeInput.templates.prism(PrismInit()));
-		this.codeEditor = elem;
 	},
 
 	getUrlData() {

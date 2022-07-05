@@ -104,7 +104,7 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 				}
 			}
 
-			_.hooks.run('wrap', env);
+			Prism.hooks.run('wrap', env);
 
 			var attributes = '';
 			for (var name in env.attributes) {
@@ -125,7 +125,7 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 		 * @namespace
 		 * @memberof Prism
 		 */
-		util: {
+		util: { // TODO: this entire section seems to be stuff that isn't even needed in the object
 			encode: function encode(tokens) {
 				if (tokens instanceof Token) {
 					return new Token(tokens.type, encode(tokens.content), tokens.alias);
@@ -179,13 +179,13 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 			 * @returns {T}
 			 * @template T
 			 */
-			clone: function deepClone(o, visited) {
+			clone: function deepClone(o, visited) { // TODO: considering the use case of this it can probably just be replaced with prototype inheritance
 				visited = visited || {};
 
 				var clone; var id;
-				switch (_.util.type(o)) {
+				switch (Prism.util.type(o)) {
 					case 'Object':
-						id = _.util.objId(o);
+						id = Prism.util.objId(o);
 						if (visited[id]) {
 							return visited[id];
 						}
@@ -201,7 +201,7 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 						return /** @type {any} */ (clone);
 
 					case 'Array':
-						id = _.util.objId(o);
+						id = Prism.util.objId(o);
 						if (visited[id]) {
 							return visited[id];
 						}
@@ -281,7 +281,7 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 					// A stack will look like this:
 					//
 					// Error
-					//    at _.util.currentScript (http://localhost/components/prism-core.js:119:5)
+					//    at Prism.util.currentScript (http://localhost/components/prism-core.js:119:5)
 					//    at Global code (http://localhost/components/prism-core.js:606:1)
 
 					var src = (/at [^(\r\n]*\((.*):[^:]+:[^:]+\)$/i.exec(err.stack) || [])[1];
@@ -378,7 +378,7 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 			 * });
 			 */
 			extend: function (id, redef) {
-				var lang = _.util.clone(_.languages[id]);
+				var lang = Prism.util.clone(Prism.languages[id]);
 
 				for (var key in redef) {
 					lang[key] = redef[key];
@@ -463,7 +463,7 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 			 * @public
 			 */
 			insertBefore: function (inside, before, insert, root) {
-				root = root || /** @type {any} */ (_.languages);
+				root = root || /** @type {any} */ (Prism.languages);
 				var grammar = root[inside];
 				/** @type {Grammar} */
 				var ret = {};
@@ -490,7 +490,7 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 				root[inside] = ret;
 
 				// Update references in other language definitions
-				_.languages.DFS(_.languages, function (key, value) {
+				Prism.languages.DFS(Prism.languages, function (key, value) {
 					if (value === old && key != inside) {
 						this[key] = ret;
 					}
@@ -503,14 +503,14 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 			DFS: function DFS(o, callback, type, visited) {
 				visited = visited || {};
 
-				var objId = _.util.objId;
+				var objId = Prism.util.objId;
 
 				for (var i in o) {
 					if (o.hasOwnProperty(i)) {
 						callback.call(o, i, o[i], type || i);
 
 						var property = o[i];
-						var propertyType = _.util.type(property);
+						var propertyType = Prism.util.type(property);
 
 						if (propertyType === 'Object' && !visited[objId(property)]) {
 							visited[objId(property)] = true;
@@ -556,16 +556,16 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 		 */
 		highlightElement: function (element, async, callback) {
 			// Find language
-			var language = _.util.getLanguage(element);
-			var grammar = _.languages[language];
+			var language = Prism.util.getLanguage(element);
+			var grammar = Prism.languages[language];
 
 			// Set language on the element, if not present
-			_.util.setLanguage(element, language);
+			Prism.util.setLanguage(element, language);
 
 			// Set language on the parent, for styling
 			var parent = element.parentElement;
 			if (parent && parent.nodeName.toLowerCase() === 'pre') {
-				_.util.setLanguage(parent, language);
+				Prism.util.setLanguage(parent, language);
 			}
 
 			var code = element.textContent;
@@ -580,16 +580,16 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 			function insertHighlightedCode(highlightedCode) {
 				env.highlightedCode = highlightedCode;
 
-				_.hooks.run('before-insert', env);
+				Prism.hooks.run('before-insert', env);
 
 				env.element.innerHTML = env.highlightedCode;
 
-				_.hooks.run('after-highlight', env);
-				_.hooks.run('complete', env);
+				Prism.hooks.run('after-highlight', env);
+				Prism.hooks.run('complete', env);
 				callback && callback.call(env.element);
 			}
 
-			_.hooks.run('before-sanity-check', env);
+			Prism.hooks.run('before-sanity-check', env);
 
 			// plugins may change/add the parent/element
 			parent = env.element.parentElement;
@@ -598,20 +598,20 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 			}
 
 			if (!env.code) {
-				_.hooks.run('complete', env);
+				Prism.hooks.run('complete', env);
 				callback && callback.call(env.element);
 				return;
 			}
 
-			_.hooks.run('before-highlight', env);
+			Prism.hooks.run('before-highlight', env);
 
 			if (!env.grammar) {
-				insertHighlightedCode(_.util.encode(env.code));
+				insertHighlightedCode(Prism.util.encode(env.code));
 				return;
 			}
 
 			if (async && globalThis.Worker) { // TODO: remove globalThis
-				var worker = new Worker(_.filename);
+				var worker = new Worker(Prism.filename);
 
 				worker.onmessage = function (evt) {
 					insertHighlightedCode(evt.data);
@@ -623,7 +623,7 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 					immediateClose: true
 				}));
 			} else {
-				insertHighlightedCode(_.highlight(env.code, env.grammar, env.language));
+				insertHighlightedCode(Prism.highlight(env.code, env.grammar, env.language));
 			}
 		},
 
@@ -653,13 +653,13 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 				grammar: grammar,
 				language: language
 			};
-			_.hooks.run('before-tokenize', env);
+			Prism.hooks.run('before-tokenize', env);
 			if (!env.grammar) {
 				throw new Error('The language "' + env.language + '" has no grammar.');
 			}
-			env.tokens = _.tokenize(env.code, env.grammar);
-			_.hooks.run('after-tokenize', env);
-			return Token.stringify(_.util.encode(env.tokens), env.language);
+			env.tokens = Prism.tokenize(env.code, env.grammar);
+			Prism.hooks.run('after-tokenize', env);
+			return Token.stringify(Prism.util.encode(env.tokens), env.language);
 		},
 
 		/**
@@ -725,7 +725,7 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 			 * @public
 			 */
 			add: function (name, callback) {
-				var hooks = _.hooks.all;
+				var hooks = Prism.hooks.all;
 
 				hooks[name] = hooks[name] || [];
 
@@ -742,7 +742,7 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 			 * @public
 			 */
 			run: function (name, env) {
-				var callbacks = _.hooks.all[name];
+				var callbacks = Prism.hooks.all[name];
 
 				if (!callbacks || !callbacks.length) {
 					return;
@@ -926,7 +926,7 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 
 					removeRange(tokenList, removeFrom, removeCount);
 
-					var wrapped = new Token(token, inside ? _.tokenize(matchStr, inside) : matchStr, alias, matchStr);
+					var wrapped = new Token(token, inside ? Prism.tokenize(matchStr, inside) : matchStr, alias, matchStr);
 					currentNode = addAfter(tokenList, removeFrom, wrapped);
 
 					if (after) {
@@ -1048,7 +1048,7 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 				var code = message.code;
 				var immediateClose = message.immediateClose;
 
-				globalThis.postMessage(_.highlight(code, _.languages[lang], lang));
+				globalThis.postMessage(Prism.highlight(code, Prism.languages[lang], lang));
 				if (immediateClose) {
 					globalThis.close();
 				}
@@ -1059,10 +1059,10 @@ export default function PrismInit(useWorkerMessageHandler = true) {
 	}
 
 	// Get current script and highlight
-	var script = _.util.currentScript();
+	var script = Prism.util.currentScript();
 
 	if (script)
-		_.filename = script.src;
+		Prism.filename = script.src;
 
 	Prism.languages.clike = {
 		'comment': [

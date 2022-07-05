@@ -81,46 +81,21 @@ html[data-embed] #code-editor-container {
 	font-family: monospace;
 	font-size: 1.2rem;
 	line-height: 1;
-}
-#code-editor:not(.cm-editor) {
-	word-break: break-all;
+
 	margin: 0;
-	white-space: break-spaces;
+	padding: 2px;
+	word-break: break-word;
+	overflow-wrap: anywhere;
 	tab-size: 3;
 	color: inherit;
 	background-color: inherit;
+	caret-color: white;
 	border: none;
 	outline: none;
 	resize: none;
 }
-#code-editor.cm-editor .cm-scroller {
-	padding: 2px;
-	line-height: 1;
-}
-#code-editor.cm-editor .cm-activeLine {
-	background-color: transparent;
-}
-#code-editor.cm-editor .cm-cursor {
-	border-left-color: white;
-}
-#code-editor.cm-editor .cm-content {
-	padding: 0;
-	caret-color: initial;
-}
-#code-editor.cm-editor .cm-line {
-	padding: 0;
-}
-#code-editor.cm-editor .cm-matchingBracket {
-	background-color: transparent;
-	border: 1px solid grey;
-	margin: -1px;
-}
-#code-editor.cm-editor .cm-selectionMatch {
-	background-color: #333;
-}
-
 /* editor highlight style */
-#code-editor.cm-editor .cmt-keyword { color: violet; }
+/*#code-editor.cm-editor .cmt-keyword { color: violet; }
 #code-editor.cm-editor .cmt-string { color: #fa7; }
 #code-editor.cm-editor .cmt-number { color: lightgreen; }
 #code-editor.cm-editor .cmt-variableName { color: skyblue; }
@@ -132,7 +107,7 @@ html[data-embed] #code-editor-container {
 	text-decoration-color: red;
 	text-decoration-style: wavy;
 }
-
+*/
 /**
  * playback controls
  */

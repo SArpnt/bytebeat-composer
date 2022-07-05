@@ -3,12 +3,16 @@
 const codeInput = Object.seal({
 	usedTemplates: {}, // TODO: this should be renamed to templates and the other thing named something else
 	defaultTemplate: null,
-	registerTemplate(template_name, template) { // TODO: this doesn't really need to be a function
-		codeInput.usedTemplates[template_name] = template;
-		codeInput.defaultTemplate = template_name;
+	registerTemplate(templateName, template) {
+		codeInput.usedTemplates[templateName] = template;
+		codeInput.defaultTemplate = templateName;
+		for (const e of document.querySelectorAll("code-input")) // TODO: this isn't great because it doesn't support extensions of it and such
+			if (!e.template || e.template === templateName)
+				e.updateTemplate();
 	},
 	templates: {
 		prism(prism) { // Prism.js (https://prismjs.com/)
+			console.log(prism, prism.high);
 			return {
 				highlight: prism.highlightElement,
 				isCode: true,
@@ -69,17 +73,20 @@ class CodeInputElem extends HTMLElement {
 		const value = this.value || this.innerHTML || "";
 
 		const shadow = this.attachShadow({ mode: "open" });
-		const pre = document.createElement("pre");
+		this.scrollElem = document.createElement("pre");
 		this.outputElem = document.createElement("code");
+		this.outputElem.part = "code";
+		this.scrollElem.part = "pre";
+		this.scrollElem.ariaHidden = true;
+		this.scrollElem.append(this.outputElem);
+		shadow.append(this.scrollElem);
 		this.inputElem = document.createElement("textarea");
-		pre.ariaHidden = true;
-		pre.append(this.outputElem);
-		shadow.append(pre);
+		this.inputElem.part = "textarea";
 		this.inputElem.placeholder = this.getAttribute("placeholder");
 		this.inputElem.spellcheck = false;
 		this.inputElem.name = this.getAttribute("name");
 		this.removeAttribute("name");
-		this.inputElem.oninput = () => {this.value = this.inputElem.value; this.syncScroll();}
+		this.inputElem.oninput = () => {this.value = this.inputElem.value;}
 		this.inputElem.onscroll = () => {this.syncScroll();}
 		this.inputElem.onkeydown = e => {this.checkTab(e); this.checkEnter(e);}
 		shadow.append(this.inputElem);
@@ -103,10 +110,10 @@ class CodeInputElem extends HTMLElement {
 
 	/* Syntax-highlighting functions */
 	update() {
-		const text = this.value;
+		let text = this.value;
 
 		// Handle final newlines (see article)
-		if (text[text.length - 1] == "\n")
+		if (text[text.length - 1] === "\n")
 			text += " ";
 
 		this.outputElem.innerHTML = this.escapeHtml(text);
@@ -114,28 +121,30 @@ class CodeInputElem extends HTMLElement {
 			if (this.template.includeCodeInputInHighlightFunc)
 				this.template.highlight(this.outputElem, this);
 			else
-				this.template.highlight(result_element);
+				this.template.highlight(this.outputElem);
 		}
+
+		this.syncScroll();
 	}
 
 	syncScroll() {
 		/* Scroll result to scroll coords of event - sync with textarea */
 		// Get and set x and y
-		this.outputElem.scrollTop = this.inputElem.scrollTop;
-		this.outputElem.scrollLeft = this.inputElem.scrollLeft;
+		this.scrollElem.scrollTop = this.inputElem.scrollTop;
+		this.scrollElem.scrollLeft = this.inputElem.scrollLeft;
 	}
 
-	checkTab(event) {
+	checkTab(event) { // TODO: fix variable names in this function
 		if (event.key != "Tab" || !this.template?.isCode)
 			return;
 
-		let code = input_element.value;
+		const oldVal = this.inputElem.value;
 		event.preventDefault();
 
-		if (!event.shiftKey && input_element.selectionStart == input_element.selectionEnd) {
+		if (!event.shiftKey && this.inputElem.selectionStart === this.inputElem.selectionEnd) {
 			// Shift always means dedent - this places a tab here.
-			let before_selection = code.slice(0, input_element.selectionStart); // text before tab
-			let after_selection = code.slice(input_element.selectionEnd, input_element.value.length); // text after tab
+			let before_selection = oldVal.slice(0, this.inputElem.selectionStart); // text before tab
+			let after_selection = oldVal.slice(this.inputElem.selectionEnd, this.inputElem.value.length); // text after tab
 
 			let cursor_pos = this.inputElem.selectionEnd + 1; // where cursor moves after tab - moving forward by 1 char to after tab
 			this.inputElem.value = before_selection + "\t" + after_selection; // add tab char
@@ -160,11 +169,12 @@ class CodeInputElem extends HTMLElement {
 				console.log(lines[i], ": start", this.inputElem.selectionStart, letter_i, "&& end", this.inputElem.selectionEnd , letter_i - lines[i].length)
 				if (this.inputElem.selectionStart <= letter_i && this.inputElem.selectionEnd >= letter_i - lines[i].length) {
 					// Starts before or at last char and ends after or at first char
-					if (event.shiftKey) {
+					if (event.shiftKey) {(t*(1+(5&t>>10))*(3+(t>>17&1?(2^2&t>>14)/3:3&(t>>13)+1))>>(3&t>>9))&(t&4096?(t*(t^t%9)|t>>3)>>1:255)
 						if (lines[i][0] === "\t") {
 							// Remove first tab
 							lines[i] = lines[i].slice(1);
-							if(number_indents == 0) first_line_indents--;
+							if (number_indents === 0)
+								first_line_indents--;
 							number_indents--;
 						}
 					} else {
@@ -176,21 +186,21 @@ class CodeInputElem extends HTMLElement {
 					
 				}
 			}
-			input_element.value = lines.join("\n");
+			this.inputElem.value = lines.join("\n");
 
 			// move cursor
-			input_element.selectionStart = selection_start + first_line_indents;
-			input_element.selectionEnd = selection_end + number_indents;
+			this.inputElem.selectionStart = selection_start + first_line_indents;
+			this.inputElem.selectionEnd = selection_end + number_indents;
 		}
 
-		this.update(input_element.value);
+		this.value = this.inputElem.value;
 	}
 
-	check_enter(event) {
+	checkEnter(event) { // TODO: fix variable names in this function
 		if (event.key != "Enter" || !this.template?.isCode)
 			return;
 
-		event.preventDefault(); // stop normal
+		event.preventDefault();
 
 		let lines = this.inputElem.value.split("\n");
 		let letter_i = 0;
@@ -201,14 +211,14 @@ class CodeInputElem extends HTMLElement {
 		// find the index of the line our cursor is currently on
 		for (let i = 0; i < lines.length; i++) {
 			letter_i += lines[i].length + 1;
-			if (input_element.selectionEnd <= letter_i) {
+			if (this.inputElem.selectionEnd <= letter_i) {
 				current_line = i;
 				break;
 			}
 		}
 
 		// count the number of indents the current line starts with (up to our cursor position in the line)
-		let cursor_pos_in_line = lines[current_line].length - (letter_i - input_element.selectionEnd) + 1;
+		let cursor_pos_in_line = lines[current_line].length - (letter_i - this.inputElem.selectionEnd) + 1;
 		for (let i = 0; i < cursor_pos_in_line; i++) {
 			if (lines[current_line][i] === "\t")
 				number_indents++;
@@ -230,18 +240,18 @@ class CodeInputElem extends HTMLElement {
 		new_line += text_after_cursor;
 
 		// save the current cursor position
-		let selection_start = input_element.selectionStart;
-		let selection_end = input_element.selectionEnd;
+		let selection_start = this.inputElem.selectionStart;
+		let selection_end = this.inputElem.selectionEnd;
 
 		// splice our new line into the list of existing lines and join them all back up
 		lines.splice(current_line + 1, 0, new_line);
-		input_element.value = lines.join("\n");
+		this.inputElem.value = lines.join("\n");
 
 		// move cursor to new position
-		input_element.selectionStart = selection_start + number_indents + 1;  // count the indent level and the newline character
-		input_element.selectionEnd = selection_end + number_indents + 1;
+		this.inputElem.selectionStart = selection_start + number_indents + 1;  // count the indent level and the newline character
+		this.inputElem.selectionEnd = selection_end + number_indents + 1;
 
-		this.update(input_element.value);
+		this.value = this.inputElem.value;
 	}
 
 	escapeHtml(text) {
