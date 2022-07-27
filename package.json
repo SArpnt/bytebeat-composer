@@ -1,0 +1,10 @@
+{
+	"dependencies": {
+		"@rollup/plugin-json": "^4.1.0",
+		"@web/rollup-plugin-html": "^1.10.3",
+		"pako": "^2.0.4",
+
+		"gh-pages": "^4.0.0",
+		"swc": "^1.0.11"
+	}
+}

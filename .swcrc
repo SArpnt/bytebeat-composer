@@ -1,0 +1,42 @@
+{
+	"$schema": "https://json.schemastore.org/swcrc",
+	"jsc": {
+		"parser": {
+			"syntax": "ecmascript",
+			"jsx": false,
+			"dynamicImport": false,
+			"privateMethod": false,
+			"functionBind": false,
+			"exportDefaultFrom": false,
+			"exportNamespaceFrom": false,
+			"decorators": false,
+			"decoratorsBeforeExport": false,
+			"topLevelAwait": false,
+			"importMeta": false
+		},
+		"target": "es2022",
+		"loose": true,
+		"minify": {
+			"compress": {
+				"dead_code": true,
+				"ecma": 2020,
+				"inline": 3,
+				"pure_getters": "strict",
+				"reduce_vars": true,
+				"unused": true
+			},
+			"mangle": {
+				"properties": {
+					"reserved": []
+				},
+				"reserved": []
+			},
+			"format": {
+				"comments": false,
+				"ecma": 2020,
+				"quoteStyle": 0
+			}
+		}
+	},
+	"minify": true
+}
