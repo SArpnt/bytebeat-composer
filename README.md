@@ -90,3 +90,10 @@ if i'm unavalible or you're in a hurry, you can decode the links manually:
 	4. inflateRaw to string with zlib or pako (not sure quite how zlib works in this case, pako is preferable)
 	5. parse with JSON
 - links prefixed with `#v4` have essentially the same process. the only differences are the prefix and the absence of base64 padding.
+
+## license
+
+note that the license has changed from MIT to AGPL, the different versions have the licenses they came with.
+
+if the agpl isn't clear enough, putting the website in an iframe doesn't require you to use AGPL for the website it's in.
+if you were to modify the website AND put it online, then you would have to make it AGPL.
