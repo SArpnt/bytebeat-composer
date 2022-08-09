@@ -1,8 +1,20 @@
 #!/bin/sh
 
-# clean build directory
-find ../dist -mindepth 1 -maxdepth 1 ! -name 'assets' -exec rm -r '{}' \\
+rm -r tmp
+mkdir tmp
 
-npx swc src/*.mjs -s false -d dist
+# minify js
+# TODO directories
+# TODO .js
+npx swc src/*.mjs -s true -d tmp
 
-python -m "http.server" -d dist 8080
+# minify css
+# TODO minify
+cp src/*.css tmp
+
+zola build
+
+mv tmp/* build
+rm -r tmp
+
+python -m "http.server" -d build 8080

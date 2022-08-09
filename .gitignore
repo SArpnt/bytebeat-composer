@@ -1,5 +1,4 @@
-.vscode/
 node_modules
-dist/*
-!dist/assets/
+build/*
+tmp/*
 **/rust/target
