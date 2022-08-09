@@ -95,5 +95,7 @@ if i'm unavalible or you're in a hurry, you can decode the links manually:
 
 note that the license has changed from MIT to AGPL, the different versions have the licenses they came with.
 
+(not legal advice)
+
 if the agpl isn't clear enough, putting the website in an iframe doesn't require you to use AGPL for the website it's in.
 if you were to modify the website AND put it online, then you would have to make it AGPL.
