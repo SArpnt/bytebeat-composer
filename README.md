@@ -1,3 +1,6 @@
+# THIS REPO IS NO LONGER USED!
+the new website is at [bytebeat.ficial.net](https://bytebeat.ficial.net), and the new repository is on [disroot](https://git.disroot.org/SArpnt/bytebeat-composer)
+
 # bytebeat-composer
 modern bytebeat player with a library of many formulas from around the internet.
 
